@@ -7,18 +7,31 @@
       <router-link to="/" >Pranešimai</router-link>
     </nav>
 
-    <button id="messages-btn">
+    <button id="notifications-btn">
       <img src="../assets/icons/Notification-bell.svg" alt="">
+      <span v-show="notification" id="unread-notification"></span>
     </button>
 
-    <button id="profile-btn">VP</button>
+    <button id="profile-btn">{{ nameInitials }}</button>
   </header>
 
 </template>
 
 <script>
   export default {
-    name: "Header"
+    name: "Header",
+    // props: [ 'notification', 'name' ],
+    data() {
+      return {
+        notification: true,
+        name: 'Vardenis Pavardenis',
+      }
+    },
+    computed: {
+      nameInitials() {
+        return this.name.charAt(0) + this.name.split(" ")[1].charAt(0);
+      }
+    }
   }
 </script>
 
@@ -30,6 +43,7 @@
     display: flex;
     align-items: center;
     justify-content: end;
+    letter-spacing: 1px;
   }
 
   a {
@@ -41,9 +55,20 @@
     margin-right: 1em;
   }
 
-  #messages-btn {
-    margin-right: 1em;
+  #notifications-btn {
+    margin: 0 1em;
+    position: relative;
+  }
 
+  #unread-notification {
+    background: #FF6464;
+    height: 13px;
+    width: 13px;
+    border: solid var(--clr-accent) 2px;
+    border-radius: 50%;
+
+    position: absolute;
+    right: 1px;
   }
 
   #profile-btn {
@@ -52,11 +77,10 @@
     font-family: var(--ff-bebas-neue);
     font-size: 1.875rem;
     letter-spacing: 2px;
-    /*padding-top:;*/
 
-    /*margin: .2em;*/
     height: 44px;
     width: 44px;
+    padding-top: 2px;
     border-radius: 50%;
   }
 
