@@ -1,14 +1,17 @@
 <template>
   <div id="app">
+<!--    <Header />-->
     <router-view />
   </div>
 </template>
 
 <script>
 
+// import Header from "@/components/Header";
 export default {
   name: 'App',
   components: {
+    // Header
   }
 }
 </script>
@@ -30,6 +33,9 @@ export default {
     --ff-karla: 'Karla', sans-serif;
     --ff-roboto-con: 'Roboto Condensed', sans-serif;
 
+    --ls-bebas: .065em;
+    /*--ls-roboto:*/
+
     --fw-bold-roboto: 700;
     --fw-bold-karla: 600;
 
@@ -37,7 +43,7 @@ export default {
     --fs-table-header: 1.25rem; /* 20px */
     --fs-side-menu: 1.5rem;     /* 24px */
     --fs-button: 1.875rem;      /* 30px */
-    --fs-title: 4rem;           /* 64px media 30px */
+    /*--fs-title: 4rem;           !* 64px media 30px *!*/
 
     /* Add item modal title 48px */
     /* header profile bubble --fs-button 30px */
@@ -54,6 +60,37 @@ export default {
     font-family: var(--ff-karla);
     color: var(--clr-black);
   }
+
+  h1 {
+    font-size: 4rem;
+  }
+
+  h2 {
+    font-size: 3rem;
+  }
+
+  h1, h2 {
+    display: inline-block;
+    color: var(--clr-dark-grey);
+    font-family: var(--ff-roboto-con);
+    font-weight: 400;
+    padding-right: 1.5em;
+    padding-bottom: .1em;
+
+    border-bottom: solid var(--clr-grey) 2px;
+  }
+
+  /*h1:after,*/
+  /*h2:after {*/
+  /*  content: '';*/
+  /*  display: block;*/
+  /*  width: calc(100% + 1.5em);*/
+  /*  width: 100%;*/
+  /*  margin-top: 5px;*/
+
+  /*  height: 2px;*/
+  /*  background: var(--clr-grey);*/
+  /*}*/
 
   img {
     max-width: 100%;
@@ -73,11 +110,28 @@ export default {
     color: var(--clr-dark-grey);
     font-family: var(--ff-bebas-neue);
     font-size: var(--fs-button);
+    letter-spacing: var(--ls-bebas);
 
     padding: .15em .8em;
+    transition: background-color 250ms, color 250ms;
   }
 
-  input {
+  .btn:hover,
+  .btn:focus {
+    background: var(--clr-accent);
+    color: var(--clr-white);
+  }
+
+  .btn:disabled,
+  .btn:disabled:hover,
+  .btn:disabled:focus {
+    background-color: var(--clr-white);
+    border-color: var(--clr-light-grey);
+    color: var(--clr-grey);
+  }
+
+  input,
+  select {
     /*position: relative;*/
     font: inherit;
     color: inherit;
@@ -86,9 +140,16 @@ export default {
     border-left: solid 3px transparent;
     border-bottom: solid 3px var(--clr-grey);
     padding: .7em 1.5em;
+    transition: border-color 300ms;
   }
 
-  input:focus {
+  input:hover,
+  select:hover {
+    border-bottom-color: var(--clr-accent);
+  }
+
+  input:focus,
+  select:focus {
     /*color: var(--clr-accent);*/
     border-width: 3px;
     border-color: var(--clr-accent);
