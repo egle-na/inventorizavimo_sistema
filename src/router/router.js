@@ -2,6 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import LogIn from "@/views/LogIn";
 import AddUser from "@/views/AddUser";
+import AddItem from "@/views/AddItem";
 
 Vue.use(VueRouter);
 
@@ -22,6 +23,11 @@ const router = new VueRouter({
             path: '/add-user',
             name: 'add-user',
             component: AddUser,
+        },
+        {
+            path: '/add-item',
+            name: 'add-item',
+            component: AddItem,
         },
     ]
 })

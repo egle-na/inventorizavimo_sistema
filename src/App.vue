@@ -70,27 +70,19 @@ export default {
   }
 
   h1, h2 {
-    display: inline-block;
     color: var(--clr-dark-grey);
     font-family: var(--ff-roboto-con);
     font-weight: 400;
+
+    display: inline-block;
     padding-right: 1.5em;
     padding-bottom: .1em;
-
     border-bottom: solid var(--clr-grey) 2px;
   }
 
-  /*h1:after,*/
-  /*h2:after {*/
-  /*  content: '';*/
-  /*  display: block;*/
-  /*  width: calc(100% + 1.5em);*/
-  /*  width: 100%;*/
-  /*  margin-top: 5px;*/
-
-  /*  height: 2px;*/
-  /*  background: var(--clr-grey);*/
-  /*}*/
+  h2 {
+    border-color: var(--clr-accent);
+  }
 
   img {
     max-width: 100%;
@@ -131,7 +123,8 @@ export default {
   }
 
   input,
-  select {
+  select,
+  textarea {
     /*position: relative;*/
     font: inherit;
     color: inherit;
@@ -144,12 +137,14 @@ export default {
   }
 
   input:hover,
-  select:hover {
+  select:hover,
+  textarea:hover {
     border-bottom-color: var(--clr-accent);
   }
 
   input:focus,
-  select:focus {
+  select:focus,
+  textarea:focus {
     /*color: var(--clr-accent);*/
     border-width: 3px;
     border-color: var(--clr-accent);

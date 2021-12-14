@@ -8,20 +8,25 @@
     <main>
 
       <div class="container-center">
-        <h2>Pridėti Darbuotoją</h2>
-        <form-item>
-          <div>
-            <input type="text" placeholder="Vardas" required>
-            <input type="text" placeholder="Pavardė" required>
-          </div>
-          <input type="email" placeholder="Elektroninis paštas" class="input-long" required>
+        <h2>Pridėti Įrangą</h2>
 
+        <form-item @onSubmit="onSubmit">
+          <input type="text" placeholder="Pavadinimas" required class="input-long">
+          <textarea placeholder="Aprašymas" required class="input-long" />
+          <div>
+            <input type="text" placeholder="Kodas" required >
+            <input type="text" placeholder="Serijos Numeris" required >
+          </div>
+          <div>
+            <input type="text" placeholder="Kiekis" required >
+            <input type="text" placeholder="Vieneto Kaina" required >
+          </div>
           <select class="input-long" required>
             <option selected hidden class="placeholder" value="">Įmonė</option>
             <option v-for="item in 5" :key="item" :value="item">Įmonės Pavadinimas {{item}}</option> <!-- įmonių sąrašas -->
           </select>
 
-          <button class="btn" disabled>Pridėti</button>
+          <button class="btn">Pridėti</button>
         </form-item>
       </div>
     </main>
@@ -39,6 +44,11 @@
       FormItem,
       Header,
       SideMenu
+    },
+    methods: {
+      onSubmit() {
+        console.log('hi');
+      }
     }
   }
 </script>
@@ -68,8 +78,14 @@
     margin: 2em;
   }
 
-  h2 {
-    border-color: var(--clr-accent);
+  textarea {
+    height: 44px;
+    transition: height 400ms;
+    resize: vertical;
+  }
+
+  textarea:focus {
+    height: 90px;
   }
 
 </style>

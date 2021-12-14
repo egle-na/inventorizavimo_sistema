@@ -5,6 +5,7 @@
 <!--</template>-->
 
 <script>
+  // change to component
   export default {
     name: "ProfileImgMixin",
     data() {
@@ -22,17 +23,17 @@
 
 <style scoped>
 
-  #profile-btn {
-    background: var(--clr-white);
-    color: var(--clr-accent);
-    font-family: var(--ff-bebas-neue);
-    font-size: 1.875rem;
-    letter-spacing: 2px;
+  /*#profile-btn {*/
+  /*  background: var(--clr-white);*/
+  /*  color: var(--clr-accent);*/
+  /*  font-family: var(--ff-bebas-neue);*/
+  /*  font-size: 1.875rem;*/
+  /*  letter-spacing: 2px;*/
 
-    height: 44px;
-    width: 44px;
-    padding-top: 2px;
-    border-radius: 50%;
-  }
+  /*  height: 44px;*/
+  /*  width: 44px;*/
+  /*  padding-top: 2px;*/
+  /*  border-radius: 50%;*/
+  /*}*/
 
 </style>

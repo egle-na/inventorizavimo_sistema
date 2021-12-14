@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <form @submit.prevent="$emit('onSubmit')">
     <slot />
   </form>
 </template>
@@ -10,13 +10,17 @@
 </script>
 <style scoped>
 
-  form input,
-  form select {
+  input,
+  select,
+  textarea {
     margin-bottom: 2em;
+  }
+
+  input {
     width: 45%;
   }
 
-  form input:first-child {
+  input:first-child:not(.input-long) {
     margin-right: 10%;
   }
 
@@ -32,13 +36,14 @@
     color: initial;
   }
 
-  button {
-    float: right;
+  input:valid,
+  select:valid,
+  textarea:valid {
+    border-bottom-color: #0054A6;
   }
 
-  input:valid,
-  select:valid {
-    border-bottom-color: #0054A6;
+  button {
+    float: right;
   }
 
 </style>
