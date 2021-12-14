@@ -61,14 +61,6 @@ export default {
     color: var(--clr-black);
   }
 
-  h1 {
-    font-size: 4rem;
-  }
-
-  h2 {
-    font-size: 3rem;
-  }
-
   h1, h2 {
     color: var(--clr-dark-grey);
     font-family: var(--ff-roboto-con);
@@ -80,7 +72,15 @@ export default {
     border-bottom: solid var(--clr-grey) 2px;
   }
 
+  h1 {
+    font-size: 4rem;
+    padding-bottom: 0;
+    line-height: 1em;
+    margin: 0;
+  }
+
   h2 {
+    font-size: 3rem;
     border-color: var(--clr-accent);
   }
 

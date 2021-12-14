@@ -2,8 +2,8 @@
 
   <header>
     <nav>
-      <router-link to="/" >Mano Inventorius</router-link>
-      <router-link to="/" >Pridėti įrangą</router-link>
+      <router-link to="/user-inventory" >Mano Inventorius</router-link>
+      <router-link to="/add-inventory" >Pridėti įrangą</router-link>
       <router-link to="/" >Pranešimai</router-link>
     </nav>
 
