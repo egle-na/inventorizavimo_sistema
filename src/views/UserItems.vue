@@ -1,5 +1,5 @@
 <template>
-<div>
+<div class="fixed-container">
   <Header />
 
   <main>
@@ -25,15 +25,17 @@
       </div>
     </div>
 
-    <div>
+    <div class="table-container">
       <table>
         <tr>
+          <th></th>
           <th>Pavadinimas</th>
           <th>Gavimo data</th>
           <th>Statusas</th>
           <th>Veiksmai</th>
         </tr>
-        <tr v-for="item in 7" :key="item">
+        <tr v-for="item in 20" :key="item">
+          <td></td>
           <td>Dell 24 Monitor-S2421H</td>
           <td>2021-12-14</td>
           <td>Savininkas</td>
@@ -68,6 +70,11 @@
 </script>
 
 <style scoped>
+
+  /*.fixed-container {*/
+  /*  max-height: 100vh;*/
+  /*  overflow: hidden;*/
+  /*}*/
 
   main {
     max-width: 1000px;
@@ -134,23 +141,29 @@
 
   /* Table Design */
 
-  table {
-    width: 100%;
-    color: var(--clr-black);
-    border: solid 3px var(--clr-light-grey);
-    border-radius: 5px 5px 3px 3px; /* does nothing */
-    border-collapse: collapse;
+  .table-container {
+    border-radius: 10px 10px 7px 7px;
+    overflow: hidden;
+    border: solid 1px var(--clr-light-grey);
+    overflow-y: scroll;
+    height: 60vh;
   }
 
-  th {
-    color: var(--clr-accent);
-    background-color: var(--clr-light-grey);
-    text-align: left;
-    font-family: var(--ff-karla);
-    letter-spacing: 0.08em;
-    font-weight: 400;
-    font-size: var(--fs-table-header);
-    text-transform: uppercase;
+  ::-webkit-scrollbar-thumb {
+    background-color:var(--clr-grey);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  table {
+    color: var(--clr-black);
+    border: solid 2px var(--clr-light-grey);
+    border-collapse: collapse;
+    width: 100%;
+    /*position: relative;*/
   }
 
   th, td {
@@ -158,13 +171,36 @@
     padding: 1rem;
   }
 
-  td {
-    /*padding: 1em;*/
-
+  th {
+    color: var(--clr-accent);
+    background-color: var(--clr-light-grey);
+    font-size: var(--fs-table-header);
+    font-family: var(--ff-karla);
+    font-weight: 400;
+    text-transform: uppercase;
+    text-align: left;
+    letter-spacing: 0.08em;
   }
 
+  th:not(:first-child){ /* column dividers fir sticky header */
+    box-shadow: -1px 0 0 var(--clr-grey);
+  }
 
+  tr:first-child { /* keep headers on the top of table  */
+    position: sticky;
+    top: 1px;
+    box-shadow: 0 2px 4px #C5C5C5;
+  }
 
+  th:first-child:before{ /* to fill the gap on the top of table  */
+    content: '';
+    display: block;
+    position: absolute;
+    top: -1px;
+    left:0;
+    width: 100%;
+    border-top: solid var(--clr-light-grey);
+  }
 
 
 </style>

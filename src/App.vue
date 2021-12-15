@@ -65,21 +65,21 @@ export default {
     color: var(--clr-dark-grey);
     font-family: var(--ff-roboto-con);
     font-weight: 400;
-
     display: inline-block;
-    padding-right: 1.5em;
-    padding-bottom: .1em;
     border-bottom: solid var(--clr-grey) 2px;
   }
 
   h1 {
     font-size: 4rem;
+    padding-right: 1em;
     padding-bottom: 0;
     line-height: 1em;
     margin: 0;
   }
 
   h2 {
+    padding-right: 1.5em;
+    padding-bottom: .1em;
     font-size: 3rem;
     border-color: var(--clr-accent);
   }
