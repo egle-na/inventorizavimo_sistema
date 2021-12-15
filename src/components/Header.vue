@@ -7,10 +7,16 @@
       <router-link to="/" >Pranešimai</router-link>
     </nav>
 
-    <button id="notifications-btn">
-      <img src="../assets/icons/Notification-bell.svg" alt="">
-      <span v-show="notification" id="unread-notification"></span>
-    </button>
+    <div class="notification-container">
+      <button id="notifications-btn">
+        <img src="../assets/icons/Notification-bell.svg" alt="">
+        <span v-show="notification" id="unread-notification"></span>
+      </button>
+
+
+      <notification-card />
+
+    </div>
 
     <span id="profile-btn">{{ nameInitials }}</span>
   </header>
@@ -19,9 +25,11 @@
 
 <script>
   import ProfileImgMixin from "@/components/mixins/ProfileImgMixin";
+  import NotificationCard from "@/components/NotificationCard";
 
   export default {
     name: "Header",
+    components: {NotificationCard},
     // props: [ 'notification', 'name' ],
     mixins: [ ProfileImgMixin ],
     data() {
@@ -87,5 +95,36 @@
     padding-top: 2px;
     border-radius: 50%;
   }
+
+  .notification-container {
+    position: relative;
+  }
+
+  .notification-card {
+    position: absolute;
+    right: 0;
+    width: 350px;
+    padding: 1em;
+
+    background: var(--clr-white);
+    border-radius: 5px;
+
+    font-family: var(--ff-karla);
+    letter-spacing: initial;
+  }
+
+  .close-btn {
+    position: absolute;
+    font-size: 1.3rem;
+    top: .5em;
+    right: .5em;
+    line-height: 1em;
+  }
+
+  .date {
+    margin: 0;
+    color: var(--clr-darker-grey)
+  }
+
 
 </style>

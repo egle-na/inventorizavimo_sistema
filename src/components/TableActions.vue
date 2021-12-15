@@ -49,8 +49,8 @@
   .actions-container {
     display: flex;
     width: 100%;
-    justify-content: space-between;
-    padding: 0em 1em;
+    justify-content: space-around;
+    padding: 0;
   }
 
   .action-divider {
@@ -67,7 +67,7 @@
     text-align: center;
     line-height: 0;
     height: fit-content;
-    padding: 0;
+    padding: .3em;
     align-self: center;
   }
 

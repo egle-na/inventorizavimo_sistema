@@ -48,10 +48,6 @@
     padding: 1rem;
   }
 
-  .actions-cell {
-    padding: 0;
-  }
-
   th {
     color: var(--clr-accent);
     background-color: var(--clr-light-grey);
@@ -89,32 +85,38 @@
     background-color: var(--clr-almost-white);
   }
 
-  .actions-cell button {
-    transform: rotate(0);
-    transition: rotate 300ms;
-  }
-
   .actions-cell {
     text-align: right;
-    vertical-align: middle; /* jei kažkur sugedo perkelti į visa įranga */
   }
 
   /* Expanded Table Rules */
 
-  .row-selected {
-    /*z-index: -1;*/
-    background: var(--clr-light-grey);
-    filter: drop-shadow(0 3px 3px #C5C5C5);
-    /*box-shadow: 0 2px 4px #C5C5C5;*/
+  .main-trow .actions-cell button {
+    transform: rotate(0);
+    transition: rotate 300ms;
   }
+
   .row-selected .actions-cell button {
     transform: rotate(180deg);
   }
 
-  .expanded-table {
-    display: contents;
+  .expanded-table .actions-cell {
+    vertical-align: middle; /* jei kažkur sugedo perkelti į visa įranga */
+    padding: 0;
   }
-  .expanded-table tr {
+
+  .expanded-table{
+    background: var(--clr-almost-white);
+    border-bottom: 2px solid var(--clr-accent);
+  }
+
+  .row-selected {
+    background: var(--clr-light-grey);
+    filter: drop-shadow(0 3px 3px #C5C5C5);
+  }
+
+  .expanded-table > td {
+    padding: 0;
   }
 
   .expanded-table th{
@@ -124,26 +126,5 @@
     box-shadow: none; /* for chrome */
     background: var(--clr-almost-white);
   }
-
-  .expanded-table td{
-    background: var(--clr-almost-white);
-  }
-
-  .expanded-table:after{ /* Blue line after expanded table */
-    content: '';
-    display: table-row;
-    width: 100%;
-    border-bottom: 2px solid var(--clr-accent);
-    background: var(--clr-almost-white);
-    box-shadow: 0 4px 5px var(--clr-dark-grey);
-  }
-
-  /*tbody {*/
-    /*box-shadow: none;*/
-  /*}*/
-
-  /*.row-selected .expanded-table {*/
-  /*  height: 0;*/
-  /*}*/
 
 </style>

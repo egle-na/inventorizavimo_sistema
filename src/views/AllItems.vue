@@ -3,7 +3,7 @@
 
     <div class="title-container">
       <h1>Visa Įranga</h1>
-      <router-link to="/add-user" class="add-btn">
+      <router-link to="/add-inventory" class="add-btn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
@@ -36,28 +36,34 @@
             <button @click="expandRow(item)">v</button>
           </td>
         </tr>
-        <div class="expanded-table" v-show="rowExpanded === item">
-          <tr>
-            <th></th>
-            <th>Serijos Numeris</th>
-            <th>Savininkas</th>
-            <th>Turėtojas</th>
-            <th></th>
-          </tr>
-          <tr class="expanded-trow">
-            <td>1</td>
-            <td>KD-55XG9505-1245123</td>
-            <td>Jonas Jonaitis</td>
-            <td>Petras Petraitis</td>
-            <td class="actions-cell">
-              <table-actions/>
-            </td>
-          </tr>
-        </div>
+
+        <tr class="expanded-table" v-show="rowExpanded === item">
+          <td colspan="5">
+            <table>
+              <tr>
+                <th></th>
+                <th>Serijos Numeris</th>
+                <th>Savininkas</th>
+                <th>Turėtojas</th>
+                <th></th>
+              </tr>
+              <tr class="expanded-trow">
+                <td>1</td>
+                <td>KD-55XG9505-1245123</td>
+                <td>Jonas Jonaitis</td>
+                <td>Petras Petraitis</td>
+                <td class="actions-cell">
+                  <table-actions/>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
       </tbody>
-
-
     </table-component> <!-- /table container-->
+
+
 
   </admin-desk>
 </template>
