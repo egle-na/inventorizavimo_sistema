@@ -4,6 +4,7 @@ import LogIn from "@/views/LogIn";
 import AddUser from "@/views/AddUser";
 import AddItem from "@/views/AddItem";
 import UserItems from "@/views/UserItems";
+import AllUsers from "@/views/AllUsers";
 
 Vue.use(VueRouter);
 
@@ -29,6 +30,11 @@ const router = new VueRouter({
             path: '/add-user',
             name: 'add-user',
             component: AddUser,
+        },
+        {
+            path: '/all-users',
+            name: 'all-users',
+            component: AllUsers,
         },
         {
             path: '/add-inventory',

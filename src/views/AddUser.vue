@@ -1,14 +1,8 @@
 <template>
-  <div class="grid">
-
-    <Header />
-
-    <side-menu class="side-menu" />
-
-    <main>
-
+  <admin-desk>
       <div class="container-center">
         <h2>Pridėti Darbuotoją</h2>
+
         <form-item>
           <div>
             <input type="text" placeholder="Vardas" required>
@@ -23,53 +17,31 @@
 
           <button class="btn" disabled>Pridėti</button>
         </form-item>
+
       </div>
-    </main>
-  </div>
+  </admin-desk>
 </template>
 
 <script>
-  import SideMenu from "@/components/SideMenu";
-  import Header from "@/components/Header";
   import FormItem from "@/components/FormItem";
+  import AdminDesk from "@/components/AdminDesk";
 
   export default {
     name: "AddUser",
     components: {
+      AdminDesk,
       FormItem,
-      Header,
-      SideMenu
     }
   }
 </script>
 
 <style scoped>
 
-  .grid {
-    display: grid;
-    grid-template: min-content auto / 330px auto;
-    height: 100vh;
-  }
-
-  header {
-    grid-column: 1 / -1;
-    grid-row: 1;
-  }
-
-  .side-menu {
-    grid-column: 1;
-    grid-row: 2 / -1;
-  }
-
-  main {
-    align-self: center;
-    justify-self: center;
+  .container-center {
+    /*align-self: center;*/
+    /*justify-self: center;*/
     max-width: 550px;
-    margin: 2em;
-  }
-
-  h2 {
-    border-color: var(--clr-accent);
+    margin: 1em auto;
   }
 
 </style>

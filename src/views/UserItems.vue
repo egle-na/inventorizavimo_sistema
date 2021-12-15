@@ -22,37 +22,41 @@
         <button class="filter-btn"
                 :class="{'filter-selected': filter === 'all'}"
                 @click="setFilter('all')">Visi</button>
-      </div>
-    </div>
+      </div> <!-- /filter container-->
+    </div> <!-- /title container-->
 
-    <div class="table-container">
-      <table>
-        <tr>
-          <th></th>
-          <th>Pavadinimas</th>
-          <th>Gavimo data</th>
-          <th>Statusas</th>
-          <th>Veiksmai</th>
-        </tr>
-        <tr v-for="item in 20" :key="item">
-          <td></td>
-          <td>Dell 24 Monitor-S2421H</td>
-          <td>2021-12-14</td>
-          <td>Savininkas</td>
-          <td>Some data</td>
+    <table-component>
+      <tr>
+        <th></th>
+        <th>Pavadinimas</th>
+        <th>Gavimo data</th>
+        <th>Statusas</th>
+        <th>Veiksmai</th>
+      </tr>
+      <tr v-for="item in 20" :key="item">
+        <td></td>
+        <td>Dell 24 Monitor-S2421H</td>
+        <td>2021-12-14</td>
+        <td>Savininkas</td>
+        <td class="actions-cell">
+          <table-actions />
+        </td>
 
-        </tr>
-      </table>
-    </div>
+      </tr>
+    </table-component>
   </main>
 </div>
 </template>
 
 <script>
   import Header from "@/components/Header";
+  import TableActions from "@/components/TableActions";
+  import TableComponent from "@/views/TableComponent";
   export default {
     name: "UserItems",
     components: {
+      TableComponent,
+      TableActions,
       Header
     },
     data() {
@@ -96,7 +100,7 @@
     transform: translateY(50%);
   }
   .add-btn path{
-    /*stroke: var(--clr-accent);*/
+    stroke: var(--clr-darker-grey);
     transition: stroke 200ms;
   }
 
@@ -139,68 +143,75 @@
     border-color: var(--clr-accent);
   }
 
-  /* Table Design */
+  /*!* Table Design *!*/
 
-  .table-container {
-    border-radius: 10px 10px 7px 7px;
-    overflow: hidden;
-    border: solid 1px var(--clr-light-grey);
-    overflow-y: scroll;
-    height: 60vh;
-  }
+  /*.table-container {*/
+  /*  border-radius: 10px 10px 7px 7px;*/
+  /*  overflow: hidden;*/
+  /*  border: solid 1px var(--clr-light-grey);*/
+  /*  overflow-y: scroll;*/
+  /*  height: 60vh;*/
+  /*}*/
 
-  ::-webkit-scrollbar-thumb {
-    background-color:var(--clr-grey);
-    border-radius: 5px;
-  }
+  /*::-webkit-scrollbar-thumb {*/
+  /*  background-color:var(--clr-grey);*/
+  /*  border-radius: 5px;*/
+  /*}*/
 
-  ::-webkit-scrollbar {
-    width: 10px;
-  }
+  /*::-webkit-scrollbar {*/
+  /*  width: 10px;*/
+  /*}*/
 
-  table {
-    color: var(--clr-black);
-    border: solid 2px var(--clr-light-grey);
-    border-collapse: collapse;
-    width: 100%;
-    /*position: relative;*/
-  }
+  /*table {*/
+  /*  color: var(--clr-black);*/
+  /*  border: solid 2px var(--clr-light-grey);*/
+  /*  border-collapse: collapse;*/
+  /*  width: 100%;*/
+  /*  !*position: relative;*!*/
+  /*}*/
 
-  th, td {
-    border: solid 1px var(--clr-grey);
-    padding: 1rem;
-  }
+  /*th, td {*/
+  /*  border: solid 1px var(--clr-grey);*/
+  /*  padding: 1rem;*/
+  /*}*/
 
-  th {
-    color: var(--clr-accent);
-    background-color: var(--clr-light-grey);
-    font-size: var(--fs-table-header);
-    font-family: var(--ff-karla);
-    font-weight: 400;
-    text-transform: uppercase;
-    text-align: left;
-    letter-spacing: 0.08em;
-  }
+  /*.actions-cell {*/
+  /*  padding: 0;*/
+  /*}*/
 
-  th:not(:first-child){ /* column dividers fir sticky header */
-    box-shadow: -1px 0 0 var(--clr-grey);
-  }
+  /*th {*/
+  /*  color: var(--clr-accent);*/
+  /*  background-color: var(--clr-light-grey);*/
+  /*  font-size: var(--fs-table-header);*/
+  /*  font-family: var(--ff-karla);*/
+  /*  font-weight: 400;*/
+  /*  text-transform: uppercase;*/
+  /*  text-align: left;*/
+  /*  letter-spacing: 0.08em;*/
+  /*}*/
 
-  tr:first-child { /* keep headers on the top of table  */
-    position: sticky;
-    top: 1px;
-    box-shadow: 0 2px 4px #C5C5C5;
-  }
+  /*th:not(:first-child){ !* column dividers fir sticky header *!*/
+  /*  box-shadow: -1px 0 0 var(--clr-grey);*/
+  /*}*/
 
-  th:first-child:before{ /* to fill the gap on the top of table  */
-    content: '';
-    display: block;
-    position: absolute;
-    top: -1px;
-    left:0;
-    width: 100%;
-    border-top: solid var(--clr-light-grey);
-  }
+  /*tr:first-child { !* keep headers on the top of table  *!*/
+  /*  position: sticky;*/
+  /*  top: 1px;*/
+  /*  box-shadow: 0 2px 4px #C5C5C5;*/
+  /*}*/
 
+  /*th:first-child:before{ !* to fill the gap on the top of table  *!*/
+  /*  content: '';*/
+  /*  display: block;*/
+  /*  position: absolute;*/
+  /*  top: -1px;*/
+  /*  left:0;*/
+  /*  width: 100%;*/
+  /*  border-top: solid var(--clr-light-grey);*/
+  /*}*/
+
+  /*tr:not(:first-child):hover {*/
+  /*  background-color: var(--clr-almost-white);*/
+  /*}*/
 
 </style>
