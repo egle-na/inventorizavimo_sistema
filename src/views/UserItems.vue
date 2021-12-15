@@ -26,7 +26,7 @@
     </div> <!-- /title container-->
 
     <table-component>
-      <tr>
+      <tr class="head-row">
         <th></th>
         <th>Pavadinimas</th>
         <th>Gavimo data</th>
@@ -51,7 +51,7 @@
 <script>
   import Header from "@/components/Header";
   import TableActions from "@/components/TableActions";
-  import TableComponent from "@/views/TableComponent";
+  import TableComponent from "@/components/TableComponent";
   export default {
     name: "UserItems",
     components: {

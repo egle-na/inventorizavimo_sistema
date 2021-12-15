@@ -19,7 +19,7 @@
     <Search />
 
     <table-component>
-      <tr>
+      <tr class="head-row">
         <th>Vardas Pavardė</th>
         <th>Elektroninis paštas</th>
         <th>Įrangos kiekis</th>
@@ -42,8 +42,8 @@
 
 <script>
   import AdminDesk from "@/components/AdminDesk";
-  import Search from "@/views/Search";
-  import TableComponent from "@/views/TableComponent";
+  import Search from "@/components/Search";
+  import TableComponent from "@/components/TableComponent";
   import TableActions from "@/components/TableActions";
 
   export default {
@@ -95,16 +95,12 @@
 
   td, th {
     border: none;
-  }
-
-  tr {
     text-align: center;
   }
 
   th {
     background: var(--clr-white);
     color: var(--clr-dark-grey);
-    text-align: center;
   }
 
   th:not(:first-child){ /* column dividers fir sticky header */

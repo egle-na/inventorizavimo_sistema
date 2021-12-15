@@ -12,10 +12,10 @@
     <div class="side-nav-container">
       <ul class="side-nav">
         <li><router-link to="/add-inventory">Pridėti įrangą</router-link></li>
-        <li><router-link to="/a">Visi įrenginiai</router-link></li>
+        <li><router-link to="/all-inventory">Visi įrenginiai</router-link></li>
         <li><router-link to="/add-user">Pridėti Darbuotoją</router-link></li>
         <li><router-link to="/all-users">Visi Darbuotojai</router-link></li>
-        <li><router-link to="/a">Nustatymai</router-link></li>
+        <li><router-link to="/settings">Nustatymai</router-link></li>
       </ul>
     </div>
 

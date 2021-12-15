@@ -5,6 +5,7 @@ import AddUser from "@/views/AddUser";
 import AddItem from "@/views/AddItem";
 import UserItems from "@/views/UserItems";
 import AllUsers from "@/views/AllUsers";
+import AllItems from "@/views/AllItems";
 
 Vue.use(VueRouter);
 
@@ -40,6 +41,11 @@ const router = new VueRouter({
             path: '/add-inventory',
             name: 'add-inventory',
             component: AddItem,
+        },
+        {
+            path: '/all-inventory',
+            name: 'all-inventory',
+            component: AllItems,
         },
     ]
 })
