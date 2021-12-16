@@ -39,7 +39,7 @@
         <td>2021-12-14</td>
         <td>Savininkas</td>
         <td class="actions-cell">
-          <table-actions />
+          <table-actions :id="item" />
         </td>
 
       </tr>
@@ -96,7 +96,7 @@
     color: var(--clr-grey);
     padding: 0;
     margin: 0 .5em;
-    line-height: 1rem;
+    line-height: 1;
     transform: translateY(50%);
   }
   .add-btn path{

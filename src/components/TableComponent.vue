@@ -23,24 +23,14 @@
     border-bottom: solid 3px var(--clr-light-grey);
 
     overflow-y: scroll;
-    height: 60vh;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background-color:var(--clr-grey);
-    border-radius: 5px;
-  }
-
-  ::-webkit-scrollbar {
-    width: 10px;
+    max-height: 60vh;
   }
 
   table {
-    color: var(--clr-black);
     border: solid 2px var(--clr-light-grey);
+    /*border: solid 2px blue;*/
     border-collapse: collapse;
     width: 100%;
-    /*position: relative;*/
   }
 
   th, td {
@@ -87,6 +77,7 @@
 
   .actions-cell {
     text-align: right;
+    padding: 0 .2em;
   }
 
   /* Expanded Table Rules */
@@ -125,6 +116,15 @@
     /*background: var(--clr-light-grey);*/
     box-shadow: none; /* for chrome */
     background: var(--clr-almost-white);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color:var(--clr-grey);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
   }
 
 </style>

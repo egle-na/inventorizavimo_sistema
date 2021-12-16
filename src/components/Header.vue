@@ -8,13 +8,13 @@
     </nav>
 
     <div class="notification-container">
-      <button id="notifications-btn">
+      <button id="notifications-btn" @click="notificationOpen = !notificationOpen">
         <img src="../assets/icons/Notification-bell.svg" alt="">
         <span v-show="notification" id="unread-notification"></span>
       </button>
 
 
-      <notification-card />
+      <notification-card v-show="notificationOpen" @close="notificationOpen = false"/>
 
     </div>
 
@@ -35,6 +35,7 @@
     data() {
       return {
         notification: true,
+        notificationOpen: false,
       }
     },
   }
@@ -52,7 +53,8 @@
     font-family: var(--ff-roboto-con);
     position: relative;
     z-index: 1;
-    filter: drop-shadow(0px 4px 7px rgba(0, 0, 0, 0.25));
+    /*filter: drop-shadow(0px 4px 7px rgba(0, 0, 0, 0.25));*/
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   }
 
   a {
@@ -99,32 +101,5 @@
   .notification-container {
     position: relative;
   }
-
-  .notification-card {
-    position: absolute;
-    right: 0;
-    width: 350px;
-    padding: 1em;
-
-    background: var(--clr-white);
-    border-radius: 5px;
-
-    font-family: var(--ff-karla);
-    letter-spacing: initial;
-  }
-
-  .close-btn {
-    position: absolute;
-    font-size: 1.3rem;
-    top: .5em;
-    right: .5em;
-    line-height: 1em;
-  }
-
-  .date {
-    margin: 0;
-    color: var(--clr-darker-grey)
-  }
-
 
 </style>

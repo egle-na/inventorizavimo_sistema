@@ -6,6 +6,8 @@ import AddItem from "@/views/AddItem";
 import UserItems from "@/views/UserItems";
 import AllUsers from "@/views/AllUsers";
 import AllItems from "@/views/AllItems";
+import NotificationHistory from "@/views/NotificationHistory";
+import InventoryInfo from "@/views/InventoryInfo";
 
 Vue.use(VueRouter);
 
@@ -46,6 +48,16 @@ const router = new VueRouter({
             path: '/all-inventory',
             name: 'all-inventory',
             component: AllItems,
+        },
+        {
+            path: '/notifications',
+            name: 'notifications',
+            component: NotificationHistory,
+        },
+        {
+            path: '/inventory/:inventory_id',
+            name: 'inventory-info',
+            component: InventoryInfo,
         },
     ]
 })

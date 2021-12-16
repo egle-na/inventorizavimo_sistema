@@ -42,7 +42,7 @@ export default {
     --fs-nav: 0.875rem;         /* 14px */
     --fs-table-header: 1.25rem; /* 20px */
     --fs-side-menu: 1.5rem;     /* 24px */
-    --fs-button: 1.875rem;      /* 30px */
+    --fs-button: 1.8rem;      /* nebe 30px 1.875 */
     /*--fs-title: 4rem;           !* 64px media 30px *!*/
 
     /* Add item modal title 48px */
@@ -61,7 +61,7 @@ export default {
     color: var(--clr-black);
   }
 
-  h1, h2 {
+  h1, h2, h3 {
     color: var(--clr-dark-grey);
     font-family: var(--ff-roboto-con);
     font-weight: 400;
@@ -73,7 +73,7 @@ export default {
     font-size: 4rem;
     padding-right: 1em;
     padding-bottom: 0;
-    line-height: 1em;
+    line-height: 1;
     margin: 0;
   }
 
@@ -82,6 +82,12 @@ export default {
     padding-bottom: .1em;
     font-size: 3rem;
     border-color: var(--clr-accent);
+  }
+
+  h3 {
+    padding-right: 1.5em;
+    border-color: var(--clr-accent);
+    margin: 0;
   }
 
   img {
@@ -104,12 +110,13 @@ export default {
     font-size: var(--fs-button);
     letter-spacing: var(--ls-bebas);
 
-    padding: .15em .8em;
-    transition: background-color 250ms, color 250ms;
+    /*padding: .15em .8em;*/
+    padding: .15em .6em;
+    transition: background-color 200ms, color 200ms, border-color 200ms;
   }
 
-  .btn:hover,
-  .btn:focus {
+  /*.btn:focus,*/
+  .btn:hover {
     background: var(--clr-accent);
     color: var(--clr-white);
   }

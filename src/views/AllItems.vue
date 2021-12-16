@@ -111,7 +111,7 @@
     color: var(--clr-grey);
     padding: 0;
     margin: 0 .5em;
-    line-height: 1rem;
+    line-height: 1;
     transform: translateY(50%);
   }
   .add-btn path{
