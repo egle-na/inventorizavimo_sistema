@@ -10,13 +10,13 @@
          <button @click="actionCardOpen = !actionCardOpen">
            <img src="../assets/icons/action-dots.svg" alt="">
          </button>
-         <ActionCard v-show="actionCardOpen" @close="actionCardOpen = false">
+         <action-card v-show="actionCardOpen" @close="actionCardOpen = false">
            <button class="action-btn">Skolinti</button>
            <button class="action-btn">Perleisti</button>
            <button class="action-btn">Grąžinti</button>
            <button class="action-btn">Generuoti PDF</button>
            <button class="action-btn">Ištrinti</button>
-         </ActionCard>
+         </action-card>
        </div>
      </div>
      <div class="main-content">
@@ -42,7 +42,7 @@
          </div>
          <div>
            <h3>Vieneto kaina</h3>
-           <p>163,67€</p>
+           <p>163,67 €</p>
          </div>
 
          <div class="btn-container">
@@ -56,7 +56,6 @@
          <div class="history-title">
            <h3>Istorija</h3>
          </div>
-
          <table-component>
            <tr v-for="item in 19" :key="item">
              <td>
@@ -152,7 +151,7 @@
   .history {
     width: 55%;
     position: relative;
-    margin-top: .5em;
+    margin-top: 1.5rem;
     border: solid 3px var(--clr-grey);
     border-radius: 7px;
     /*max-height: 100%;*/
@@ -185,14 +184,14 @@
 
   .history-title {
     position: absolute;
-    top: -1.5em;
+    top: -1.7em;
     width: 100%;
     display: flex;
     justify-content: center;
   }
 
   .history-title h3 {
-    font-size: 1.875rem;
+    font-size: 2.125rem;
     border-bottom: 0;
     border-radius: 5px;
     padding: 0 .2em;

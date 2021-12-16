@@ -34,16 +34,18 @@
         <th>Veiksmai</th>
       </tr>
       <tr v-for="item in 20" :key="item">
-        <td></td>
+        <td>
+          <input type="checkbox" v-show="false"> <!-- check when clicked on a row -->
+        </td>
         <td>Dell 24 Monitor-S2421H</td>
         <td>2021-12-14</td>
         <td>Savininkas</td>
         <td class="actions-cell">
           <table-actions :id="item" />
         </td>
-
       </tr>
     </table-component>
+
   </main>
 </div>
 </template>

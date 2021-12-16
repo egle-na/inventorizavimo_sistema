@@ -85,7 +85,7 @@ export default {
   }
 
   h3 {
-    font-size: 20px;
+    font-size: 24px;
     padding-right: 1.5em;
     border-color: var(--clr-accent);
     margin: 0;

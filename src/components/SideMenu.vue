@@ -1,13 +1,7 @@
 <template>
   <div class="side-menu-container">
 
-    <div class="user-card">
-
-      <span id="profile-btn">{{ nameInitials }}</span>
-      <span>{{ name }}</span>
-      <p class="email" >vardenis.pavardenis@teltonika.lt</p>
-
-    </div>
+    <user-card />
 
     <div class="side-nav-container">
       <ul class="side-nav">
@@ -25,9 +19,11 @@
 
 <script>
   import ProfileImgMixin from "@/components/mixins/ProfileImgMixin";
+  import UserCard from "@/components/UserCard";
 
   export default {
     name: "SideMenu",
+    components: {UserCard},
     mixins: [ ProfileImgMixin ],
   }
 </script>
@@ -48,41 +44,6 @@
     text-transform: uppercase;
 
     box-shadow: 4px 0 7px #E5E5E5;
-  }
-
-  .user-card {
-    grid-row: 1;
-    grid-column: 1;
-    display: grid;
-    padding: 0 1.5em;
-    margin: 2em 0;
-    grid-gap: .4em;
-    grid-template-columns: auto auto;
-  }
-
-  #profile-btn {
-    background: var(--clr-accent);
-    color: var(--clr-white);
-    font-family: var(--ff-bebas-neue);
-    font-size: 2.1875rem;
-    letter-spacing: 2px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    height: 51px;
-    width: 51px;
-    padding-top: 2px;
-    border-radius: 50%;
-  }
-
-  .email {
-    font-size: 1rem;
-    font-family: var(--ff-karla);
-    text-transform: lowercase;
-    grid-column: 2 span;
-    margin: 0
   }
 
   .side-nav-container {
