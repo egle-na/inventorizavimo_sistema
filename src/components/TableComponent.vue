@@ -1,6 +1,6 @@
 <template>
   <div class="table-container">
-    <table>
+    <table class="asd">
 
       <slot />
 
@@ -28,7 +28,6 @@
 
   table {
     border: solid 2px var(--clr-light-grey);
-    /*border: solid 2px blue;*/
     border-collapse: collapse;
     width: 100%;
   }
@@ -126,5 +125,6 @@
   ::-webkit-scrollbar {
     width: 10px;
   }
+
 
 </style>

@@ -4,7 +4,7 @@
     <nav>
       <router-link to="/user-inventory" >Mano Inventorius</router-link>
       <router-link to="/add-inventory" >Pridėti įrangą</router-link>
-      <router-link to="/" >Pranešimai</router-link>
+      <router-link to="/notifications" >Pranešimai</router-link>
     </nav>
 
     <div class="notification-container">

@@ -210,9 +210,4 @@
     border: none;
   }
 
-  table {
-    color: #FF6464 !important;
-    border: solid 5px #FF6464;
-  }
-
 </style>
