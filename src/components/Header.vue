@@ -67,7 +67,7 @@
     justify-content: end;
     font-family: var(--ff-roboto-con);
     /*position: relative;*/
-    z-index: 1;
+    z-index: 2;
     /*filter: drop-shadow(0px 4px 7px rgba(0, 0, 0, 0.25));*/
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   }

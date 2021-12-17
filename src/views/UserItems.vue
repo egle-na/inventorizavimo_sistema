@@ -27,15 +27,25 @@
 
     <table-component>
       <tr class="head-row">
-        <th></th>
+        <th>
+          <input type="checkbox"
+                 :class="{'checkbox-hidden': !anySelected}"
+                 :checked="anySelected"
+                 @click="$event.target.checked ? selectAll() :  rowsSelected = []">
+        </th>
         <th>Pavadinimas</th>
         <th>Gavimo data</th>
         <th>Statusas</th>
         <th>Veiksmai</th>
       </tr>
-      <tr v-for="item in 20" :key="item">
+      <tr v-for="item in 20"
+          :key="item"
+          :class="{'row-selected-simple': rowsSelected.includes(item)}"
+          @click="selectRow(item, $event)">
         <td>
-          <input type="checkbox" v-show="false"> <!-- check when clicked on a row -->
+          <input type="checkbox"
+                 :checked="rowsSelected.includes(item)"
+                 :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
         </td>
         <td>Dell 24 Monitor-S2421H</td>
         <td>2021-12-14</td>
@@ -64,23 +74,78 @@
     data() {
       return {
         filter: 'all',
+        rowsSelected: [],
+        lastSelected: '',
       }
     },
     methods: {
       setFilter(filter) {
         this.filter = filter;
         console.log(filter);
-      }
+      },
+      selectRow(id, event){
+
+        if(event.shiftKey){
+
+          if(!this.rowsSelected.includes(id)){ // check multiple
+            console.log("shift");
+
+            if(id > this.lastSelected){ // check multiple from down to up
+              for(let i = id; i >= this.lastSelected; i--) {
+                this.rowsSelected.push(i);
+              }
+            } else { // check multiple from up to down
+              for(let i = id; i <= this.lastSelected; i++) {
+                this.rowsSelected.push(i);
+              }
+            }
+
+          } else { // uncheck multiple
+            let deselect = [];
+            if(id > this.lastSelected){ // uncheck multiple from down to up
+                console.log("uncheck multiple from down to up");
+              for(let i = id; i >= this.lastSelected; i--) {
+                deselect.push(i);
+              }
+            } else { // uncheck multiple from up to down
+                console.log("uncheck multiple from up to down");
+              for(let i = id; i <= this.lastSelected; i++) {
+                deselect.push(i);
+              }
+            }
+                console.log(deselect);
+            this.rowsSelected = this.rowsSelected.filter(item => !deselect.includes(item));
+          }
+        } else { // if shift key not pressed
+          if(!this.rowsSelected.includes(id)){ // check
+            this.rowsSelected.push(id);
+            console.log('add',id);
+          } else { // uncheck
+            this.rowsSelected = this.rowsSelected.filter(item => item !== id);
+            console.log('remove',id);
+          }
+        }
+        this.lastSelected = id;
+
+
+      },
+      selectAll(){
+        for(let i = 1; i <= 20; i++){
+          this.rowsSelected.push(i);
+        }
+        console.log('all')
+        this.lastSelected = '';
+      },
+    },
+    computed:{
+      anySelected() {
+        return this.rowsSelected.length > 0;
+      },
     }
   }
 </script>
 
 <style scoped>
-
-  /*.fixed-container {*/
-  /*  max-height: 100vh;*/
-  /*  overflow: hidden;*/
-  /*}*/
 
   main {
     max-width: 1000px;
@@ -145,75 +210,20 @@
     border-color: var(--clr-accent);
   }
 
-  /*!* Table Design *!*/
+  .checkbox-hidden {
+    opacity: 0;
+  }
 
-  /*.table-container {*/
-  /*  border-radius: 10px 10px 7px 7px;*/
-  /*  overflow: hidden;*/
-  /*  border: solid 1px var(--clr-light-grey);*/
-  /*  overflow-y: scroll;*/
-  /*  height: 60vh;*/
-  /*}*/
+  .checkbox-hidden:hover {
+    opacity: .3;
+  }
 
-  /*::-webkit-scrollbar-thumb {*/
-  /*  background-color:var(--clr-grey);*/
-  /*  border-radius: 5px;*/
-  /*}*/
+  .row-selected-simple{
+    background: #0054A616;
+  }
 
-  /*::-webkit-scrollbar {*/
-  /*  width: 10px;*/
-  /*}*/
-
-  /*table {*/
-  /*  color: var(--clr-black);*/
-  /*  border: solid 2px var(--clr-light-grey);*/
-  /*  border-collapse: collapse;*/
-  /*  width: 100%;*/
-  /*  !*position: relative;*!*/
-  /*}*/
-
-  /*th, td {*/
-  /*  border: solid 1px var(--clr-grey);*/
-  /*  padding: 1rem;*/
-  /*}*/
-
-  /*.actions-cell {*/
-  /*  padding: 0;*/
-  /*}*/
-
-  /*th {*/
-  /*  color: var(--clr-accent);*/
-  /*  background-color: var(--clr-light-grey);*/
-  /*  font-size: var(--fs-table-header);*/
-  /*  font-family: var(--ff-karla);*/
-  /*  font-weight: 400;*/
-  /*  text-transform: uppercase;*/
-  /*  text-align: left;*/
-  /*  letter-spacing: 0.08em;*/
-  /*}*/
-
-  /*th:not(:first-child){ !* column dividers fir sticky header *!*/
-  /*  box-shadow: -1px 0 0 var(--clr-grey);*/
-  /*}*/
-
-  /*tr:first-child { !* keep headers on the top of table  *!*/
-  /*  position: sticky;*/
-  /*  top: 1px;*/
-  /*  box-shadow: 0 2px 4px #C5C5C5;*/
-  /*}*/
-
-  /*th:first-child:before{ !* to fill the gap on the top of table  *!*/
-  /*  content: '';*/
-  /*  display: block;*/
-  /*  position: absolute;*/
-  /*  top: -1px;*/
-  /*  left:0;*/
-  /*  width: 100%;*/
-  /*  border-top: solid var(--clr-light-grey);*/
-  /*}*/
-
-  /*tr:not(:first-child):hover {*/
-  /*  background-color: var(--clr-almost-white);*/
-  /*}*/
+  table .row-selected-simple:hover {
+    background: #0054A620;
+  }
 
 </style>
