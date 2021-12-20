@@ -1,0 +1,127 @@
+<template>
+<div>
+  <admin-desk >
+    <div class="title-container">
+      <h1>Visos Įmonės</h1>
+      <button class="add-btn" @click="openAddCompanyCard">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
+        </svg>
+      </button>
+    </div> <!-- /title container-->
+
+    <Search />
+
+    <table-component>
+      <tr class="head-row">
+        <th>Įmonės pavadinimas</th>
+        <th>Darbuotojų skaičius</th>
+        <th>Įrangos kiekis</th>
+        <th></th>
+      </tr>
+      <tr v-for="item in 20" :key="item">
+        <td class="no-padding"><router-link to="/">Įmonės Pavadinimas</router-link></td>
+        <td class="no-padding"><router-link to="/">23</router-link></td>
+        <td class="no-padding"><router-link to="/">94</router-link></td>
+        <td class="actions-cell">
+          <table-actions/>
+        </td>
+      </tr>
+
+    </table-component> <!-- /table container-->
+  </admin-desk>
+
+  <modulus-full v-show="addCompanyOpen" @close="addCompanyOpen = false">
+    <h3>Pridėti naują įmonę</h3>
+
+    <input ref="firstInput" type="text" placeholder="Įmonės pavadinimas" required class="add-input">
+
+    <div class="btn-container">
+      <button class="btn">Pridėti</button>
+    </div>
+  </modulus-full>
+
+</div>
+</template>
+
+<script>
+  import AdminDesk from "@/components/AdminDesk";
+  import Search from "@/components/Search";
+  import TableComponent from "@/components/TableComponent";
+  import TableActions from "@/components/TableActions";
+  import ModulusFull from "@/components/ModulusFull";
+  export default {
+    name: "AllCompanies",
+    components: {
+      ModulusFull,
+      TableActions,
+      TableComponent,
+      Search,
+      AdminDesk
+    },
+    data() {
+      return {
+        addCompanyOpen: false,
+      }
+    },
+    methods: {
+      openAddCompanyCard(){
+        this.addCompanyOpen = true;
+        // this.$refs.firstInput.focus() // doesnt work
+      }
+    }
+  }
+</script>
+
+<style scoped>
+
+  .title-container {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    margin: 0;
+  }
+
+  .add-btn {
+    color: var(--clr-grey);
+    padding: 0;
+    margin: 0 .5em;
+    line-height: 1;
+    transform: translateY(50%);
+  }
+  .add-btn path{
+    stroke: var(--clr-darker-grey);
+    transition: stroke 200ms;
+  }
+
+  .add-btn:hover path{
+    stroke: var(--clr-accent);
+  }
+
+  .add-input{
+    margin: 1.5em 0;
+  }
+
+  /* Table Design */
+
+  td, th {
+    border: none;
+    text-align: center;
+  }
+
+  th {
+    background: var(--clr-white);
+    color: var(--clr-dark-grey);
+  }
+  th:first-child,
+  td:first-child {
+    padding-left: 1em ;
+    text-align: left;
+  }
+
+  th:not(:first-child){ /* column dividers fir sticky header */
+    box-shadow:none;
+  }
+
+
+</style>

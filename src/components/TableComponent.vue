@@ -79,6 +79,23 @@
     padding: 0 .2em;
   }
 
+  .no-padding {
+    padding: 0;
+  }
+
+  a {
+    display: inline-block;
+    color: currentColor;
+    text-decoration: none;
+    width: 100%;
+    padding: 1rem;
+  }
+
+  a:hover {
+    color: var(--clr-accent);
+
+  }
+
   /* Expanded Table Rules */
 
   .main-trow .actions-cell button {

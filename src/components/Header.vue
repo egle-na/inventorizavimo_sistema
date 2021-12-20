@@ -118,4 +118,9 @@
     position: relative;
   }
 
+  .action-card a,
+  .action-card button:not(.close-btn){
+    padding: .5em 1em;
+  }
+
 </style>

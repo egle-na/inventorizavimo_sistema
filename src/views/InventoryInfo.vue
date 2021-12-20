@@ -11,11 +11,15 @@
            <img src="../assets/icons/action-dots.svg" alt="">
          </button>
          <action-card v-show="actionCardOpen" @close="actionCardOpen = false">
-           <button class="action-btn">Skolinti</button>
-           <button class="action-btn">Perleisti</button>
-           <button class="action-btn">Grąžinti</button>
-           <button class="action-btn">Generuoti PDF</button>
-           <button class="action-btn">Ištrinti</button>
+           <button class="action-btn"
+                   @click="openSelect('Skolinti')"
+           >Skolinti</button>
+           <button class="action-btn"
+                   @click="openSelect('Perleisti')"
+           >Perleisti</button>
+           <button class="action-btn" @click="returnCardOpen = true">Grąžinti</button>
+           <button class="action-btn" @click="generatePDF">Generuoti PDF</button>
+           <button class="action-btn" @click="writeOffCardOpen = true">Nurašyti</button>
          </action-card>
        </div>
      </div>
@@ -46,9 +50,9 @@
          </div>
 
          <div class="btn-container">
-           <button class="btn">Grąžinti</button>
-           <button class="btn">Skolinti</button>
-           <button class="btn">Perleisti</button>
+           <button class="btn" @click="returnCardOpen = true">Grąžinti</button>
+           <button class="btn" @click="openSelect('Skolinti')">Skolinti</button>
+           <button class="btn" @click="openSelect('Perleisti')">Perleisti</button>
          </div>
        </div>
 
@@ -75,6 +79,20 @@
 
    </main>
 
+   <select-user v-show="selectUserOpen"
+                @close="selectUserOpen = false"
+                :type="actionType" />
+
+   <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false">
+     <p>Ar tikrai norite nurašyti <strong>This Item</strong>?</p>
+     <button class="btn" @click="writeOffItem">Taip</button>
+   </modulus-full>
+
+   <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false">
+     <p>Ar esate pasiruošę grąžinti <strong>This Item</strong>?</p>
+     <button class="btn" @click="returnItem">Taip</button>
+   </modulus-full>
+
  </div>
 </template>
 
@@ -82,10 +100,14 @@
   import Header from "@/components/Header";
   import ActionCard from "@/components/ActionCard";
   import TableComponent from "@/components/TableComponent";
+  import SelectUser from "@/components/SelectUser";
+  import ModulusFull from "@/components/ModulusFull";
 
   export default {
     name: "InventoryInfo",
     components: {
+      ModulusFull,
+      SelectUser,
       TableComponent,
       ActionCard,
       Header,
@@ -94,14 +116,39 @@
     data() {
       return {
         actionCardOpen: false,
+        selectUserOpen: false,
+        writeOffCardOpen: false,
+        returnCardOpen: false,
+        actionType:'',
         item: {
           name: '',
           status: '',
           owner: '',
           price: '',
-        }
+        },
       }
     },
+    methods: {
+      openSelect(action) {
+        this.actionType = action;
+        this.selectUserOpen = true;
+        this.actionCardOpen = false;
+      },
+      returnItem() {
+        console.log('return');
+        // if everything is ok:
+        this.returnCardOpen = false;
+      },
+      generatePDF() {
+        console.log('PDF sugeneruotas');
+        this.actionCardOpen = false;
+      },
+      writeOffItem() {
+        console.log('nurašytas');
+        // if everything is ok:
+        this.writeOffCardOpen = false;
+      }
+    }
   }
 </script>
 
@@ -207,6 +254,10 @@
 
   .table-container {
     border: none;
+  }
+
+  tr:first-child:hover {
+    background-color: var(--clr-almost-white);
   }
 
 </style>

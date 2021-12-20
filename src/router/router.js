@@ -8,6 +8,7 @@ import AllUsers from "@/views/AllUsers";
 import AllItems from "@/views/AllItems";
 import NotificationHistory from "@/views/NotificationHistory";
 import InventoryInfo from "@/views/InventoryInfo";
+import AllCompanies from "@/views/AllCompanies";
 
 Vue.use(VueRouter);
 
@@ -38,6 +39,11 @@ const router = new VueRouter({
             path: '/all-users',
             name: 'all-users',
             component: AllUsers,
+        },
+        {
+            path: '/all-companies',
+            name: 'all-companies',
+            component: AllCompanies,
         },
         {
             path: '/add-inventory',

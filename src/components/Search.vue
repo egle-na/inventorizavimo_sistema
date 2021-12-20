@@ -16,13 +16,17 @@
 </script>
 <style scoped>
 
+  .search-container {
+    margin: 1.5em 0 2em;
+
+  }
+
   .search-container input {
     width: 100%;
     border: none;
     border-bottom: solid 2px #E5E5E5;
     /*box-shadow: 0px 4px 6px rgba(229, 229, 229, 0.76);*/
     filter: drop-shadow( 0 6px 5px var(--clr-grey));
-    margin: 1.5em 0 2em;
   }
 
   .search-container input::placeholder{

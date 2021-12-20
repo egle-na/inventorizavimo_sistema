@@ -20,7 +20,7 @@
 
     <table-component>
       <tr class="head-row">
-        <th></th>
+        <th class="cell-min"></th>
         <th>Pavadinimas</th>
         <th>Kodas</th>
         <th>Kiekis</th>
@@ -28,12 +28,14 @@
       </tr>
       <tbody v-for="item in 20" :key="item">
         <tr class="main-trow" :class="{'row-selected': rowExpanded === item}">
-          <td></td>
+          <td class="cell-min"></td>
           <td>Dell 24 Monitor-S2421H</td>
           <td>KD-55XG9505</td>
           <td>3</td>
-          <td class="actions-cell">
-            <button @click="expandRow(item)">v</button>
+          <td class="cell-min">
+            <button @click="expandRow(item)">
+              <img src="../assets/icons/ArrowDown.svg" alt="">
+            </button>
           </td>
         </tr>
 
@@ -41,14 +43,14 @@
           <td colspan="5">
             <table>
               <tr>
-                <th></th>
+                <th class="cell-min"></th>
                 <th>Serijos Numeris</th>
                 <th>Savininkas</th>
                 <th>Turėtojas</th>
                 <th></th>
               </tr>
               <tr class="expanded-trow">
-                <td>1</td>
+                <td class="cell-min">1</td>
                 <td>KD-55XG9505-1245123</td>
                 <td>Jonas Jonaitis</td>
                 <td>Petras Petraitis</td>
@@ -62,8 +64,6 @@
         </tr>
       </tbody>
     </table-component> <!-- /table container-->
-
-
 
   </admin-desk>
 </template>
@@ -134,55 +134,20 @@
 
   /* Table */
 
-  /*.actions-cell button {*/
-  /*  transform: rotate(0);*/
-  /*  transition: rotate 300ms;*/
-  /*}*/
+  tr:hover {
+    background: #0054A6;
+  }
 
-  /*.actions-cell {*/
-  /*  text-align: right;*/
-  /*}*/
+  .cell-min {
+    padding: 1rem;
+    width: 45px;
+    white-space: nowrap;
+    max-height: min-content;
+  }
 
-  /*.row-selected {*/
-  /*  background: var(--clr-light-grey);*/
-  /*  filter: drop-shadow(0 2px 4px #C5C5C5);*/
-  /*  !*box-shadow: 0 2px 4px #C5C5C5;*!*/
-  /*}*/
-  /*.row-selected .actions-cell button {*/
-  /*  transform: rotate(180deg);*/
-  /*}*/
-
-  /*.expanded-table {*/
-  /*  display: contents;*/
-  /*}*/
-  /*.expanded-table tr {*/
-  /*}*/
-
-  /*.expanded-table th{*/
-  /*  color: var(--clr-dark-grey);*/
-  /*  background: var(--clr-white);*/
-  /*  padding: .3em 1rem;*/
-  /*  !*background: var(--clr-light-grey);*!*/
-  /*  background: var(--clr-almost-white);*/
-
-  /*}*/
-
-  /*.expanded-table td{*/
-  /*  background: var(--clr-almost-white);*/
-  /*}*/
-
-  /*.expanded-table:after{*/
-  /*  content: '';*/
-  /*  display: table-row;*/
-  /*  width: 100%;*/
-  /*  border-bottom: 2px solid var(--clr-accent);*/
-  /*  background: var(--clr-almost-white);*/
-
-  /*}*/
-
-  /*tbody {*/
-  /*  box-shadow: none;*/
-  /*}*/
+  .main-trow .cell-min {
+    padding: .7rem;
+  }
 
 
 </style>

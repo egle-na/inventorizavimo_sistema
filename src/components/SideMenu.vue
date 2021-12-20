@@ -5,6 +5,7 @@
 
     <div class="side-nav-container">
       <ul class="side-nav">
+        <li><router-link to="/all-companies">Visos įmonės</router-link></li>
         <li><router-link to="/add-inventory">Pridėti įrangą</router-link></li>
         <li><router-link to="/all-inventory">Visi įrenginiai</router-link></li>
         <li><router-link to="/add-user">Pridėti Darbuotoją</router-link></li>
@@ -23,7 +24,7 @@
 
   export default {
     name: "SideMenu",
-    components: {UserCard},
+    components: { UserCard },
     mixins: [ ProfileImgMixin ],
   }
 </script>

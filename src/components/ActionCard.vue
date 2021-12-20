@@ -17,7 +17,7 @@
     right: 0;
     z-index: 1;
     width: max-content;
-    max-width: 280px;
+    max-width: 310px;
     padding: 0;
     display: flex;
     flex-direction: column;
@@ -40,37 +40,6 @@
     color: var(--clr-dark-grey)
   }
 
-  /*.action-btn {*/
-  /*  color: var(--clr-dark-grey);*/
-  /*  font-family: var(--ff-roboto-con);*/
-  /*  font-size: var(--fs-side-menu);*/
-  /*  text-transform: uppercase;*/
-  /*  text-align: left;*/
-  /*  letter-spacing: .025em;*/
-
-  /*  width: 100%;*/
-  /*  padding: .2em 1em;*/
-
-  /*  border-bottom: solid 1px var(--clr-light-grey);*/
-  /*}*/
-
-  /*.action-btn:nth-child(2) {*/
-  /*  padding-top: .5em;*/
-  /*}*/
-
-  /*.action-btn:last-child {*/
-  /*  padding-bottom: .5em;*/
-  /*  border-bottom: none;*/
-  /*}*/
-
-  /*.action-btn:hover {*/
-  /*  color: var(--clr-accent);*/
-  /*  background: var(--clr-almost-white);*/
-  /*}*/
-
-  /*a {*/
-  /*  text-decoration: none;*/
-  /*} */
   .action-card a,
   button:not(.close-btn) {
     color: var(--clr-dark-grey);

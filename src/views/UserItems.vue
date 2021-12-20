@@ -38,20 +38,20 @@
         <th>Statusas</th>
         <th>Veiksmai</th>
       </tr>
-      <tr v-for="item in 20"
-          :key="item"
-          :class="{'row-selected-simple': rowsSelected.includes(item)}"
-          @click="selectRow(item, $event)">
+      <tr v-for="(item, index) in list"
+          :key="index"
+          :class="{'row-selected-simple': rowsSelected.includes(index)}"
+          @click="selectRow(index, $event)">
         <td>
           <input type="checkbox"
-                 :checked="rowsSelected.includes(item)"
+                 :checked="rowsSelected.includes(index)"
                  :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
         </td>
-        <td>Dell 24 Monitor-S2421H</td>
+        <td>{{ item.name }}</td>
         <td>2021-12-14</td>
         <td>Savininkas</td>
         <td class="actions-cell">
-          <table-actions :id="item" />
+          <table-actions :id="index" /> <!-- item.id -->
         </td>
       </tr>
     </table-component>
@@ -76,7 +76,27 @@
         filter: 'all',
         rowsSelected: [],
         lastSelected: '',
+        list: [
+          {name: 'a Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'b Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'c Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'd Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'e Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'f Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'g Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'h Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'i Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'j Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'k Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'l Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'm Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'n Dell 24 Monitor-S2421H', variable: 'alive'},
+          {name: 'o Dell 24 Monitor-S2421H', variable: 'alive'},
+        ],
       }
+    },
+    created() {
+      this.list.map( (item, index) => item.row = index+1 );
     },
     methods: {
       setFilter(filter) {
@@ -84,19 +104,16 @@
         console.log(filter);
       },
       selectRow(id, event){
-
-        if(event.shiftKey){
+        if(event.shiftKey){ // if shift key pressed
 
           if(!this.rowsSelected.includes(id)){ // check multiple
-            console.log("shift");
-
             if(id > this.lastSelected){ // check multiple from down to up
               for(let i = id; i >= this.lastSelected; i--) {
-                this.rowsSelected.push(i);
+                this.addIfNotSelected(i);
               }
             } else { // check multiple from up to down
               for(let i = id; i <= this.lastSelected; i++) {
-                this.rowsSelected.push(i);
+                this.addIfNotSelected(i);
               }
             }
 
@@ -113,12 +130,11 @@
                 deselect.push(i);
               }
             }
-                console.log(deselect);
             this.rowsSelected = this.rowsSelected.filter(item => !deselect.includes(item));
           }
         } else { // if shift key not pressed
           if(!this.rowsSelected.includes(id)){ // check
-            this.rowsSelected.push(id);
+            this.addIfNotSelected(id);
             console.log('add',id);
           } else { // uncheck
             this.rowsSelected = this.rowsSelected.filter(item => item !== id);
@@ -126,17 +142,27 @@
           }
         }
         this.lastSelected = id;
-
-
       },
+
+      addIfNotSelected(item){
+        if(!this.rowsSelected.includes(item))
+        this.rowsSelected.push(item);
+      },
+
       selectAll(){
-        for(let i = 1; i <= 20; i++){
+        for(let i = 0; i < this.list.length; i++){
           this.rowsSelected.push(i);
         }
         console.log('all')
         this.lastSelected = '';
       },
+
+      listSelected(){
+        const sendList = this.rowsSelected.map(row => this.list[row]);
+        sendList.forEach(item => console.log(item.name));
+      }
     },
+
     computed:{
       anySelected() {
         return this.rowsSelected.length > 0;
