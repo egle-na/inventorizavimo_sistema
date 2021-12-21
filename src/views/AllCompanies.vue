@@ -19,8 +19,8 @@
         <th>Įrangos kiekis</th>
         <th></th>
       </tr>
-      <tr v-for="item in 20" :key="item">
-        <td class="no-padding"><router-link to="/">Įmonės Pavadinimas</router-link></td>
+      <tr v-for="item in list" :key="item.id">
+        <td class="no-padding"><router-link to="/">{{ item.name }}</router-link></td>
         <td class="no-padding"><router-link to="/">23</router-link></td>
         <td class="no-padding"><router-link to="/">94</router-link></td>
         <td class="actions-cell">
@@ -34,10 +34,11 @@
   <modulus-full v-show="addCompanyOpen" @close="addCompanyOpen = false">
     <h3>Pridėti naują įmonę</h3>
 
-    <input ref="firstInput" type="text" placeholder="Įmonės pavadinimas" required class="add-input">
+<!--    <input ref="firstInput" type="text" placeholder="Įmonės pavadinimas" required class="add-input">-->
+    <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
 
     <div class="btn-container">
-      <button class="btn">Pridėti</button>
+      <button @click="createCompany" class="btn">Pridėti</button>
     </div>
   </modulus-full>
 
@@ -62,12 +63,55 @@
     data() {
       return {
         addCompanyOpen: false,
+        newCompanyName: '',
+        list: {},
       }
+    },
+    created() {
+      this.getData('https://inventor-system.herokuapp.com/api/companies');
     },
     methods: {
       openAddCompanyCard(){
         this.addCompanyOpen = true;
         // this.$refs.firstInput.focus() // doesnt work
+      },
+
+      getData(url) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`
+          }
+        };
+
+        this.$http.get(url, config)
+            .then(response => {
+              console.log(response.data);
+              this.list = response.data;
+
+            }).catch(error => {
+          console.log(error);
+          console.log(error.response);
+        })
+      },
+
+      createCompany() {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`
+          }
+        };
+
+        this.$http.post(
+            'https://inventor-system.herokuapp.com/api/companies',
+            { name: this.newCompanyName },
+            config
+        ).then(response => {
+          console.log(response.data);
+          this.getData('https://inventor-system.herokuapp.com/api/companies');
+        }).catch(error => {
+          console.log(error);
+        })
+
       }
     }
   }

@@ -1,5 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import store from "@/store";
+
 import LogIn from "@/views/LogIn";
 import AddUser from "@/views/AddUser";
 import AddItem from "@/views/AddItem";
@@ -9,6 +11,11 @@ import AllItems from "@/views/AllItems";
 import NotificationHistory from "@/views/NotificationHistory";
 import InventoryInfo from "@/views/InventoryInfo";
 import AllCompanies from "@/views/AllCompanies";
+import RemindPassword from "@/views/RemindPassword";
+
+import guest from "@/router/middleware/guest";
+import auth from "@/router/middleware/auth";
+import admin from "@/router/middleware/admin";
 
 Vue.use(VueRouter);
 
@@ -18,54 +25,126 @@ const router = new VueRouter({
     routes: [
         {
             path: '/',
-            redirect: '/log-in'
+            redirect: '/login'
         },
         {
-            path: '/log-in',
+            path: '/login',
             name: 'login',
             component: LogIn,
+            meta: {
+                middleware: [
+                    guest
+                ]
+            }
+        },
+        {
+            path: '/remind-password',
+            name: 'remind-password',
+            component: RemindPassword,
+            meta: {
+                middleware: [
+                    auth
+                ]
+            },
         },
         {
             path: '/user-inventory',
             name: 'user-inventory',
             component: UserItems,
+            meta: {
+                middleware: [
+                    auth
+                ]
+            }
         },
         {
             path: '/add-user',
             name: 'add-user',
             component: AddUser,
+            meta: {
+                middleware: [
+                    admin
+                ]
+            }
         },
         {
             path: '/all-users',
             name: 'all-users',
             component: AllUsers,
+            meta: {
+                middleware: [
+                    admin
+                ]
+            }
         },
         {
             path: '/all-companies',
             name: 'all-companies',
             component: AllCompanies,
+            meta: {
+                middleware: [
+                    admin
+                ]
+            }
         },
         {
             path: '/add-inventory',
             name: 'add-inventory',
             component: AddItem,
+            meta: {
+                middleware: [
+                    auth // admin?
+                ]
+            }
         },
         {
             path: '/all-inventory',
             name: 'all-inventory',
             component: AllItems,
+            meta: {
+                middleware: [
+                    admin
+                ]
+            }
         },
         {
             path: '/notifications',
             name: 'notifications',
             component: NotificationHistory,
+            meta: {
+                middleware: [
+                    auth
+                ]
+            }
         },
         {
             path: '/inventory/:inventory_id',
             name: 'inventory-info',
             component: InventoryInfo,
+            meta: {
+                middleware: [
+                    auth
+                ]
+            }
         },
     ]
+})
+router.beforeEach((to, from, next) => {
+    if (!to.meta.middleware) {
+        return next();
+    }
+    const middleware = to.meta.middleware;
+
+    const context = {
+        to,
+        from,
+        next,
+        store
+    }
+    return middleware[0]({
+        ...context
+    })
+
 })
 
 export default router;

@@ -96,13 +96,31 @@
       }
     },
     created() {
-      this.list.map( (item, index) => item.row = index+1 );
+      this.getData('https://inventor-system.herokuapp.com/api/gear');
     },
     methods: {
       setFilter(filter) {
         this.filter = filter;
         console.log(filter);
       },
+
+      getData(url) {
+        const config = {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`
+          }
+        };
+
+        this.$http.get(url, config)
+          .then(response => {
+            console.log(response.data);
+
+          }).catch(error => {
+            console.log(error);
+            console.log(error.response);
+        })
+      },
+
       selectRow(id, event){
         if(event.shiftKey){ // if shift key pressed
 

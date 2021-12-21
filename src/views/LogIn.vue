@@ -5,11 +5,15 @@
   <div class="backdrop">
     <form class="form-container" @submit.prevent="tryLogin">
 
-      <p v-show="true" class="error-msg">Prisijungimo duomenys neteisngi.</p>
+      <p v-show="isUnrecognized" class="error-msg">Prisijungimo duomenys neteisngi.</p>
 
-      <input type="email" placeholder="Elektroninis Paštas" required class="first-input"/>
+      <input type="email" placeholder="Elektroninis Paštas" required class="first-input" v-model="email"/>
       <div class="password-container">
-        <input :type="pswInputType" placeholder="Slaptažodis" required />
+        <input :type="pswInputType"
+               placeholder="Slaptažodis"
+               required
+               v-model="password"
+               minlength="6"/>
         <button id="show-psw-btn" @click="togglePasswordVisibility" type="button">
 <!--          <img src="../assets/icons/Eye-closed-icon.svg" alt="">-->
           <svg width="32" height="23" viewBox="0 0 32 23" fill="none" xmlns="http://www.w3.org/2000/svg" class="view">
@@ -20,7 +24,7 @@
         </button>
       </div>
 
-      <router-link to="/" >Priminti slaptažodį</router-link>
+      <router-link to="/remind-password">Priminti slaptažodį</router-link>
       <button type="submit" class="btn">Prisijungti</button>
 
     </form>
@@ -30,25 +34,41 @@
 </template>
 
 <script>
-  // import Header from "@/components/Header";
   export default {
     name: "LogIn",
-    components: {
-      // Header
-    },
     data() {
       return {
+        isUnrecognized: false,
         pswVisible: false,
+        password: '',
+        email: '',
       }
     },
     methods: {
       togglePasswordVisibility() {
         this.pswVisible = !this.pswVisible;
       },
+
       tryLogin() {
-        console.log("login");
+        this.$http.post('https://inventor-system.herokuapp.com/api/auth/login',{
+          email: this.email,
+          password: this.password
+        }).then(response => {
+          // this.$store.getters.auth.loggedIn = true;
+          // console.log(response.data.user);
+
+          this.$store.commit('setUser', response.data.user);
+          localStorage.setItem("access_token", response.data.access_token);
+
+          this.$router.push({path: '/user-inventory'});
+        }).catch(err => {
+          console.log(err);
+          console.log(err.response.data);
+          this.isUnrecognized = true;
+        })
       }
     },
+
     computed: {
       pswInputType() {
         return this.pswVisible ? "text" : "password";
@@ -73,6 +93,7 @@
   }
 
   .form-container {
+    position: relative;
     display: flex;
     flex-direction: column;
 
@@ -120,6 +141,8 @@
 
   .error-msg {
     color: #FF6464;
+    position: absolute;
+    top: -3em;
   }
 
   #show-psw-btn:hover path{

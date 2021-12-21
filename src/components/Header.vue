@@ -23,6 +23,7 @@
         <router-link to="user-inventory">Mano Inventorius</router-link>
         <button>Visi pranešimai</button>
         <button>Keisti slaptažodį</button>
+        <button @click="logOut">Atsijungti</button>
 
       </action-card>
     </div>
@@ -52,6 +53,15 @@
         userDropdownOpen: false,
       }
     },
+    methods: {
+      logOut() {
+        // this.$store.getters.auth.loggedIn = false;
+        localStorage.clear();
+
+        this.$store.commit("setUser", {});
+        this.$router.push({path: '/login'});
+      }
+    }
   }
 </script>
 
