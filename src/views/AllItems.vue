@@ -9,9 +9,9 @@
         </svg>
       </router-link>
 
-      <select class="company-filter">
-        <option selected>Įmonės pavadinimas</option> <!-- Visos įmonės-->
-        <option>Pirmos įmonės pavadinimas</option>
+      <select class="company-filter" v-model="companyFilter">
+        <option selected hidden value="">Įmonės pavadinimas</option><!-- Visos įmonės-->
+        <option v-for="item in additionalList" :key="item.name" :value="item.id">{{ item.name }}</option>
       </select>
 
     </div> <!-- /title container-->
@@ -73,8 +73,11 @@
   import TableComponent from "@/components/TableComponent";
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
+  import GetDataMixin from "@/components/mixins/GetDataMixin";
+  import AdditionalListMixin from "@/components/mixins/AdditionalListMixin";
   export default {
     name: "AllItems",
+    mixins: [ GetDataMixin, AdditionalListMixin ],
     components: {
       TableActions,
       Search,
@@ -83,8 +86,15 @@
     },
     data() {
       return {
+        companyFilter: '',
         rowExpanded: '',
+        list: [],
+        // additionalList: [],
       }
+    },
+    created() {
+      this.getData('https://inventor-system.herokuapp.com/api/gear/all');
+      this.getAdditionalData('https://inventor-system.herokuapp.com/api/companies');
     },
     methods: {
       expandRow(item) {
@@ -132,10 +142,18 @@
     color: var(--clr-grey)
   }
 
+  .company-filter {
+    color: var(--clr-black);
+  }
+
+  option:not([hidden]){
+    color: var(--clr-black)
+  }
+
   /* Table */
 
   tr:hover {
-    background: #0054A6;
+    background: #0054A622;
   }
 
   .cell-min {

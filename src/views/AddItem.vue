@@ -10,20 +10,20 @@
       <div class="container-center">
         <h2>Pridėti Įrangą</h2>
 
-        <form-item @onSubmit="onSubmit">
-          <input type="text" placeholder="Pavadinimas" required class="input-long">
-          <textarea placeholder="Aprašymas" required class="input-long" />
+        <form-item @onSubmit="addNewGear">
+          <input type="text" placeholder="Pavadinimas" required class="input-long" v-model="newGear.name" >
+          <textarea placeholder="Aprašymas" required class="input-long" /><!-- nepriskirta -->
           <div>
-            <input type="text" placeholder="Kodas" required >
-            <input type="text" placeholder="Serijos Numeris" required >
+            <input type="text" placeholder="Kodas" required ><!-- nepriskirta -->
+            <input type="text" placeholder="Serijos Numeris" required v-model="newGear.serial_number" >
           </div>
           <div>
-            <input type="text" placeholder="Kiekis" required >
-            <input type="text" placeholder="Vieneto Kaina" required >
+            <input type="text" placeholder="Kiekis" required v-model="newGear.quantity" >
+            <input type="text" placeholder="Vieneto Kaina" required v-model="newGear.unit_price">
           </div>
-          <select class="input-long" required>
+          <select class="input-long" required><!-- nepriskirta -->
             <option selected hidden class="placeholder" value="">Įmonė</option>
-            <option v-for="item in 5" :key="item" :value="item">Įmonės Pavadinimas {{item}}</option> <!-- įmonių sąrašas -->
+            <option v-for="item in list" :key="item.id" :value="item.id">{{ item.name }}</option>
           </select>
 
           <button class="btn">Pridėti</button>
@@ -37,18 +37,36 @@
   import SideMenu from "@/components/SideMenu";
   import Header from "@/components/Header";
   import FormItem from "@/components/FormItem";
+  import GetDataMixin from "@/components/mixins/GetDataMixin";
 
   export default {
     name: "AddUser",
+    mixins: [ GetDataMixin ],
     components: {
       FormItem,
       Header,
       SideMenu
     },
-    methods: {
-      onSubmit() {
-        console.log('hi');
+    data() {
+      return {
+        list:[],
+        newGear: {
+          name: '',
+          serial_number: '',
+          quantity: '',
+          unit_price: '',
+          long_term: '',
+          user_id: '',
+        },
       }
+    },
+    created() {
+      this.getData("https://inventor-system.herokuapp.com/api/companies");
+    },
+    methods: {
+      addNewGear() {
+        this.postData('https://inventor-system.herokuapp.com/api/gear', this.newGear, {name: 'all-inventory'})
+      },
     }
   }
 </script>

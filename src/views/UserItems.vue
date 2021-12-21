@@ -64,8 +64,10 @@
   import Header from "@/components/Header";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
+  import GetDataMixin from "@/components/mixins/GetDataMixin";
   export default {
     name: "UserItems",
+    mixins: [ GetDataMixin ],
     components: {
       TableComponent,
       TableActions,
@@ -96,29 +98,12 @@
       }
     },
     created() {
-      this.getData('https://inventor-system.herokuapp.com/api/gear');
+      // this.getData('https://inventor-system.herokuapp.com/api/gear');
     },
     methods: {
       setFilter(filter) {
         this.filter = filter;
         console.log(filter);
-      },
-
-      getData(url) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`
-          }
-        };
-
-        this.$http.get(url, config)
-          .then(response => {
-            console.log(response.data);
-
-          }).catch(error => {
-            console.log(error);
-            console.log(error.response);
-        })
       },
 
       selectRow(id, event){

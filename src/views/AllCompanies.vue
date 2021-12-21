@@ -38,6 +38,7 @@
     <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
 
     <div class="btn-container">
+      <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
       <button @click="createCompany" class="btn">Pridėti</button>
     </div>
   </modulus-full>
@@ -51,8 +52,10 @@
   import TableComponent from "@/components/TableComponent";
   import TableActions from "@/components/TableActions";
   import ModulusFull from "@/components/ModulusFull";
+  import GetDataMixin from "@/components/mixins/GetDataMixin";
   export default {
     name: "AllCompanies",
+    mixins:[ GetDataMixin ],
     components: {
       ModulusFull,
       TableActions,
@@ -64,7 +67,8 @@
       return {
         addCompanyOpen: false,
         newCompanyName: '',
-        list: {},
+        errorMsg: '',
+        list: [],
       }
     },
     created() {
@@ -76,43 +80,25 @@
         // this.$refs.firstInput.focus() // doesnt work
       },
 
-      getData(url) {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`
-          }
-        };
-
-        this.$http.get(url, config)
-            .then(response => {
-              console.log(response.data);
-              this.list = response.data;
-
-            }).catch(error => {
-          console.log(error);
-          console.log(error.response);
-        })
-      },
-
       createCompany() {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`
-          }
-        };
-
         this.$http.post(
             'https://inventor-system.herokuapp.com/api/companies',
             { name: this.newCompanyName },
-            config
+            this.config
         ).then(response => {
           console.log(response.data);
+          this.errorMsg = "";
+          this.addCompanyOpen = false;
           this.getData('https://inventor-system.herokuapp.com/api/companies');
         }).catch(error => {
           console.log(error);
+          if(error.response.status === 400){
+            if(error.response.data.error.name[0] === "The name has already been taken."){
+              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta"
+            }
+          }
         })
-
-      }
+      },
     }
   }
 </script>
@@ -165,6 +151,11 @@
 
   th:not(:first-child){ /* column dividers fir sticky header */
     box-shadow:none;
+  }
+
+  .error-msg {
+    color: #FF6464;
+    margin: 0 auto 0 0;
   }
 
 

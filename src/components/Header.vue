@@ -5,6 +5,7 @@
       <router-link to="/user-inventory" >Mano Inventorius</router-link>
       <router-link to="/add-inventory" >Pridėti įrangą</router-link>
       <router-link to="/notifications" >Pranešimai</router-link>
+      <router-link v-show="true" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
     </nav>
 
     <div class="expand-container">
@@ -57,6 +58,11 @@
       logOut() {
         // this.$store.getters.auth.loggedIn = false;
         localStorage.clear();
+
+        this.$http.post("https://inventor-system.herokuapp.com/api/auth/logout")
+          .then(response => {
+            console.log(response.data);
+          }).catch(error => console.log('too bad', error))
 
         this.$store.commit("setUser", {});
         this.$router.push({path: '/login'});

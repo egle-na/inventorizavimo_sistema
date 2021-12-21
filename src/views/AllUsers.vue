@@ -9,9 +9,9 @@
         </svg>
       </router-link>
 
-      <select class="company-filter">
-        <option selected>Įmonės pavadinimas</option> <!-- Visos įmonės-->
-        <option>Pirmos įmonės pavadinimas</option>
+      <select class="company-filter" v-model="companyFilter">
+        <option selected hidden value="" class="placeholder">Įmonės pavadinimas</option> <!-- Visos įmonės-->
+        <option v-for="item in additionalList" :key="item.id" :value="item.id">{{ item.name }}</option>
       </select>
 
     </div> <!-- /title container-->
@@ -25,9 +25,9 @@
         <th>Įrangos kiekis</th>
         <th></th>
       </tr>
-      <tr v-for="item in 20" :key="item">
-        <td>Jonas Jonauskas</td>
-        <td>jonas.jonauskas@teltonika.lt</td>
+      <tr v-for="item in list" :key="item.id">
+        <td>{{ item.first_name }} {{ item.last_name }}</td>
+        <td>{{ item.email }}</td>
         <td>5</td>
         <td class="actions-cell">
           <table-actions/>
@@ -45,15 +45,28 @@
   import Search from "@/components/Search";
   import TableComponent from "@/components/TableComponent";
   import TableActions from "@/components/TableActions";
+  import GetDataMixin from "@/components/mixins/GetDataMixin";
+  import AdditionalListMixin from "@/components/mixins/AdditionalListMixin";
 
   export default {
     name: "AllUsers",
+    mixins: [ GetDataMixin, AdditionalListMixin ],
+    data(){
+      return {
+        companyFilter: '',
+        list: [],
+      }
+    },
     components: {
       TableActions,
       TableComponent,
       Search,
       AdminDesk
     },
+    created() {
+      this.getData("https://inventor-system.herokuapp.com/api/users");
+      this.getAdditionalData("https://inventor-system.herokuapp.com/api/companies")
+    }
   }
 </script>
 
@@ -90,6 +103,14 @@
     max-width: 50%;
     color: var(--clr-grey)
   }
+
+  .company-filter:not(.placeholder) {
+    color: var(--clr-black);
+  }
+
+  /*option[selected]{*/
+  /*  color: var(--clr-black)*/
+  /*}*/
 
   /* Table Design */
 

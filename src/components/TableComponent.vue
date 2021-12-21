@@ -22,7 +22,7 @@
     border-top: solid 1px var(--clr-light-grey);
     border-bottom: solid 3px var(--clr-light-grey);
 
-    overflow-y: scroll;
+    overflow-y: auto;
     max-height: 60vh;
   }
 
@@ -70,7 +70,11 @@
     border-top: solid var(--clr-light-grey);
   }
 
-  tr:not(:first-child):hover {
+  /*tr:not(:first-child):hover {*/
+  /*  background-color: var(--clr-almost-white);*/
+  /*}  */
+
+  tr:not(.head-row):hover {
     background-color: var(--clr-almost-white);
   }
 
@@ -93,7 +97,6 @@
 
   a:hover {
     color: var(--clr-accent);
-
   }
 
   /* Expanded Table Rules */
