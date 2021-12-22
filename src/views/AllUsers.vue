@@ -1,13 +1,14 @@
 <template>
+<div>
   <admin-desk>
 
     <div class="title-container">
       <h1>Darbuotojai</h1>
-      <router-link to="/add-user" class="add-btn">
+      <button class="add-btn" @click="addUserCardOpen=true">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
-      </router-link>
+      </button>
 
       <select class="company-filter" v-model="companyFilter">
         <option selected hidden value="" class="placeholder">Įmonės pavadinimas</option> <!-- Visos įmonės-->
@@ -30,14 +31,44 @@
         <td>{{ item.email }}</td>
         <td>5</td>
         <td class="actions-cell">
-          <table-actions/>
+          <table-actions/><!-- prideti suteikti admino teises-->
         </td>
       </tr>
 
     </table-component> <!-- /table container-->
-
-
   </admin-desk>
+
+  <modulus-full v-if="addUserCardOpen" @close="addUserCardOpen = false">
+<!--    <add-user :companyList="additionalList" @createUser="createUser" />-->
+    <h2>Pridėti Darbuotoją</h2>
+
+    <form-item @onSubmit="createUser">
+      <div>
+        <input type="text"
+               placeholder="Vardas" required
+               v-model="newUser.first_name">
+        <input type="text"
+               placeholder="Pavardė" required
+               v-model="newUser.last_name">
+      </div>
+      <input type="email"
+             placeholder="Elektroninis paštas"
+             class="input-long" required
+             v-model="newUser.email">
+
+      <select class="input-long" required v-model="newUser.company_id">
+        <option selected hidden class="placeholder" value="">Įmonė</option>
+        <option v-for="item in companyList" :key="item.id" :value="item.id">{{item.name}}</option> <!-- įmonių sąrašas -->
+      </select>
+
+      <div>
+        <p v-if="addUserError" class="error-msg">Vartotojas šiuo elektroniniu paštu jau užregistruotas</p>
+        <button class="btn" type="submit">Pridėti</button>
+      </div>
+    </form-item>
+  </modulus-full>
+
+</div>
 </template>
 
 <script>
@@ -46,6 +77,9 @@
   import TableComponent from "@/components/TableComponent";
   import TableActions from "@/components/TableActions";
   import DataMixin from "@/components/mixins/DataMixin";
+  import ModulusFull from "@/components/ModulusFull";
+  // import AddUser from "@/components/AddUser";
+  import FormItem from "@/components/FormItem";
 
   export default {
     name: "AllUsers",
@@ -53,10 +87,22 @@
     data(){
       return {
         companyFilter: '',
+        addUserCardOpen: false,
+        addUserError: false,
+        newUser: {
+          first_name: '',
+          last_name: '',
+          email: '',
+          company_id: '',
+          role: 0,
+        },
         list: [],
       }
     },
     components: {
+      FormItem,
+      // AddUser,
+      ModulusFull,
       TableActions,
       TableComponent,
       Search,
@@ -65,6 +111,28 @@
     created() {
       this.getData("https://inventor-system.herokuapp.com/api/users");
       this.getAdditionalData("https://inventor-system.herokuapp.com/api/companies")
+    },
+    methods: {
+      createUser(data) {
+        this.postData(
+            'https://inventor-system.herokuapp.com/api/users',
+            data,
+            this.userAdded,
+            this.userAddError
+        );
+      },
+      userAdded(){
+        console.log("success");
+        this.getData("https://inventor-system.herokuapp.com/api/users");
+        this.addUserCardOpen = false;
+      },
+      userAddError(error) {
+        console.log("fail");
+        if(error.response.status === 400 && error.response.data.email){
+          this.addUserError = true;
+        }
+      }
+
     }
   }
 </script>
@@ -127,5 +195,8 @@
     box-shadow:none;
   }
 
+  h2{
+    margin-top: .4em;
+  }
 
 </style>

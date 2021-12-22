@@ -1,9 +1,9 @@
 <template>
-  <admin-desk>
-      <div class="container-center">
+<!--  <admin-desk>-->
+      <div>
         <h2>Pridėti Darbuotoją</h2>
 
-        <form-item @onSubmit="createUser">
+        <form-item @onSubmit="$emit('createUser', newUser)">
           <div>
             <input type="text"
                    placeholder="Vardas" required
@@ -19,26 +19,26 @@
 
           <select class="input-long" required v-model="newUser.company_id">
             <option selected hidden class="placeholder" value="">Įmonė</option>
-            <option v-for="item in list" :key="item.id" :value="item.id">{{item.name}}</option> <!-- įmonių sąrašas -->
+            <option v-for="item in companyList" :key="item.id" :value="item.id">{{item.name}}</option> <!-- įmonių sąrašas -->
           </select>
 
-          <button class="btn" type="submit">Pridėti</button>
+          <div>
+            <p class="error-msg">Vartotojas šiuo elektroniniu paštu jau užregistruotas</p>
+            <button class="btn" type="submit">Pridėti</button>
+          </div>
         </form-item>
 
       </div>
-  </admin-desk>
+<!--  </admin-desk>-->
 </template>
 
 <script>
   import FormItem from "@/components/FormItem";
-  import AdminDesk from "@/components/AdminDesk";
-  import DataMixin from "@/components/mixins/DataMixin";
 
   export default {
     name: "AddUser",
-    mixins: [ DataMixin ],
+    props: [ 'companyList' ],
     components: {
-      AdminDesk,
       FormItem,
     },
     data() {
@@ -50,27 +50,16 @@
           company_id: '',
           role: 0,
         },
-        list: [],
+
       }
     },
-    created(){
-      this.getData("https://inventor-system.herokuapp.com/api/companies")
-    },
-    methods: {
-      createUser() {
-        this.postData( 'https://inventor-system.herokuapp.com/api/users', this.newUser, {name: "all-users"} );
-      },
-    }
   }
 </script>
 
 <style scoped>
 
-  .container-center {
-    /*align-self: center;*/
-    /*justify-self: center;*/
-    max-width: 550px;
-    margin: 1em auto;
+  h2{
+    margin-top: .4em;
   }
 
 </style>

@@ -3,7 +3,7 @@ import VueRouter from "vue-router";
 import store from "@/store";
 
 import LogIn from "@/views/LogIn";
-import AddUser from "@/views/AddUser";
+import AddUser from "@/components/AddUser";
 import AddItem from "@/views/AddItem";
 import UserItems from "@/views/UserItems";
 import AllUsers from "@/views/AllUsers";
@@ -43,7 +43,7 @@ const router = new VueRouter({
             component: RemindPassword,
             meta: {
                 middleware: [
-                    auth
+                    guest
                 ]
             },
         },

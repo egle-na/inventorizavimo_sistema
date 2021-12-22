@@ -1,6 +1,8 @@
 <template>
 <!--<div>-->
 <!--  <Header />-->
+<div>
+  <header-guest />
 
   <div class="backdrop">
     <form class="form-container" @submit.prevent="tryLogin">
@@ -31,11 +33,15 @@
   </div>
 
 <!--</div>-->
+</div>
 </template>
 
 <script>
+  import HeaderGuest from "@/views/HeaderGuest";
+
   export default {
     name: "LogIn",
+    components: {HeaderGuest},
     data() {
       return {
         isUnrecognized: false,
@@ -78,6 +84,7 @@
 </script>
 
 <style scoped>
+
   .backdrop {
     position: absolute;
     top:0;
@@ -89,7 +96,7 @@
     align-items: center;
     justify-content: center;
 
-    background: var(--clr-white);
+    /*background: var(--clr-white);*/
   }
 
   .form-container {

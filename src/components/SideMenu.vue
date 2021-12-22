@@ -8,8 +8,8 @@
         <li><router-link to="/all-companies">Įmonės</router-link></li>
         <li><router-link to="/all-users">Darbuotojai</router-link></li>
         <li><router-link to="/all-inventory">Inventorius</router-link></li>
-        <li><router-link to="/add-user">Pridėti Darbuotoją</router-link></li>
-        <li><router-link to="/add-inventory">Pridėti įrangą</router-link></li>
+<!--        <li><router-link to="/add-user">Pridėti Darbuotoją</router-link></li>-->
+<!--        <li><router-link to="/add-inventory">Pridėti įrangą</router-link></li>-->
         <li><router-link to="/settings">Nustatymai</router-link></li>
       </ul>
     </div>
@@ -19,13 +19,13 @@
 </template>
 
 <script>
-  import ProfileImgMixin from "@/components/mixins/ProfileImgMixin";
+  // import ProfileImgMixin from "@/components/mixins/ProfileImgMixin";
   import UserCard from "@/components/UserCard";
 
   export default {
     name: "SideMenu",
     components: { UserCard },
-    mixins: [ ProfileImgMixin ],
+    // mixins: [ ProfileImgMixin ],
   }
 </script>
 

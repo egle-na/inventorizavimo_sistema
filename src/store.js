@@ -15,12 +15,12 @@ export default new Vuex.Store({
         }
     },
     getters: {
-        auth(state) {
+        user(state) {
             return state.user;
         },
-        isAdmin() {
+        isAdmin(state) {
             // return state.user.role === 1;
-            return true;
+            return state.user.isAdmin;
         }
     },
 

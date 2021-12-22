@@ -6,7 +6,7 @@
       <router-link to="/user-inventory" >Mano Inventorius</router-link>
       <router-link to="/add-inventory" >Pridėti įrangą</router-link>
       <router-link to="/notifications" >Pranešimai</router-link>
-      <router-link v-show="true" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
+      <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
     </nav>
 
     <div class="expand-container">
@@ -34,10 +34,12 @@
 </template>
 
 <script>
-  import ProfileImgMixin from "@/components/mixins/ProfileImgMixin";
   import NotificationCard from "@/components/NotificationCard";
   import ActionCard from "@/components/ActionCard";
   import UserCard from "@/components/UserCard";
+  import DataMixin from "@/components/mixins/DataMixin";
+
+  import jwt_decode from "jwt-decode";
 
   export default {
     name: "Header",
@@ -47,7 +49,7 @@
       NotificationCard
     },
     // props: [ 'notification', 'name' ],
-    mixins: [ ProfileImgMixin ],
+    mixins: [ DataMixin ],
     data() {
       return {
         notification: true,
@@ -55,20 +57,36 @@
         userDropdownOpen: false,
       }
     },
+    created() {
+      // console.log('header created')
+
+      // create user mixin (header and UserCard)
+      const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
+      this.$store.commit('setUser', {id, first_name, last_name, email, isAdmin: !!role })
+      // console.log(this.user);
+
+    },
+    computed: {
+      nameInitials() {
+        return this.$store.getters.user.first_name.charAt(0) + this.$store.getters.user.last_name.charAt(0);
+      },
+    },
     methods: {
       logOut() {
-        // this.$store.getters.auth.loggedIn = false;
-
-        this.$http.post("https://inventor-system.herokuapp.com/api/auth/logout")
+        this.$http.post("https://inventor-system.herokuapp.com/api/auth/logout", {}, this.config)
           .then(response => {
-            console.log(response.data);
+            console.log(response.data.message);
             localStorage.clear();
-          }).catch(error => console.log('too bad', error))
-        localStorage.clear();
-        this.$store.commit("setUser", {});
-        this.$router.push({path: '/login'});
-      }
-    }
+            this.$router.push({path: '/login'});
+            this.$store.commit("setUser", {}); //
+          }).catch(error => {
+            console.log('too bad', error)
+            localStorage.clear();
+            this.$store.commit("setUser", {}); //
+            this.$router.push({path: '/login'});
+          })
+      },
+    },
   }
 </script>
 

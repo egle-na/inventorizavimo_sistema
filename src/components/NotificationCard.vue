@@ -73,7 +73,7 @@
 
   .btn-container {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     padding-bottom: 1em;
     border-bottom: solid 2px var(--clr-light-grey);
     margin-bottom: 1em;
