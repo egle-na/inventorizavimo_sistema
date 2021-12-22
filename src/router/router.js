@@ -16,6 +16,7 @@ import RemindPassword from "@/views/RemindPassword";
 import guest from "@/router/middleware/guest";
 import auth from "@/router/middleware/auth";
 import admin from "@/router/middleware/admin";
+import CreatePassword from "@/views/CreatePassword";
 
 Vue.use(VueRouter);
 
@@ -46,6 +47,16 @@ const router = new VueRouter({
                     guest
                 ]
             },
+        },
+        {
+            path: '/create-password',
+            name: 'create-password',
+            component: CreatePassword,
+            // meta: {
+            //     middleware: [
+            //         guest
+            //     ]
+            // },
         },
         {
             path: '/user-inventory',

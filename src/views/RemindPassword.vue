@@ -68,6 +68,7 @@
   h1 {
     margin-bottom: .7em;
     border-bottom-width: 3px ;
+    padding: 0;
   }
 
   .form-container button {
