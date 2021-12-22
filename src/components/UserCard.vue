@@ -14,7 +14,7 @@
 
   export default {
     name: 'UserCard',
-    mixins:[ ProfileImgMixin ]
+    mixins: [ ProfileImgMixin ]
   }
 </script>
 <style scoped>

@@ -2,7 +2,7 @@
   <admin-desk>
 
     <div class="title-container">
-      <h1>Visa Įranga</h1>
+      <h1>Įranga</h1>
       <router-link to="/add-inventory" class="add-btn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
@@ -73,11 +73,10 @@
   import TableComponent from "@/components/TableComponent";
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
-  import GetDataMixin from "@/components/mixins/GetDataMixin";
-  import AdditionalListMixin from "@/components/mixins/AdditionalListMixin";
+  import DataMixin from "@/components/mixins/DataMixin";
   export default {
     name: "AllItems",
-    mixins: [ GetDataMixin, AdditionalListMixin ],
+    mixins: [ DataMixin ],
     components: {
       TableActions,
       Search,

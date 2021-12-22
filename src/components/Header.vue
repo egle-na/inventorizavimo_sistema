@@ -1,6 +1,7 @@
 <template>
 
   <header>
+    <img src="../assets/teltonika_logo.png" alt="" class="teltonika-logo">
     <nav>
       <router-link to="/user-inventory" >Mano Inventorius</router-link>
       <router-link to="/add-inventory" >Pridėti įrangą</router-link>
@@ -57,13 +58,13 @@
     methods: {
       logOut() {
         // this.$store.getters.auth.loggedIn = false;
-        localStorage.clear();
 
         this.$http.post("https://inventor-system.herokuapp.com/api/auth/logout")
           .then(response => {
             console.log(response.data);
+            localStorage.clear();
           }).catch(error => console.log('too bad', error))
-
+        localStorage.clear();
         this.$store.commit("setUser", {});
         this.$router.push({path: '/login'});
       }
@@ -86,6 +87,11 @@
     z-index: 2;
     /*filter: drop-shadow(0px 4px 7px rgba(0, 0, 0, 0.25));*/
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  .teltonika-logo {
+    margin-right: auto;
+    height: 30px;
   }
 
   a {

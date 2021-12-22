@@ -37,11 +37,11 @@
   import SideMenu from "@/components/SideMenu";
   import Header from "@/components/Header";
   import FormItem from "@/components/FormItem";
-  import GetDataMixin from "@/components/mixins/GetDataMixin";
+  import DataMixin from "@/components/mixins/DataMixin";
 
   export default {
     name: "AddUser",
-    mixins: [ GetDataMixin ],
+    mixins: [ DataMixin ],
     components: {
       FormItem,
       Header,

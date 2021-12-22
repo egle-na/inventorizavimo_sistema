@@ -64,10 +64,10 @@
   import Header from "@/components/Header";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
-  import GetDataMixin from "@/components/mixins/GetDataMixin";
+  import DataMixin from "@/components/mixins/DataMixin";
   export default {
     name: "UserItems",
-    mixins: [ GetDataMixin ],
+    mixins: [ DataMixin ],
     components: {
       TableComponent,
       TableActions,

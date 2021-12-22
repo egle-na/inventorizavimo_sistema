@@ -32,12 +32,11 @@
 <script>
   import FormItem from "@/components/FormItem";
   import AdminDesk from "@/components/AdminDesk";
-  import GetDataMixin from "@/components/mixins/GetDataMixin";
-  import PostDataMixin from "@/components/mixins/PostDataMixin";
+  import DataMixin from "@/components/mixins/DataMixin";
 
   export default {
     name: "AddUser",
-    mixins:[ GetDataMixin, PostDataMixin ],
+    mixins: [ DataMixin ],
     components: {
       AdminDesk,
       FormItem,

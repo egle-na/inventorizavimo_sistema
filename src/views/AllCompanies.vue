@@ -2,7 +2,7 @@
 <div>
   <admin-desk >
     <div class="title-container">
-      <h1>Visos Įmonės</h1>
+      <h1>Įmonės</h1>
       <button class="add-btn" @click="openAddCompanyCard">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
@@ -33,14 +33,16 @@
 
   <modulus-full v-show="addCompanyOpen" @close="addCompanyOpen = false">
     <h3>Pridėti naują įmonę</h3>
+      <form @submit.prevent="createCompany" >
+        <!--    <input ref="firstInput" type="text" placeholder="Įmonės pavadinimas" required class="add-input">-->
+        <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
 
-<!--    <input ref="firstInput" type="text" placeholder="Įmonės pavadinimas" required class="add-input">-->
-    <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
+        <div class="btn-container">
+          <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
+          <button class="btn">Pridėti</button>
+        </div>
+      </form>
 
-    <div class="btn-container">
-      <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
-      <button @click="createCompany" class="btn">Pridėti</button>
-    </div>
   </modulus-full>
 
 </div>
@@ -52,10 +54,10 @@
   import TableComponent from "@/components/TableComponent";
   import TableActions from "@/components/TableActions";
   import ModulusFull from "@/components/ModulusFull";
-  import GetDataMixin from "@/components/mixins/GetDataMixin";
+  import DataMixin from "@/components/mixins/DataMixin";
   export default {
     name: "AllCompanies",
-    mixins:[ GetDataMixin ],
+    mixins: [ DataMixin ],
     components: {
       ModulusFull,
       TableActions,
