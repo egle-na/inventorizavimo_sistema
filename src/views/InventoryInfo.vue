@@ -4,7 +4,7 @@
 
    <main>
      <div class="title-container">
-       <h1>Dell 24 Monitor - S2421H <span>Paskolintas</span></h1>
+       <h1>{{ list.name }} <span>Paskolintas</span></h1>
 
        <div class="actions">
          <button @click="actionCardOpen = !actionCardOpen">
@@ -34,19 +34,19 @@
            urna nec tincidunt. Tellus in hac habitasse platea.</p>
          <div>
            <h3>Savininkas</h3>
-           <p>Jonas Jonaitis</p>
+           <p >{{ ownersName }}</p>
          </div>
          <div>
            <h3>Kodas</h3>
-           <p>KD-55XG9505</p>
+           <p>{{ list.code }}</p>
          </div>
          <div>
            <h3>Serijos numeris</h3>
-           <p>6007041</p>
+           <p>{{ list.serial_number }}</p>
          </div>
          <div>
            <h3>Vieneto kaina</h3>
-           <p>163,67 €</p>
+           <p>{{ list.unit_price }} €</p>
          </div>
 
          <div class="btn-container">
@@ -102,9 +102,11 @@
   import TableComponent from "@/components/TableComponent";
   import SelectUser from "@/components/SelectUser";
   import ModulusFull from "@/components/ModulusFull";
+  import DataMixin from "@/components/mixins/DataMixin";
 
   export default {
     name: "InventoryInfo",
+    mixins: [ DataMixin ],
     components: {
       ModulusFull,
       SelectUser,
@@ -112,7 +114,7 @@
       ActionCard,
       Header,
     },
-    // props: [ 'item' ],
+    // props: [ 'userId' ],
     data() {
       return {
         actionCardOpen: false,
@@ -126,6 +128,19 @@
           owner: '',
           price: '',
         },
+        ownersName: '',
+      }
+    },
+    created() {
+      this.getData('https://inventor-system.herokuapp.com/api/gear/' + this.$route.params.inventory_id)
+    },
+    watch: {
+      list: function () {
+        if(this.list.user_id && !this.ownersName){
+          this.$http.get('https://inventor-system.herokuapp.com/api/users/' + this.list.user_id, this.config)
+              .then(response => this.ownersName = `${response.data.first_name} ${response.data.last_name}`)
+              .catch(error => error.response.message)
+        }
       }
     },
     methods: {
@@ -163,7 +178,7 @@
   .title-container {
     display: flex;
     justify-content: space-between;
-    align-items: end;
+    align-items: flex-end;
     padding: 0;
   }
 
@@ -207,7 +222,7 @@
   .specs div {
     display: flex;
     justify-content: space-between;
-    align-items: end;
+    align-items: flex-end;
     margin: 1em 0;
     border-bottom: solid 2px var(--clr-light-grey);
   }
@@ -223,7 +238,7 @@
   .specs .btn-container{
     border: none;
     margin: auto 0 0;
-    justify-content: end;
+    justify-content: flex-end;
   }
   .specs .btn {
     margin-left: 1em

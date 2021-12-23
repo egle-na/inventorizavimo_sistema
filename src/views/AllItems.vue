@@ -1,19 +1,18 @@
 <template>
+<div>
   <admin-desk>
-
     <div class="title-container">
       <h1>Įranga</h1>
-      <router-link to="/add-inventory" class="add-btn">
+      <button @click="addGearOpen = true" class="add-btn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
-      </router-link>
+      </button>
 
       <select class="company-filter" v-model="companyFilter">
-        <option selected hidden value="">Įmonės pavadinimas</option><!-- Visos įmonės-->
+        <option selected value="">Visos įmonės</option>
         <option v-for="item in additionalList" :key="item.name" :value="item.id">{{ item.name }}</option>
       </select>
-
     </div> <!-- /title container-->
 
     <search />
@@ -26,11 +25,11 @@
         <th>Kiekis</th>
         <th></th>
       </tr>
-      <tbody v-for="item in 20" :key="item">
+      <tbody v-for="item in list" :key="item.id">
         <tr class="main-trow" :class="{'row-selected': rowExpanded === item}">
           <td class="cell-min"></td>
-          <td>Dell 24 Monitor-S2421H</td>
-          <td>KD-55XG9505</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.serial_number }}</td>
           <td>3</td>
           <td class="cell-min">
             <button @click="expandRow(item)">
@@ -64,8 +63,44 @@
         </tr>
       </tbody>
     </table-component> <!-- /table container-->
-
   </admin-desk>
+
+  <modulus-full v-if="addGearOpen" @close="addGearOpen = false">
+    <add-item @success="addGearSuccess"/>
+<!--      <h2>Pridėti Įrangą</h2>-->
+
+<!--      <form-item @onSubmit="addNewGear">-->
+<!--        <input type="text" placeholder="Pavadinimas" required class="input-long" v-model="newGear.name" >-->
+<!--        <textarea placeholder="Aprašymas" required class="input-long" />&lt;!&ndash; nepriskirta &ndash;&gt;-->
+<!--        <div>-->
+<!--          <input type="text" placeholder="Kodas" required >&lt;!&ndash; nepriskirta &ndash;&gt;-->
+<!--          <input type="text" placeholder="Serijos Numeris" required v-model="newGear.serial_number" >-->
+<!--        </div>-->
+<!--        <div class="relative-container">-->
+<!--          <input type="text" placeholder="Kiekis" required >&lt;!&ndash; nepriskirta &ndash;&gt;-->
+<!--          <input type="number" step=".01" placeholder="Vieneto Kaina" id="unit-price" required v-model="newGear.unit_price">-->
+<!--          <label for="unit-price" id="euro-sign">€</label>-->
+<!--        </div>-->
+
+<!--        <div class="btn-container">-->
+<!--          <div>-->
+<!--            <label>-->
+<!--              <input type="radio" name="long-term" value="true" v-model="newGear.long_term">-->
+<!--              Ilgalaikė įranga-->
+<!--            </label>-->
+
+<!--            <label>-->
+<!--              <input type="radio" name="long-term" value="false" v-model="newGear.long_term">-->
+<!--              Trumpalaikė įranga-->
+<!--            </label>-->
+<!--          </div>-->
+
+<!--          <button class="btn">Pridėti</button>-->
+<!--        </div>-->
+<!--      </form-item>-->
+  </modulus-full>
+
+</div>
 </template>
 
 <script>
@@ -74,10 +109,16 @@
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
   import DataMixin from "@/components/mixins/DataMixin";
+  import ModulusFull from "@/components/ModulusFull";
+  // import FormItem from "@/components/FormItem";
+  import AddItem from "@/components/AddItem";
   export default {
     name: "AllItems",
     mixins: [ DataMixin ],
     components: {
+      AddItem,
+      // FormItem,
+      ModulusFull,
       TableActions,
       Search,
       TableComponent,
@@ -85,15 +126,25 @@
     },
     data() {
       return {
+        main_get_url: 'https://inventor-system.herokuapp.com/api/gear/all',
+        addit_get_url: 'https://inventor-system.herokuapp.com/api/companies',
         companyFilter: '',
         rowExpanded: '',
-        list: [],
-        // additionalList: [],
+        addGearOpen: false,
+        // list: [],
+        // newGear: {
+        //   name: '',
+        //   serial_number: '',
+        //   // quantity: '',
+        //   unit_price: '',
+        //   long_term: true,
+        //   user_id: this.$store.getters.user.id,
+        // },
       }
     },
     created() {
-      this.getData('https://inventor-system.herokuapp.com/api/gear/all');
-      this.getAdditionalData('https://inventor-system.herokuapp.com/api/companies');
+      this.getData(this.main_get_url);
+      this.getAdditionalData(this.addit_get_url);
     },
     methods: {
       expandRow(item) {
@@ -103,6 +154,20 @@
           this.rowExpanded = item;
         }
       },
+      // addNewGear() {
+      //   this.postData(
+      //       'https://inventor-system.herokuapp.com/api/gear',
+      //       this.newGear,
+      //       this.addGearSuccess,
+      //       this.addGearError )
+      // },
+      addGearSuccess() {
+        this.addGearOpen = false;
+        this.getData('https://inventor-system.herokuapp.com/api/gear/all');
+      },
+      // addGearError() {
+      //
+      // }
     },
   }
 </script>
@@ -166,5 +231,56 @@
     padding: .7rem;
   }
 
+  /* Add gear card */
+
+  /*h2 {*/
+  /*  margin-top: 0;*/
+  /*}*/
+
+  /*textarea {*/
+  /*  height: 44px;*/
+  /*  transition: height 400ms;*/
+  /*  resize: vertical;*/
+  /*}*/
+
+  /*textarea:focus {*/
+  /*  height: 90px;*/
+  /*}*/
+
+  /*.relative-container {*/
+  /*  position: relative;*/
+  /*}*/
+
+  /*#euro-sign {*/
+  /*  position: absolute;*/
+  /*  !*top: 50%;*!*/
+  /*  bottom: 60%;*/
+  /*  right: .5em;*/
+  /*  color: grey;*/
+  /*}*/
+
+  /*.btn-container {*/
+  /*  display: flex;*/
+  /*  justify-content: space-between;*/
+  /*}*/
+
+  /*.btn-container label:not(:first-child) {*/
+  /*  margin-top: .9em ;*/
+  /*}*/
+
+  /*.btn-container div{*/
+  /*  color: grey;*/
+  /*  display: flex;*/
+  /*  flex-direction: column;*/
+  /*}*/
+
+  /*.btn-container input{*/
+  /*  width: fit-content;*/
+  /*  margin: 0 1em 0 0;*/
+  /*}*/
+
+  /*.btn-container .btn {*/
+  /*  align-self: flex-end;*/
+  /*}*/
 
 </style>

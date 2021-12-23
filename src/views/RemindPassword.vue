@@ -20,7 +20,7 @@
 </template>
 
 <script>
-  import HeaderGuest from "@/views/HeaderGuest";
+  import HeaderGuest from "@/components/HeaderGuest";
   export default {
     name: "RemindPassword",
     components: {HeaderGuest},
@@ -33,7 +33,7 @@
     },
     methods: {
       remindPassword() {
-        this.$http.post("https://inventor-system.herokuapp.com/api/auth/logout",{...this.email})
+        this.$http.post("https://inventor-system.herokuapp.com/api/reset-password",{email: this.email})
           .then(() => this.passwordResetSent = true)
           .catch(() => this.noEmailFound = true)
       },
@@ -72,7 +72,7 @@
   }
 
   .form-container button {
-    align-self: end;
+    align-self: flex-end;
   }
 
   .error-msg {

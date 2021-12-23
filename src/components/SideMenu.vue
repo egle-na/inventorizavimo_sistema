@@ -53,7 +53,8 @@
     align-self: center;
     min-height: 100px;
     height: 100%;
-    max-height: 350px;
+    /*max-height: 350px;*/
+    max-height: 250px;
 
   }
 
@@ -71,6 +72,7 @@
   .side-nav li{
     /*margin-bottom: 2em;*/
     width: fit-content;
+    padding-right: 2em;
   }
 
   a {

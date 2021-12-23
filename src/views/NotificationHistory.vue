@@ -35,10 +35,16 @@
 
 <script>
   import Header from "@/components/Header";
+  import DataMixin from "@/components/mixins/DataMixin";
   export default {
     name: "NotificationHistory",
+    mixins: [ DataMixin ],
     components: {
       Header,
+    },
+    created(){
+      console.log("notification history list:")
+      this.getData('https://inventor-system.herokuapp.com/api/history');
     }
   }
 </script>

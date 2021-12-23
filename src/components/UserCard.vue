@@ -43,7 +43,7 @@
     display: flex;
     width: 100%;
     align-items: center;
-    justify-content: start;
+    justify-content: flex-start;
   }
 
   #profile-btn {
@@ -83,8 +83,7 @@
     font-family: var(--ff-karla);
     text-transform: lowercase;
     grid-column: 1 / -1;
-    margin: 0;
-    margin-top: .4em;
+    margin: .4em 0 0;
   }
 
 </style>

@@ -58,11 +58,11 @@
 
       <select class="input-long" required v-model="newUser.company_id">
         <option selected hidden class="placeholder" value="">Įmonė</option>
-        <option v-for="item in companyList" :key="item.id" :value="item.id">{{item.name}}</option> <!-- įmonių sąrašas -->
+        <option v-for="item in additionalList" :key="item.id" :value="item.id">{{item.name}}</option> <!-- įmonių sąrašas -->
       </select>
 
-      <div>
-        <p v-if="addUserError" class="error-msg">Vartotojas šiuo elektroniniu paštu jau užregistruotas</p>
+      <div class="button-container">
+        <p v-if="addUserError" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas</p>
         <button class="btn" type="submit">Pridėti</button>
       </div>
     </form-item>
@@ -113,27 +113,28 @@
       this.getAdditionalData("https://inventor-system.herokuapp.com/api/companies")
     },
     methods: {
-      createUser(data) {
+      createUser() {
         this.postData(
             'https://inventor-system.herokuapp.com/api/users',
-            data,
+            this.newUser,
             this.userAdded,
             this.userAddError
         );
       },
+
       userAdded(){
         console.log("success");
         this.getData("https://inventor-system.herokuapp.com/api/users");
         this.addUserCardOpen = false;
       },
+
       userAddError(error) {
         console.log("fail");
-        if(error.response.status === 400 && error.response.data.email){
+        if(error.response.status === 400 && error.response.data.message === "The email has already been taken"){
           this.addUserError = true;
         }
-      }
-
-    }
+      },
+    },
   }
 </script>
 
@@ -197,6 +198,15 @@
 
   h2{
     margin-top: .4em;
+  }
+
+  .button-container {
+    display: flex;
+  }
+
+  .error-msg {
+    color: #FF6464;
+    margin: 0 1em 0 0;
   }
 
 </style>

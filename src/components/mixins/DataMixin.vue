@@ -5,6 +5,7 @@
     name: "DataMixin",
     data() {
       return {
+        list: [],
         additionalList: [],
         config: {
           headers: {
@@ -23,12 +24,11 @@
             this.refreshUsersToken();
           }).catch(error => {
             console.error(error);
-            if(error.response.status === 500){
-              if(error.response.data.message === "Token has expired" ||
-                  error.response.data.message === "The token has been blacklisted"){
-                localStorage.clear();
-                this.$router.push({name: 'login'});
-              }
+            if(error.response.data.message === "Token has expired" ||
+                error.response.data.message === "The token has been blacklisted" ||
+                error.response.data.status === 401 ){
+              localStorage.clear();
+              this.$router.push({name: 'login'});
             }
         })
       },

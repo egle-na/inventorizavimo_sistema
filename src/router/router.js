@@ -3,8 +3,8 @@ import VueRouter from "vue-router";
 import store from "@/store";
 
 import LogIn from "@/views/LogIn";
-import AddUser from "@/components/AddUser";
-import AddItem from "@/views/AddItem";
+// import AddUser from "@/components/AddUser";
+// import AddItem from "@/components/AddItem";
 import UserItems from "@/views/UserItems";
 import AllUsers from "@/views/AllUsers";
 import AllItems from "@/views/AllItems";
@@ -39,8 +39,8 @@ const router = new VueRouter({
             }
         },
         {
-            path: '/remind-password',
-            name: 'remind-password',
+            path: '/forgot-password',
+            name: 'forgot-password',
             component: RemindPassword,
             meta: {
                 middleware: [
@@ -68,16 +68,16 @@ const router = new VueRouter({
                 ]
             }
         },
-        {
-            path: '/add-user',
-            name: 'add-user',
-            component: AddUser,
-            meta: {
-                middleware: [
-                    admin
-                ]
-            }
-        },
+        // {
+        //     path: '/add-user',
+        //     name: 'add-user',
+        //     component: AddUser,
+        //     meta: {
+        //         middleware: [
+        //             admin
+        //         ]
+        //     }
+        // },
         {
             path: '/all-users',
             name: 'all-users',
@@ -98,16 +98,16 @@ const router = new VueRouter({
                 ]
             }
         },
-        {
-            path: '/add-inventory',
-            name: 'add-inventory',
-            component: AddItem,
-            meta: {
-                middleware: [
-                    auth // admin?
-                ]
-            }
-        },
+        // {
+        //     path: '/add-inventory',
+        //     name: 'add-inventory',
+        //     component: AddItem,
+        //     meta: {
+        //         middleware: [
+        //             auth // admin?
+        //         ]
+        //     }
+        // },
         {
             path: '/all-inventory',
             name: 'all-inventory',

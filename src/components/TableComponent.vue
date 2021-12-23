@@ -122,7 +122,13 @@
 
   .row-selected {
     background: var(--clr-light-grey);
-    filter: drop-shadow(0 3px 3px #C5C5C5);
+    position: relative;
+    /*filter: drop-shadow(0 3px 3px #C5C5C5);*/
+    box-shadow: 0 5px 5px #C5C5C566;
+  }
+
+  .main-trow.row-selected:hover {
+    background: var(--clr-light-grey);
   }
 
   .expanded-table > td {

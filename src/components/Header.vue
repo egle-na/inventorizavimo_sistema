@@ -4,7 +4,7 @@
     <img src="../assets/teltonika_logo.png" alt="" class="teltonika-logo">
     <nav>
       <router-link to="/user-inventory" >Mano Inventorius</router-link>
-      <router-link to="/add-inventory" >Pridėti įrangą</router-link>
+<!--      <router-link to="/add-inventory" >Pridėti įrangą</router-link>-->
       <router-link to="/notifications" >Pranešimai</router-link>
       <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
     </nav>
@@ -99,7 +99,7 @@
     padding: .5em 5%; /* dešinė pusė */
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
     font-family: var(--ff-roboto-con);
     /*position: relative;*/
     z-index: 2;

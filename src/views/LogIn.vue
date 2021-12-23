@@ -26,7 +26,7 @@
         </button>
       </div>
 
-      <router-link to="/remind-password">Priminti slaptažodį</router-link>
+      <router-link to="/forgot-password">Priminti slaptažodį</router-link>
       <button type="submit" class="btn">Prisijungti</button>
 
     </form>
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-  import HeaderGuest from "@/views/HeaderGuest";
+  import HeaderGuest from "@/components/HeaderGuest";
 
   export default {
     name: "LogIn",
@@ -129,7 +129,7 @@
   }
 
   a {
-    align-self: end;
+    align-self: flex-end;
     font-size: 0.75rem; /* gal geriau 1rem */
     /*text-align: right;*/
     margin: 1.5em 0;
@@ -143,7 +143,7 @@
   }
 
   .form-container button {
-    align-self: end;
+    align-self: flex-end;
   }
 
   .error-msg {

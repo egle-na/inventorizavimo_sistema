@@ -31,7 +31,7 @@
   /*}*/
 
   /*a {*/
-  /*  align-self: end;*/
+  /*  align-self: flex-end;*/
   /*  font-size: 0.75rem; !* gal geriau 1rem *!*/
   /*  !*text-align: right;*!*/
   /*  margin: 1.5em 0;*/
@@ -45,7 +45,7 @@
   /*}*/
 
   /*.form-container button {*/
-  /*  align-self: end;*/
+  /*  align-self: flex-end;*/
   /*}*/
 
   /*#show-psw-btn:hover path {*/

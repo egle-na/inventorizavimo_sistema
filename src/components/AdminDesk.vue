@@ -27,7 +27,8 @@
 
   .grid {
     display: grid;
-    grid-template: min-content auto / 330px auto;
+    /*grid-template: min-content auto / 330px auto;*/
+    grid-template: min-content auto / max-content auto;
     height: 100vh;
   }
 

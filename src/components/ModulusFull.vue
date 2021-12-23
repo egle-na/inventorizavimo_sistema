@@ -97,7 +97,7 @@
 
   .btn-container {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
   }
 
   div:not(.btn-container) .btn {

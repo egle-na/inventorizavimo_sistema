@@ -20,7 +20,7 @@
     width: 45%;
   }
 
-  input:first-child:not(.input-long) {
+  input:first-child:not(.input-long, [type='radio']) {
     margin-right: 10%;
   }
 

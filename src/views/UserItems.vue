@@ -5,12 +5,12 @@
   <main>
     <div class="title-container">
       <h1>Mano Inventorius</h1>
-      <router-link to="/add-inventory" class="add-btn">
+      <button class="add-btn" @click="addGearOpen = true">
 <!--        <img src="../assets/icons/Plus.svg" alt="">-->
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
-      </router-link>
+      </button>
 
       <div class="filter-container">
         <button class="filter-btn"
@@ -39,24 +39,30 @@
         <th>Veiksmai</th>
       </tr>
       <tr v-for="(item, index) in list"
-          :key="index"
+          :key="item.gear[0].id"
           :class="{'row-selected-simple': rowsSelected.includes(index)}"
-          @click="selectRow(index, $event)">
+          >
         <td>
           <input type="checkbox"
                  :checked="rowsSelected.includes(index)"
+                 @click="toggleSelect(index)"
                  :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
         </td>
-        <td>{{ item.name }}</td>
-        <td>2021-12-14</td>
-        <td>Savininkas</td>
+        <td @click="selectRow(index, $event)">{{ item.name }}</td>
+        <td @click="selectRow(index, $event)">{{ item.gear[0].updated_at.split('T')[0] }}</td>
+        <td @click="selectRow(index, $event)">{{ statusText(item.gear.lent) }}</td>
         <td class="actions-cell">
-          <table-actions :id="index" /> <!-- item.id -->
+          <table-actions :id="item.gear[0].id" /> <!-- item.id -->
         </td>
       </tr>
     </table-component>
 
   </main>
+
+  <modulus-full v-if="addGearOpen" @close="addGearOpen = false">
+    <add-item @success="addGearSuccess"/>
+  </modulus-full>
+
 </div>
 </template>
 
@@ -65,42 +71,51 @@
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
   import DataMixin from "@/components/mixins/DataMixin";
+  import ModulusFull from "@/components/ModulusFull";
+  import AddItem from "@/components/AddItem";
   export default {
     name: "UserItems",
     mixins: [ DataMixin ],
     components: {
+      AddItem,
+      ModulusFull,
       TableComponent,
       TableActions,
       Header
     },
     data() {
       return {
+        addGearOpen: false,
         filter: 'all',
         rowsSelected: [],
         lastSelected: '',
-        list: [
-          {name: 'a Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'b Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'c Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'd Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'e Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'f Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'g Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'h Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'i Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'j Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'k Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'l Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'm Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'n Dell 24 Monitor-S2421H', variable: 'alive'},
-          {name: 'o Dell 24 Monitor-S2421H', variable: 'alive'},
-        ],
+        // list: [
+        //   {name: 'a Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'b Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'c Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'd Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'e Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'f Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'g Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'h Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'i Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'j Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'k Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'l Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'm Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'n Dell 24 Monitor-S2421H', variable: 'alive'},
+        //   {name: 'o Dell 24 Monitor-S2421H', variable: 'alive'},
+        // ],
       }
     },
     created() {
-      // this.getData('https://inventor-system.herokuapp.com/api/gear');
+      console.log("mano inventorius: ")
+      this.getData('https://inventor-system.herokuapp.com/api/gear');
     },
     methods: {
+      statusText(lent){
+        return lent ? "paskolintas" : "Savininkas";
+      },
       setFilter(filter) {
         this.filter = filter;
         console.log(filter);
@@ -135,21 +150,29 @@
             }
             this.rowsSelected = this.rowsSelected.filter(item => !deselect.includes(item));
           }
+          this.lastSelected = id;
         } else { // if shift key not pressed
-          if(!this.rowsSelected.includes(id)){ // check
-            this.addIfNotSelected(id);
-            console.log('add',id);
-          } else { // uncheck
-            this.rowsSelected = this.rowsSelected.filter(item => item !== id);
-            console.log('remove',id);
+          if(this.rowsSelected.length) { // something is selected
+            this.toggleSelect(id);
+            this.lastSelected = id;
           }
+          this.lastSelected = "";
+
+
         }
-        this.lastSelected = id;
       },
 
       addIfNotSelected(item){
         if(!this.rowsSelected.includes(item))
         this.rowsSelected.push(item);
+      },
+
+      toggleSelect(id){
+        if(!this.rowsSelected.includes(id)){
+          this.rowsSelected.push(id);
+        } else {
+          this.rowsSelected = this.rowsSelected.filter(item => item !== id);
+        }
       },
 
       selectAll(){
@@ -163,6 +186,12 @@
       listSelected(){
         const sendList = this.rowsSelected.map(row => this.list[row]);
         sendList.forEach(item => console.log(item.name));
+      },
+
+      addGearSuccess() {
+        console.log('success');
+        this.addGearOpen = false;
+        this.getData('https://inventor-system.herokuapp.com/api/gear');
       }
     },
 

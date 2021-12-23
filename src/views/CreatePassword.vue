@@ -8,11 +8,11 @@
       <router-link to="/login">Prisijungti</router-link>
     </div>
 
-    <p v-show="isUnrecognized" class="error-msg">Nuoroda neteisinga arba nebegalioja.</p>
 
-    <div v-show="!passwordCreated && !isUnrecognized">
+    <div v-show="!passwordCreated">
       <h1>Susikurti slaptažodį</h1>
-      <form class="form-container" @submit.prevent="tryLogin">
+      <form class="form-container" @submit.prevent="createPassword">
+        <p v-show="isUnrecognized" class="error-msg">{{ isUnrecognized }}</p>
 
 
         <input type="email" placeholder="Elektroninis Paštas" required class="input" v-model="email"/>
@@ -44,14 +44,14 @@
 </template>
 
 <script>
-  import HeaderGuest from "@/views/HeaderGuest";
+  import HeaderGuest from "@/components/HeaderGuest";
 
   export default {
     name: "LogIn",
     components: {HeaderGuest},
     data() {
       return {
-        isUnrecognized: false,
+        isUnrecognized: "",
         pswVisible: false,
         passwordCreated: false,
         password: '',
@@ -62,6 +62,26 @@
       togglePasswordVisibility() {
         this.pswVisible = !this.pswVisible;
       },
+
+      createPassword() {
+        this.isUnrecognized = "";
+        this.$http.post(
+            "https://inventor-system.herokuapp.com/api/change-password",
+            {email: this.email, token: "token", password: this.password }
+        ).then(() => {
+          this.passwordCreated = true;
+        }).catch(error =>{
+          if(error.response.status === 422){
+            this.isUnrecognized = "Elektroninio pašto adresas neteisingas arba nuoroda nebegaliojanti.";
+            // if( error.response.data.message === "Email does not exist."){
+            //   this.isUnrecognized = "Vartotojas su šiuo elekroninio pašto adresu nerastas.";
+            // } else {
+            //   this.isUnrecognized = "Ši nuoroda neteisinga arba nebegaliojanti.";
+            // }
+          }
+        })
+      },
+
     },
     computed: {
       pswInputType() {
@@ -142,7 +162,7 @@
   }
 
   .form-container button {
-    align-self: end;
+    align-self: flex-end;
   }
 
   .error-msg {
