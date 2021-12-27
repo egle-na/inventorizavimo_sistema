@@ -122,13 +122,8 @@
         writeOffCardOpen: false,
         returnCardOpen: false,
         actionType:'',
-        item: {
-          name: '',
-          status: '',
-          owner: '',
-          price: '',
-        },
         ownersName: '',
+        status
       }
     },
     created() {

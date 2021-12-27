@@ -16,12 +16,21 @@
     margin-bottom: 2em;
   }
 
-  input {
+  input:not([type='checkbox'], .input-long) {
     width: 45%;
   }
 
-  input:first-child:not(.input-long, [type='radio']) {
+  label {
+    display: block;
+    width: 100%;
+  }
+
+  input:first-child:not(.input-long, [type='radio'], [type='checkbox']) {
     margin-right: 10%;
+  }
+
+  label input {
+    margin-right: 1em;
   }
 
   .input-long {

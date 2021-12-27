@@ -54,7 +54,7 @@
     align-self: center;
   }
 
-  @media (max-width: 1000px) {
+  @media (max-width: 700px) {
 
     .grid {
       grid-template: min-content auto / auto;

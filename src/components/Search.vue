@@ -1,7 +1,7 @@
 <template>
   <div class="search-container">
-    <input type="text" placeholder="Paieška" v-model="search">
-    <button @click="search = ''" v-show="search" id="clear-btn">&times;</button>
+    <input type="text" placeholder="Paieška" v-model="search" @keyup="inputChanged">
+    <button @click="clearSearch" v-show="search" id="clear-btn">&times;</button>
   </div>
 </template>
 <script>
@@ -10,8 +10,21 @@
     data() {
       return {
         search: '',
+        timeout:'',
       }
     },
+    methods: {
+      inputChanged(event) {
+        clearTimeout(this.timeout)
+        this.timeout = setTimeout(() => {
+          this.$emit('setSearch', event.target.value)
+        }, 500)
+      },
+      clearSearch(){
+        this.search = '';
+        this.$emit('setSearch', '')
+      }
+    }
   }
 </script>
 <style scoped>

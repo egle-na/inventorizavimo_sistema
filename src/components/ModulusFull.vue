@@ -63,6 +63,7 @@
     padding: 0;
     border: none;
     font-size: 2rem;
+    margin-bottom: .8em;
   }
 
   p {

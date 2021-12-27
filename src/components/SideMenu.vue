@@ -66,7 +66,8 @@
     height: 100%;
     max-height: 100%;
     margin: 0;
-    padding-left: 2em;
+    padding-left: 1.5em;
+    padding-right: .5em;
   }
 
   .side-nav li{
