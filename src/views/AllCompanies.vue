@@ -20,9 +20,9 @@
         <th></th>
       </tr>
       <tr v-for="item in list" :key="item.id">
-        <td class="no-padding"><router-link :to="{name: item.id}">{{ item.name }}</router-link></td>
-        <td class="no-padding"><router-link to="/">{{ item.user_count }}</router-link></td>
-        <td class="no-padding"><router-link to="/">{{ item.id }}</router-link></td>
+        <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.name }}</router-link></td>
+        <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.user_count }}</router-link></td>
+        <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.id }}</router-link></td>
         <td class="actions-cell">
           <table-actions>
             <btn-edit @btnClicked="openEditCompanyCard(item.id, item.name)" />
@@ -164,15 +164,15 @@
       },
 
       openAddUserCard(id){
-        this.addUserOpen = true;
         // this.editCompanyId = id;
         this.newUser.company_id = id;
+        this.addUserOpen = true;
       },
 
       openDeleteCompanyCard(id, name){
         this.editCompanyId = id;
-        this.deleteCompanyOpen = true;
         this.newCompanyName = name;
+        this.deleteCompanyOpen = true;
       },
 
       createCompany() {
@@ -255,7 +255,6 @@
         }
       },
 
-
       closeCard(){
         this.addCompanyOpen = false;
         this.editCompanyOpen = false;
@@ -293,6 +292,7 @@
     line-height: 1;
     transform: translateY(50%);
   }
+
   .add-btn path{
     stroke: var(--clr-darker-grey);
     transition: stroke 200ms;
@@ -317,6 +317,7 @@
     background: var(--clr-white);
     color: var(--clr-dark-grey);
   }
+
   th:first-child,
   td:first-child {
     padding-left: 1em ;

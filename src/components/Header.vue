@@ -3,7 +3,7 @@
   <header>
     <img src="../assets/teltonika_logo.png" alt="" class="teltonika-logo">
     <nav>
-      <router-link to="/user-inventory" >Mano Inventorius</router-link>
+      <router-link :to="{name: 'user-inventory', params:{}}">Mano Inventorius</router-link>
 <!--      <router-link to="/add-inventory" >Pridėti įrangą</router-link>-->
       <router-link to="/notifications" >Pranešimai</router-link>
       <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
@@ -39,7 +39,7 @@
   import UserCard from "@/components/UserCard";
   import DataMixin from "@/components/mixins/DataMixin";
 
-  import jwt_decode from "jwt-decode";
+  // import jwt_decode from "jwt-decode";
 
   export default {
     name: "Header",
@@ -61,8 +61,8 @@
       // console.log('header created')
 
       // create user mixin (header and UserCard)
-      const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
-      this.$store.commit('setUser', {id, first_name, last_name, email, isAdmin: !!role })
+      // const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
+      // this.$store.commit('setUser', {id, first_name, last_name, email, isAdmin: !!role })
       // console.log(this.user);
 
     },

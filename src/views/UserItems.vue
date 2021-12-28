@@ -3,6 +3,7 @@
   <Header />
 
   <main>
+    <!-- Title container -->
     <div class="title-container">
       <h1>Mano Inventorius</h1>
       <button class="add-btn" @click="addGearOpen = true">
@@ -25,6 +26,7 @@
       </div> <!-- /filter container-->
     </div> <!-- /title container-->
 
+    <!-- Table -->
     <table-component>
       <tr class="head-row">
         <th>
@@ -38,29 +40,33 @@
         <th>Statusas</th>
         <th>Veiksmai</th>
       </tr>
-      <tr v-for="(item, index) in list"
-          :key="item.gear[0].id"
-          :class="{'row-selected-simple': rowsSelected.includes(index)}"
-          >
-        <td>
-          <input type="checkbox"
-                 :checked="rowsSelected.includes(index)"
-                 @click="toggleSelect(index)"
-                 :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
-        </td>
-        <td @click="selectRow(index, $event)">{{ item.name }}</td>
-        <td @click="selectRow(index, $event)">{{ item.gear[0].updated_at.split('T')[0] }}</td>
-        <td @click="selectRow(index, $event)">{{ statusText(item.gear.lent) }}</td>
-        <td class="actions-cell">
-          <table-actions :id="item.gear[0].id" /> <!-- item.id -->
-        </td>
-      </tr>
+      <tbody v-for="(item, index) in list" :key="index">
+        <tr v-for="gear in item.gear" :key="gear.id"
+            :class="{'row-selected-simple': rowsSelected.includes(index)}"
+        >
+          <td>
+            <input type="checkbox"
+                   :checked="rowsSelected.includes(index)"
+                   @click="toggleSelect(index)"
+                   :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
+          </td>
+          <td @click="selectRow(index, $event)" class="no-padding">
+            <router-link :to="'/inventory/'+ gear.id">{{ item.name }}</router-link>
+          </td>
+          <td @click="selectRow(index, $event)">{{ gear.updated_at.split('T')[0] }}</td>
+          <td @click="selectRow(index, $event)">{{ statusText(gear.lent) }}</td>
+          <td class="actions-cell">
+            <table-actions :id="gear.id" /> <!-- item.id -->
+          </td>
+        </tr>
+      </tbody>
     </table-component>
 
   </main>
 
+  <!-- Add item card -->
   <modulus-full v-if="addGearOpen" @close="addGearOpen = false">
-    <add-item @success="addGearSuccess"/>
+    <add-item :user="user_id" @success="addGearSuccess"/>
   </modulus-full>
 
 </div>
@@ -85,10 +91,12 @@
     },
     data() {
       return {
+        url: 'https://inventor-system.herokuapp.com/api/gear',
         addGearOpen: false,
         filter: 'all',
         rowsSelected: [],
         lastSelected: '',
+        user_id: this.$store.getters.user.id,
         // list: [
         //   {name: 'a Dell 24 Monitor-S2421H', variable: 'alive'},
         //   {name: 'b Dell 24 Monitor-S2421H', variable: 'alive'},
@@ -109,8 +117,12 @@
       }
     },
     created() {
-      console.log("mano inventorius: ")
-      this.getData('https://inventor-system.herokuapp.com/api/gear');
+      if(this.$route.params.user_id){
+        this.user_id = this.$route.params.user_id;
+        this.getData(this.url +'/user/' + this.user_id);
+      } else {
+        this.getData(this.url);
+      }
     },
     methods: {
       statusText(lent){
@@ -157,8 +169,6 @@
             this.lastSelected = id;
           }
           this.lastSelected = "";
-
-
         }
       },
 
@@ -191,7 +201,11 @@
       addGearSuccess() {
         console.log('success');
         this.addGearOpen = false;
-        this.getData('https://inventor-system.herokuapp.com/api/gear');
+        if(this.$route.params.user_id){
+          this.getData(this.url + '/user/' + this.user_id);
+        } else {
+          this.getData(this.url);
+        }
       }
     },
 

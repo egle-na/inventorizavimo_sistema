@@ -20,7 +20,7 @@
       </div>
 
       <h3>Pranešimų istorija</h3>
-      <div v-for="item in 17" :key="item" class="message">
+      <div v-for="item in 2" :key="item" class="message">
         <p>Jonas Jonauskas jums paskolino <strong>Dell 17 Monitor | E1715S</strong>.</p>
         <p class="date">2021-12-14</p>
       </div>
@@ -28,6 +28,8 @@
       <div v-if="false">
         <p>Pranešimų dar neturite.</p>
       </div>
+
+      <div>{{ list }}</div>
 
     </main>
   </div>

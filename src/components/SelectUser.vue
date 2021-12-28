@@ -1,28 +1,31 @@
 <template>
-  <ModulusFull :type="type" @close="closeCard">
+  <ModulusFull @close="closeCard">
     <h3>{{ type }}</h3>
-    <p>Pasirinkite darbuotoją</p>
+    <p>Pasirinkite darbuotoją:</p>
 
-    <div class="search-container">
-      <input type="text" placeholder="Vardas Pavardė"
-             @focus="searchActive = true"
-             :value="searchName"
-             @blur="closeSearchList"
-             @input="doSearch"
-             required>
-      <!--        <button>&times;</button>-->
+<!--    &lt;!&ndash; Search container &ndash;&gt;-->
+<!--    <div class="search-container">-->
+<!--      <input type="text" placeholder="Vardas Pavardė"-->
+<!--             @focus="searchActive = true"-->
+<!--             :value="searchName"-->
+<!--             @blur="closeSearchList"-->
+<!--             @input="doSearch"-->
+<!--             required>-->
+<!--      &lt;!&ndash;        <button>&times;</button>&ndash;&gt;-->
 
-      <ul v-show="searchActive" class="list">
-        <li v-if="false" class="no-hover">Toks darbuotojas nerastas</li>
-        <li v-else v-for="item in 10"
-            :key="item"
-            @click="searchName = item"
-            v-text="item">Vardenis Pavardenis</li> <!-- @click="select(id)" -->
-      </ul>
-    </div>
+<!--      <ul v-show="searchActive" class="list">-->
+<!--        <li v-if="false" class="no-hover">Toks darbuotojas nerastas</li>-->
+<!--        <li v-else v-for="item in list"-->
+<!--            :key="item.id"-->
+<!--            @click="searchName = userName(item)"-->
+<!--            v-text="userName(item)">Vardenis Pavardenis</li> &lt;!&ndash; @click="select(id)" &ndash;&gt;-->
+<!--      </ul>-->
+<!--    </div>&lt;!&ndash; /search container &ndash;&gt;-->
+
+    <slot></slot>
 
     <div class="btn-container">
-      <button class="btn">{{ type }}</button>
+      <button class="btn" @click="$emit('submitAction', type)">{{ type }}</button>
     </div>
   </ModulusFull>
 </template>
@@ -33,7 +36,7 @@
   export default {
     name: "SelectUser",
     components: {ModulusFull},
-    props: [ 'type' ],
+    props: [ 'type', 'list' ],
     data() {
       return {
         searchActive: false,
@@ -41,6 +44,11 @@
       }
     },
     methods: {
+
+      userName(user){
+        return user.first_name + ' ' + user.last_name
+      },
+
       doSearch(event) {
         this.searchName = event.target.value;
 
@@ -70,10 +78,11 @@
     color: var(--clr-dark-grey);
   }
 
-  input {
+  input{
     width: 100%;
     border-left: none;
   }
+
 
   .list li {
     padding: .6em 1.5em;

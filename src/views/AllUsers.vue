@@ -11,8 +11,8 @@
         </svg>
       </button>
 
-      <select class="company-filter" v-model="companyFilter">
-        <option selected hidden value="" class="placeholder">Įmonės pavadinimas</option> <!-- Visos įmonės-->
+      <select class="company-filter" v-model="params.company" @change="getDataQuery(url, params)">
+        <option selected value="" class="placeholder">Visi darbuotojai</option> <!-- Visos įmonės-->
         <option v-for="item in additionalList" :key="item.id" :value="item.id">{{ item.name }}</option>
       </select>
 
@@ -28,9 +28,9 @@
         <th></th>
       </tr>
       <tr v-for="item in list" :key="item.id">
-        <td>{{ item.first_name }} {{ item.last_name }}</td>
+        <td class="no-padding"><router-link :to="{name: 'user-inventory', params: {user_id: item.id}}">{{ item.first_name }} {{ item.last_name }}</router-link></td>
         <td>{{ item.email }}</td>
-        <td>5</td>
+        <td>{{ item.gear_count }}</td>
         <td class="actions-cell">
           <!-- prideti suteikti admino teises-->
           <table-actions>
@@ -107,6 +107,10 @@
       </div>
     </form-item>
   </modulus-full>
+
+  <modulus-full v-if="addGearOpen" @close="closeCard">
+    <add-item :user="selectedUser.id" @success="addGearSuccess"/>
+  </modulus-full>
 </div>
 </template>
 
@@ -122,6 +126,7 @@
   import BtnDelete from "@/components/BtnDelete";
   import BtnAddInventory from "@/components/BtnAddInventory";
   import BtnEdit from "@/components/BtnEdit";
+  import AddItem from "@/components/AddItem";
   // import BtnView from "@/components/BtnView";
 
   export default {
@@ -129,12 +134,12 @@
     mixins: [ DataMixin ],
     data(){
       return {
-        url: "https://inventor-system.herokuapp.com/api/users",
-        // search: '',
-        companyFilter: '',
+        url: "https://inventor-system.herokuapp.com/api/users/all",
+        // companyFilter: '',
         addUserCardOpen: false,
         editUserCardOpen: false,
         addUserError: false,
+        addGearOpen: false,
         selectedUser: { },
         newUser: {
           first_name: '',
@@ -143,9 +148,14 @@
           company_id: '',
           role: 0,
         },
+        params: {
+          search: '',
+          company: '',
+        }
       }
     },
     components: {
+      AddItem,
       // BtnView,
       BtnEdit,
       BtnAddInventory,
@@ -159,11 +169,13 @@
       AdminDesk
     },
     created() {
+      if( this.$route.params.company_id ){
+        this.params.company = this.$route.params.company_id;
+      }
       this.getData(this.url);
       this.getAdditionalData("https://inventor-system.herokuapp.com/api/companies")
     },
     methods: {
-
       createUser() {
         this.postData(
             this.url,
@@ -188,7 +200,8 @@
 
       editUser({id, first_name, last_name, email, changeRole}) {
         let params = {};
-        let oldUser = this.list.find(item => item.id = id);
+        let oldUser = this.list.filter(item => item.id = id)[0];
+        console.log('old: ',oldUser);
 
         if( oldUser.first_name !== first_name ){
           params.first_name = first_name;
@@ -217,21 +230,36 @@
       },
 
       addGearToUser(id){
+        this.selectedUser.id = id;
+        this.addGearOpen = true;
         console.log('add inventory to: ', id);
+      },
+
+      addGearSuccess() {
+        this.selectedUser = {};
+        this.addGearOpen = false;
+        this.getDataQuery(this.url, this.params);
       },
 
       openEditUser(id){
         console.log('edit: ', id);
+        this.selectedUser = {...this.list.find(item => item.id === id)};
         this.editUserCardOpen = true;
-        this.selectedUser = {...this.list.find(item => item.id = id)};
       },
 
       openDeleteUser(id){
         console.log('delete: ', id);
       },
 
+      setSearch(val) {
+        this.params.search = val
+        this.getDataQuery(this.url, this.params);
+      },
+
       closeCard() {
         this.addUserCardOpen = false;
+        this.editUserCardOpen = false;
+        this.addGearOpen = false;
         this.selectedUser = {};
         this.newUser = {
           first_name: '',
@@ -240,7 +268,6 @@
           company_id: '',
           role: 0,
         };
-        this.editUserCardOpen = false;
       }
     },
   }
@@ -262,6 +289,7 @@
     line-height: 1;
     transform: translateY(50%);
   }
+
   .add-btn path{
     stroke: var(--clr-darker-grey);
     transition: stroke 200ms;

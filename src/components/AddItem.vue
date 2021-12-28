@@ -4,13 +4,13 @@
 
     <form-item @onSubmit="addNewGear">
       <input type="text" placeholder="Pavadinimas" required class="input-long" v-model="newGear.name" >
-      <textarea placeholder="Aprašymas" class="input-long" /><!-- nepriskirta -->
+      <textarea placeholder="Aprašymas" class="input-long" v-model="newGear.description" required /><!-- nepriskirta -->
       <div>
-        <input type="text" placeholder="Kodas" required v-model="newGear.code"><!-- nepriskirta -->
-        <input type="text" placeholder="Serijos Numeris" v-model="newGear.serial_number" >
+        <input type="text" placeholder="Kodas" required v-model="newGear.code">
+        <input type="text" placeholder="Serijos Numeris" v-model="newGear.serial_number" required >
       </div>
       <div class="relative-container">
-        <input type="text" placeholder="Kiekis" required ><!-- nepriskirta -->
+        <input type="text" placeholder="Kiekis" required v-model="newGear.amount" ><!-- nepriskirta -->
         <input type="number" step=".01" placeholder="Vieneto Kaina" id="unit-price" required v-model="newGear.unit_price">
         <label for="unit-price" id="euro-sign">€</label>
       </div>
@@ -43,6 +43,7 @@
   export default {
     name: "AddItem",
     mixins: [ DataMixin ],
+    props: [ 'user' ],
     components: {
       FormItem,
       // Header,
@@ -53,13 +54,14 @@
         list:[],
         longTerm: "LongTerm",
         newGear: {
+          description:'',
           name: '',
           code:'',
           serial_number: '',
-          quantity: '',
+          amount: '',
           unit_price: '',
           // long_term: this.isLongTerm,
-          user_id: this.$store.getters.user.id,
+          user_id: this.user,
         },
       }
     },
@@ -115,6 +117,7 @@
     bottom: 60%;
     right: .5em;
     color: grey;
+    width: fit-content;
   }
 
   .btn-container {

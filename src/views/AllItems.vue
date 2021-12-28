@@ -29,8 +29,8 @@
         <tr class="main-trow" :class="{'row-selected': rowExpanded === item}">
           <td class="cell-min"></td>
           <td>{{ item.name }}</td>
-          <td>{{ item.serial_number }}</td>
-          <td>3</td>
+          <td>{{ item.code }}</td>
+          <td>{{ item.count }}</td>
           <td class="cell-min">
             <button @click="expandRow(item)">
               <img src="../assets/icons/ArrowDown.svg" alt="">
@@ -45,16 +45,19 @@
                 <th class="cell-min"></th>
                 <th>Serijos Numeris</th>
                 <th>Savininkas</th>
-                <th>Turėtojas</th>
+                <th>Statusas</th>
                 <th></th>
               </tr>
-              <tr class="expanded-trow">
+              <tr v-for="gear in item.gear" :key="gear.id" class="expanded-trow">
                 <td class="cell-min">1</td>
-                <td>KD-55XG9505-1245123</td>
-                <td>Jonas Jonaitis</td>
-                <td>Petras Petraitis</td>
+                <td>{{ gear.serial_number }}</td>
+                <td>{{ ownersName(gear.user_id) }}</td>
+                <td v-if="gear.long_term">Ilgalaikis</td>
+                <td v-else>Trumpalaikis</td>
                 <td class="actions-cell">
-                  <table-actions/>
+                  <table-actions>
+                    <btn-delete/>
+                  </table-actions>
                 </td>
               </tr>
             </table>
@@ -66,7 +69,7 @@
   </admin-desk>
 
   <modulus-full v-if="addGearOpen" @close="addGearOpen = false">
-    <add-item @success="addGearSuccess"/>
+    <add-item :user="$store.getters.user.id" @success="addGearSuccess"/>
 <!--      <h2>Pridėti Įrangą</h2>-->
 
 <!--      <form-item @onSubmit="addNewGear">-->
@@ -112,10 +115,12 @@
   import ModulusFull from "@/components/ModulusFull";
   // import FormItem from "@/components/FormItem";
   import AddItem from "@/components/AddItem";
+  import BtnDelete from "@/components/BtnDelete";
   export default {
     name: "AllItems",
     mixins: [ DataMixin ],
     components: {
+      BtnDelete,
       AddItem,
       // FormItem,
       ModulusFull,
@@ -126,8 +131,8 @@
     },
     data() {
       return {
-        main_get_url: 'https://inventor-system.herokuapp.com/api/gear/all',
-        addit_get_url: 'https://inventor-system.herokuapp.com/api/companies',
+        url: 'https://inventor-system.herokuapp.com/api/gear/all',
+        addit_get_url: 'https://inventor-system.herokuapp.com/api/users/all',
         companyFilter: '',
         rowExpanded: '',
         addGearOpen: false,
@@ -143,8 +148,8 @@
       }
     },
     created() {
-      this.getData(this.main_get_url);
       this.getAdditionalData(this.addit_get_url);
+      this.getData(this.url);
     },
     methods: {
       expandRow(item) {
@@ -163,12 +168,18 @@
       // },
       addGearSuccess() {
         this.addGearOpen = false;
-        this.getData('https://inventor-system.herokuapp.com/api/gear/all');
+        this.getData(this.url);
+      },
+
+      ownersName(id){
+        let {first_name, last_name} = this.additionalList.find(user => user.id === id);
+        return `${first_name} ${last_name}`
       },
       // addGearError() {
       //
       // }
     },
+
   }
 </script>
 

@@ -17,6 +17,7 @@ import guest from "@/router/middleware/guest";
 import auth from "@/router/middleware/auth";
 import admin from "@/router/middleware/admin";
 import CreatePassword from "@/views/CreatePassword";
+import jwt_decode from "jwt-decode";
 
 Vue.use(VueRouter);
 
@@ -66,7 +67,12 @@ const router = new VueRouter({
                 middleware: [
                     auth
                 ]
-            }
+            },
+            children: [
+                {
+                   path: ":user_id",
+                }
+            ]
         },
         // {
         //     path: '/add-user',
@@ -140,7 +146,23 @@ const router = new VueRouter({
         },
     ]
 })
+
+// function refreshUsersToken(){
+//     this.$http.post('https://inventor-system.herokuapp.com/api/auth/refresh', {}, this.config)
+//         .then(response => {
+//             localStorage.setItem("access_token", response.data.access_token);
+//             this.config.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
+//             // const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
+//             // this.user = {id, first_name, last_name, email, isAdmin: !!role }
+//         }).catch(error => {
+//         console.error(error);
+//     })
+// }
+
 router.beforeEach((to, from, next) => {
+    const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
+    store.commit('setUser', {id, first_name, last_name, email, isAdmin: !!role });
+    // refreshUsersToken();
     if (!to.meta.middleware) {
         return next();
     }

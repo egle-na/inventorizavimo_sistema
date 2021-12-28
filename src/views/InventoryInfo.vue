@@ -3,35 +3,41 @@
    <Header />
 
    <main>
+     <!-- Title container -->
      <div class="title-container">
-       <h1>{{ list.name }} <span>Paskolintas</span></h1>
+       <h1>{{ list.name }} <span>{{ statusText }}</span></h1>
 
        <div class="actions">
          <button @click="actionCardOpen = !actionCardOpen">
            <img src="../assets/icons/action-dots.svg" alt="">
          </button>
+         <!-- Action Card -->
          <action-card v-show="actionCardOpen" @close="actionCardOpen = false">
            <button class="action-btn"
                    @click="openSelect('Skolinti')"
+                   v-if="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
            >Skolinti</button>
            <button class="action-btn"
+                   v-show="statusText === 'Savininkas' || this.$store.getters.isAdmin === true"
                    @click="openSelect('Perleisti')"
            >Perleisti</button>
-           <button class="action-btn" @click="returnCardOpen = true">Grąžinti</button>
+           <button class="action-btn"
+                   v-show="statusText === 'Pasiskolinta'"
+                   @click="returnCardOpen = true"
+           >Grąžinti</button>
            <button class="action-btn" @click="generatePDF">Generuoti PDF</button>
            <button class="action-btn" @click="writeOffCardOpen = true">Nurašyti</button>
          </action-card>
        </div>
-     </div>
+     </div><!-- /Title container -->
+
+     <!-- Main -->
      <div class="main-content">
 
+       <!-- Info container -->
        <div class="specs">
          <h3>Aprašymas</h3>
-         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-           tempor incididunt ut labore et dolore magna aliqua. Et ultrices neque
-           ornare aenean euismod elementum. Aliquam purus sit amet luctus. Pellentesque
-           massa placerat duis ultricies lacus sed. Feugiat in fermentum posuere
-           urna nec tincidunt. Tellus in hac habitasse platea.</p>
+         <p>{{ list.description }}</p>
          <div>
            <h3>Savininkas</h3>
            <p >{{ ownersName }}</p>
@@ -50,19 +56,26 @@
          </div>
 
          <div class="btn-container">
-           <button class="btn" @click="returnCardOpen = true">Grąžinti</button>
-           <button class="btn" @click="openSelect('Skolinti')">Skolinti</button>
-           <button class="btn" @click="openSelect('Perleisti')">Perleisti</button>
+           <button class="btn"
+                   v-show="statusText === 'Pasiskolinta'"
+                   @click="returnCardOpen = true">Grąžinti</button>
+           <button class="btn"
+                   v-show="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
+                   @click="openSelect('Skolinti')">Skolinti</button>
+           <button class="btn"
+                   v-show="statusText === 'Savininkas' || this.$store.getters.isAdmin === true"
+                   @click="openSelect('Perleisti')">Perleisti</button>
          </div>
-       </div>
+       </div><!-- /info container -->
 
+       <!-- History container -->
        <div class="history">
          <div class="history-title">
            <h3>Istorija</h3>
          </div>
          <table-component>
            <tr v-for="item in 19" :key="item">
-             <td>
+             <td class="no-padding">
                <img v-if="true" src="../assets/icons/lend.svg" alt="">
                <img v-else-if="true" src="../assets/icons/return.svg" alt="">
                <img v-else src="../assets/icons/transfer.svg" alt="">
@@ -73,21 +86,30 @@
              <td>2021-12-14</td>
            </tr>
          </table-component>
+       </div><!-- /history container -->
 
-       </div>
-     </div>
-
+     </div><!-- /main container -->
    </main>
 
+   <!-- Skolinti/Perleisti action -->
    <select-user v-show="selectUserOpen"
                 @close="selectUserOpen = false"
-                :type="actionType" />
+                :type="actionType" >
+<!--                @submitAction=""-->
+     <select class="user-select" v-model="selectedUser">
+       <option selected hidden></option>
+       <option v-for="user in additionalList" :key=" user.id"
+               :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>
+     </select>
+   </select-user>
 
+   <!-- Nurasyti action -->
    <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false">
      <p>Ar tikrai norite nurašyti <strong>This Item</strong>?</p>
      <button class="btn" @click="writeOffItem">Taip</button>
    </modulus-full>
 
+   <!-- Grazinti action -->
    <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false">
      <p>Ar esate pasiruošę grąžinti <strong>This Item</strong>?</p>
      <button class="btn" @click="returnItem">Taip</button>
@@ -114,24 +136,36 @@
       ActionCard,
       Header,
     },
-    // props: [ 'userId' ],
     data() {
       return {
+        url: 'https://inventor-system.herokuapp.com/api/gear/',
         actionCardOpen: false,
         selectUserOpen: false,
         writeOffCardOpen: false,
         returnCardOpen: false,
         actionType:'',
         ownersName: '',
-        status
+        selectedUser: '',
+        // status
+        history: {},
+        users_url: 'https://inventor-system.herokuapp.com/api/users',
       }
     },
     created() {
-      this.getData('https://inventor-system.herokuapp.com/api/gear/' + this.$route.params.inventory_id)
+      if(this.$store.getters.isAdmin === true){
+        this.url = 'https://inventor-system.herokuapp.com/api/gear/all/'
+        this.users_url = 'https://inventor-system.herokuapp.com/api/users/all'
+      }
+      this.getData(this.url + this.$route.params.inventory_id);
+      this.getAdditionalData(this.users_url)
+      this.getHistory();
     },
     watch: {
       list: function () {
-        if(this.list.user_id && !this.ownersName){
+        if(this.list.user_id === this.$store.getters.user.id) {
+          this.ownersName = `${this.$store.getters.user.first_name} ${this.$store.getters.user.last_name}`
+        }
+        if (this.list.user_id && !this.ownersName) {
           this.$http.get('https://inventor-system.herokuapp.com/api/users/' + this.list.user_id, this.config)
               .then(response => this.ownersName = `${response.data.first_name} ${response.data.last_name}`)
               .catch(error => error.response.message)
@@ -139,24 +173,47 @@
       }
     },
     methods: {
+      getHistory() {
+        this.$http.get('https://inventor-system.herokuapp.com/api/gearHistory/' + this.$route.params.inventory_id, this.config)
+          .then(response => console.log('history:',response.data))
+          .catch(err => console.error(err))
+      },
+
       openSelect(action) {
         this.actionType = action;
         this.selectUserOpen = true;
         this.actionCardOpen = false;
       },
+
       returnItem() {
         console.log('return');
         // if everything is ok:
         this.returnCardOpen = false;
       },
+
       generatePDF() {
         console.log('PDF sugeneruotas');
         this.actionCardOpen = false;
       },
+
       writeOffItem() {
         console.log('nurašytas');
         // if everything is ok:
         this.writeOffCardOpen = false;
+      },
+
+    },
+
+    computed: {
+      statusText(){
+        if(this.$store.getters.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
+          return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
+        } else if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
+          if(this.list.lent){ // jei paskolinta
+            return 'Paskolintas';
+          } else return 'Savininkas'; // nepaskolinta
+        } else return "Pasiskolinta"
+        // else '';
       }
     }
   }
@@ -268,6 +325,17 @@
 
   tr:first-child:hover {
     background-color: var(--clr-almost-white);
+  }
+
+  .no-padding img {
+    max-width: initial;
+    padding-left:.4em; /* gal abi puses? */
+  }
+
+  .user-select {
+    width: 100%;
+    margin-bottom: 1em;
+    border-left: none;
   }
 
 </style>
