@@ -57,17 +57,17 @@
         })
       },
 
-      // refreshUsersToken(){
-      //   this.$http.post('https://inventor-system.herokuapp.com/api/auth/refresh', {}, this.config)
-      //     .then(response => {
-      //       localStorage.setItem("access_token", response.data.access_token);
-      //       this.config.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
-      //       // const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
-      //       // this.user = {id, first_name, last_name, email, isAdmin: !!role }
-      //     }).catch(error => {
-      //       console.error(error);
-      //   })
-      // },
+      refreshUsersToken(){
+        this.$http.post('https://inventor-system.herokuapp.com/api/auth/refresh', {}, this.config)
+          .then(response => {
+            localStorage.setItem("access_token", response.data.access_token);
+            this.config.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
+            // const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
+            // this.user = {id, first_name, last_name, email, isAdmin: !!role }
+          }).catch(error => {
+            console.error(error);
+        })
+      },
 
       postData(url, data, successFn, failFn) {
         this.$http.post( url, data, this.config)

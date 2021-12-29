@@ -92,15 +92,19 @@
    </main>
 
    <!-- Skolinti/Perleisti action -->
-   <select-user v-show="selectUserOpen"
+   <select-user v-if="selectUserOpen"
                 @close="selectUserOpen = false"
-                :type="actionType" >
-<!--                @submitAction=""-->
-     <select class="user-select" v-model="selectedUser">
-       <option selected hidden></option>
-       <option v-for="user in additionalList" :key=" user.id"
-               :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>
-     </select>
+                @submitAction="gearAction"
+                :list="additionalList"
+                :type="actionType"
+                :gear_owner="list.user_id"
+                :errorMsg="errorMsg"
+   >
+<!--     <select class="user-select" v-model="selectedUser">-->
+<!--       <option selected hidden>Pasirinkite darbuotoją:</option>-->
+<!--       <option v-for="user in additionalList" :key=" user.id"-->
+<!--               :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>-->
+<!--     </select>-->
    </select-user>
 
    <!-- Nurasyti action -->
@@ -139,6 +143,7 @@
     data() {
       return {
         url: 'https://inventor-system.herokuapp.com/api/gear/',
+        users_url: 'https://inventor-system.herokuapp.com/api/users',
         actionCardOpen: false,
         selectUserOpen: false,
         writeOffCardOpen: false,
@@ -146,9 +151,9 @@
         actionType:'',
         ownersName: '',
         selectedUser: '',
+        errorMsg: '',
         // status
         history: {},
-        users_url: 'https://inventor-system.herokuapp.com/api/users',
       }
     },
     created() {
@@ -168,10 +173,24 @@
         if (this.list.user_id && !this.ownersName) {
           this.$http.get('https://inventor-system.herokuapp.com/api/users/' + this.list.user_id, this.config)
               .then(response => this.ownersName = `${response.data.first_name} ${response.data.last_name}`)
-              .catch(error => error.response.message)
+              .catch(error => error.response.data.message)
         }
       }
     },
+
+    computed: {
+      statusText(){
+        if(this.$store.getters.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
+          return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
+        } else if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
+          if(this.list.lent){ // jei paskolinta
+            return 'Paskolintas';
+          } else return 'Savininkas'; // nepaskolinta
+        } else return "Pasiskolinta"
+        // else '';
+      }
+    },
+
     methods: {
       getHistory() {
         this.$http.get('https://inventor-system.herokuapp.com/api/gearHistory/' + this.$route.params.inventory_id, this.config)
@@ -202,20 +221,43 @@
         this.writeOffCardOpen = false;
       },
 
-    },
+      gearAction(user_id){
+        let url = '';
+        // if(user_id === this.$store.getters.user.id){
+        //   this.errorMsg = `Inventoriaus sau ${this.actionType.toLowerCase()} negalima.`
+        // }
 
-    computed: {
-      statusText(){
-        if(this.$store.getters.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
-          return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
-        } else if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
-          if(this.list.lent){ // jei paskolinta
-            return 'Paskolintas';
-          } else return 'Savininkas'; // nepaskolinta
-        } else return "Pasiskolinta"
-        // else '';
+        if(this.actionType === 'Skolinti'){
+          url = 'https://inventor-system.herokuapp.com/api/requests/lend/'
+        } else if(this.actionType === 'Perleisti'){
+          url = 'https://inventor-system.herokuapp.com/api/requests/giveaway/';
+        }
+
+        this.postData(
+            url + this.$route.params.inventory_id,
+            { user_id },
+            () => {
+              this.actionType = '';
+              this.selectUserOpen = false;
+              this.errorMsg = '';
+              // show a message that request is pending, change status(get new data)?
+            },
+            (err) => {
+              switch (err.response.data.message) {
+                case "Gear already has a request":
+                  this.errorMsg = "Inventorius turi neatsakytą užklausą";
+                  break;
+                // case "":
+                default:
+                  this.errorMsg = err.response.data.message;
+              }
+              // this.errorMsg = err.response.data.message;
+              // console.log(err.response);
+            }
+        )
       }
-    }
+
+    },
   }
 </script>
 
@@ -332,10 +374,5 @@
     padding-left:.4em; /* gal abi puses? */
   }
 
-  .user-select {
-    width: 100%;
-    margin-bottom: 1em;
-    border-left: none;
-  }
 
 </style>

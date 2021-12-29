@@ -160,8 +160,10 @@ const router = new VueRouter({
 // }
 
 router.beforeEach((to, from, next) => {
-    const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
-    store.commit('setUser', {id, first_name, last_name, email, isAdmin: !!role });
+    if(localStorage.getItem("access_token")){
+        const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
+        store.commit('setUser', {id, first_name, last_name, email, isAdmin: !!role });
+    }
     // refreshUsersToken();
     if (!to.meta.middleware) {
         return next();

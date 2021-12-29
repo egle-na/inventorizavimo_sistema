@@ -200,7 +200,7 @@
 
       editUser({id, first_name, last_name, email, changeRole}) {
         let params = {};
-        let oldUser = this.list.filter(item => item.id = id)[0];
+        let oldUser = this.list.filter(item => item.id === id)[0];
         console.log('old: ',oldUser);
 
         if( oldUser.first_name !== first_name ){
@@ -213,19 +213,28 @@
           params.email = email;
         }
 
-        console.log(changeRole) //
+        // console.log(changeRole) //
         if( changeRole) {
           params.role = oldUser.role === 1 ? 0 :
               oldUser.role === 0 && 1;
         }
 
         if(Object.keys(params).length !== 0) {
-          console.log(params)
-          // this.$http.put(
-          //     "https://inventor-system.herokuapp.com/api/users/" + id,
-          //     params,
-          //     this.config
-          // ).then()
+          console.log('params: ',params)
+          this.$http.put(
+              "https://inventor-system.herokuapp.com/api/users/" + id,
+              params,
+              this.config
+          ).then(() => {
+            this.editUserCardOpen = false;
+            // this.errorMsg = '';
+            this.refreshUsersToken();
+            this.getData(this.url);
+          }).catch(err => {
+            if(err.response.status === 401){
+              this.$router.push('/')
+            }
+          })
         }
       },
 

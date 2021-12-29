@@ -5,7 +5,7 @@
     <nav>
       <router-link :to="{name: 'user-inventory', params:{}}">Mano Inventorius</router-link>
 <!--      <router-link to="/add-inventory" >Pridėti įrangą</router-link>-->
-      <router-link to="/notifications" >Pranešimai</router-link>
+      <router-link to="/notifications">Pranešimai</router-link>
       <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
     </nav>
 
@@ -22,8 +22,8 @@
       <action-card v-show="userDropdownOpen" @close="userDropdownOpen = false">
 
         <user-card />
-        <router-link to="user-inventory">Mano Inventorius</router-link>
-        <button>Visi pranešimai</button>
+        <router-link :to="{name: 'user-inventory', params:{}}">Mano Inventorius</router-link>
+        <router-link to="/notifications">Visi pranešimai</router-link>
         <button>Keisti slaptažodį</button>
         <button @click="logOut">Atsijungti</button>
 

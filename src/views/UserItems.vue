@@ -124,96 +124,97 @@
         this.getData(this.url);
       }
     },
-    methods: {
-      statusText(lent){
-        return lent ? "paskolintas" : "Savininkas";
-      },
-      setFilter(filter) {
-        this.filter = filter;
-        console.log(filter);
-      },
-
-      selectRow(id, event){
-        if(event.shiftKey){ // if shift key pressed
-
-          if(!this.rowsSelected.includes(id)){ // check multiple
-            if(id > this.lastSelected){ // check multiple from down to up
-              for(let i = id; i >= this.lastSelected; i--) {
-                this.addIfNotSelected(i);
-              }
-            } else { // check multiple from up to down
-              for(let i = id; i <= this.lastSelected; i++) {
-                this.addIfNotSelected(i);
-              }
-            }
-
-          } else { // uncheck multiple
-            let deselect = [];
-            if(id > this.lastSelected){ // uncheck multiple from down to up
-                console.log("uncheck multiple from down to up");
-              for(let i = id; i >= this.lastSelected; i--) {
-                deselect.push(i);
-              }
-            } else { // uncheck multiple from up to down
-                console.log("uncheck multiple from up to down");
-              for(let i = id; i <= this.lastSelected; i++) {
-                deselect.push(i);
-              }
-            }
-            this.rowsSelected = this.rowsSelected.filter(item => !deselect.includes(item));
-          }
-          this.lastSelected = id;
-        } else { // if shift key not pressed
-          if(this.rowsSelected.length) { // something is selected
-            this.toggleSelect(id);
-            this.lastSelected = id;
-          }
-          this.lastSelected = "";
-        }
-      },
-
-      addIfNotSelected(item){
-        if(!this.rowsSelected.includes(item))
-        this.rowsSelected.push(item);
-      },
-
-      toggleSelect(id){
-        if(!this.rowsSelected.includes(id)){
-          this.rowsSelected.push(id);
-        } else {
-          this.rowsSelected = this.rowsSelected.filter(item => item !== id);
-        }
-      },
-
-      selectAll(){
-        for(let i = 0; i < this.list.length; i++){
-          this.rowsSelected.push(i);
-        }
-        console.log('all')
-        this.lastSelected = '';
-      },
-
-      listSelected(){
-        const sendList = this.rowsSelected.map(row => this.list[row]);
-        sendList.forEach(item => console.log(item.name));
-      },
-
-      addGearSuccess() {
-        console.log('success');
-        this.addGearOpen = false;
-        if(this.$route.params.user_id){
-          this.getData(this.url + '/user/' + this.user_id);
-        } else {
-          this.getData(this.url);
-        }
-      }
-    },
-
-    computed:{
+    computed: {
       anySelected() {
         return this.rowsSelected.length > 0;
       },
+    },
+    methods: {
+    statusText(lent){
+      return lent ? "paskolintas" : "Savininkas";
+    },
+    setFilter(filter) {
+      this.filter = filter;
+      console.log(filter);
+    },
+
+    selectRow(id, event){
+      if(event.shiftKey){ // if shift key pressed
+
+        if(!this.rowsSelected.includes(id)){ // check multiple
+          if(id > this.lastSelected){ // check multiple from down to up
+            for(let i = id; i >= this.lastSelected; i--) {
+              this.addIfNotSelected(i);
+            }
+          } else { // check multiple from up to down
+            for(let i = id; i <= this.lastSelected; i++) {
+              this.addIfNotSelected(i);
+            }
+          }
+
+        } else { // uncheck multiple
+          let deselect = [];
+          if(id > this.lastSelected){ // uncheck multiple from down to up
+              console.log("uncheck multiple from down to up");
+            for(let i = id; i >= this.lastSelected; i--) {
+              deselect.push(i);
+            }
+          } else { // uncheck multiple from up to down
+              console.log("uncheck multiple from up to down");
+            for(let i = id; i <= this.lastSelected; i++) {
+              deselect.push(i);
+            }
+          }
+          this.rowsSelected = this.rowsSelected.filter(item => !deselect.includes(item));
+        }
+        this.lastSelected = id;
+      } else { // if shift key not pressed
+        if(this.rowsSelected.length) { // something is selected
+          this.toggleSelect(id);
+          this.lastSelected = id;
+        }
+        this.lastSelected = "";
+      }
+    },
+
+    addIfNotSelected(item){
+      if(!this.rowsSelected.includes(item))
+      this.rowsSelected.push(item);
+    },
+
+    toggleSelect(id){
+      if(!this.rowsSelected.includes(id)){
+        this.rowsSelected.push(id);
+      } else {
+        this.rowsSelected = this.rowsSelected.filter(item => item !== id);
+      }
+    },
+
+    selectAll(){
+      for(let i = 0; i < this.list.length; i++){
+        this.rowsSelected.push(i);
+      }
+      console.log('all')
+      this.lastSelected = '';
+    },
+
+    listSelected(){
+      const sendList = this.rowsSelected.map(row => this.list[row]);
+      sendList.forEach(item => console.log(item.name));
+    },
+
+    addGearSuccess() {
+      console.log('success');
+      this.addGearOpen = false;
+      if(this.$route.params.user_id){
+        this.getData(this.url + '/user/' + this.user_id);
+      } else {
+        this.getData(this.url);
+      }
     }
+  },
+
+
   }
 </script>
 

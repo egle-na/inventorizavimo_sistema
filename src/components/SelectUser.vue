@@ -24,8 +24,17 @@
 
     <slot></slot>
 
+    <select class="user-select" v-model="selectedUser">
+      <option selected hidden>Pasirinkite darbuotoją:</option>
+      <option v-for="user in userList" :key=" user.id"
+              :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>
+    </select>
+
+<!--    <input type="text" v-model="selectedUser">-->
+
     <div class="btn-container">
-      <button class="btn" @click="$emit('submitAction', type)">{{ type }}</button>
+      <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+      <button class="btn" @click="$emit('submitAction', selectedUser)">{{ type }}</button>
     </div>
   </ModulusFull>
 </template>
@@ -36,11 +45,12 @@
   export default {
     name: "SelectUser",
     components: {ModulusFull},
-    props: [ 'type', 'list' ],
+    props: [ 'type', 'list', 'errorMsg', 'gear_owner'],
     data() {
       return {
         searchActive: false,
-        searchName: '',
+        // searchName: '',
+        selectedUser: '',
       }
     },
     methods: {
@@ -61,6 +71,15 @@
       closeCard() {
         this.searchName = '';
         this.$emit('close');
+      }
+    },
+    computed: {
+      userList() {
+        if(this.type === "Skolinti" ) {
+          return this.list.filter( user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner )
+        }
+        return this.$store.getters.user.isAdmin ? this.list.filter(user => user.id !== this.gear_owner)
+            : this.list.filter( user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner )
       }
     }
   }
@@ -91,5 +110,17 @@
   .list li:not(.no-hover):hover {
     background: #0054A622;
   }
+
+  .user-select {
+    width: 100%;
+    margin-bottom: 1em;
+    border-left: none;
+  }
+
+  .error-msg {
+    margin-right: auto;
+    color: #FF6464;
+  }
+
 
 </style>
