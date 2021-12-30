@@ -2,24 +2,26 @@
   <div class="notification-card">
     <button class="close-btn" @click="$emit('close')">&times;</button>
 
-    <div v-if="false">
-      <p>Šiuo metu naujų pranešimų neturite.</p>
-    </div>
+    <slot></slot>
 
-    <div v-else >
-      <p class="date">2021-12-14</p>
-      <p>Jonas Jonauskas jums skolina <strong>Dell 17 Monitor | E1715S</strong>.</p>
+<!--    <div v-if="false">-->
+<!--      <p>Šiuo metu naujų pranešimų neturite.</p>-->
+<!--    </div>-->
 
-      <div class="btn-container">
-        <button class="btn faded">Atmesti</button>
-        <button class="btn">Priimti</button>
-      </div>
+<!--    <div v-else >-->
+<!--      <p class="date">2021-12-14</p>-->
+<!--      <p>Jonas Jonauskas jums skolina <strong>Dell 17 Monitor | E1715S</strong>.</p>-->
+
+<!--      <div class="btn-container">-->
+<!--        <button class="btn faded">Atmesti</button>-->
+<!--        <button class="btn">Priimti</button>-->
+<!--      </div>-->
 
 <!--      <div class="unread" v-if="true">-->
 <!--        <p>... Dar 3 nauji pranešimai</p>-->
 <!--      </div>-->
 
-    </div>
+<!--    </div>-->
       <router-link to="/notifications">Visi pranešimai</router-link>
 
   </div>
@@ -54,7 +56,7 @@
 
 
     font-family: var(--ff-karla);
-    letter-spacing: initial;
+    /*letter-spacing: initial;*/
   }
 
   .close-btn {
@@ -66,32 +68,32 @@
     color: var(--clr-dark-grey)
   }
 
-  .date {
-    margin: 0;
-    color: var(--clr-darker-grey)
-  }
+  /*.date {*/
+  /*  margin: 0;*/
+  /*  color: var(--clr-darker-grey)*/
+  /*}*/
 
-  .btn-container {
-    display: flex;
-    justify-content: flex-end;
-    padding-bottom: 1em;
-    border-bottom: solid 2px var(--clr-light-grey);
-    margin-bottom: 1em;
-  }
+  /*.btn-container {*/
+  /*  display: flex;*/
+  /*  justify-content: flex-end;*/
+  /*  padding-bottom: 1em;*/
+  /*  border-bottom: solid 2px var(--clr-light-grey);*/
+  /*  margin-bottom: 1em;*/
+  /*}*/
 
-  .notification-card .btn {
-    margin-left: .5em;
-    font-size: 1.6rem;
-  }
+  /*.notification-card .btn {*/
+  /*  margin-left: .5em;*/
+  /*  font-size: 1.6rem;*/
+  /*}*/
 
-  .faded {
-    border-color: var(--clr-grey);
-  }
+  /*.faded {*/
+  /*  border-color: var(--clr-grey);*/
+  /*}*/
 
-  /*.faded:focus,*/
-  .faded:hover {
-    border-color: var(--clr-accent);
-  }
+  /*!*.faded:focus,*!*/
+  /*.faded:hover {*/
+  /*  border-color: var(--clr-accent);*/
+  /*}*/
 
   /*.unread {*/
   /*  color*/

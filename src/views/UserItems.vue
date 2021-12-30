@@ -5,7 +5,11 @@
   <main>
     <!-- Title container -->
     <div class="title-container">
-      <h1>Mano Inventorius</h1>
+      <h1 v-if="!this.$route.params.user_id">Mano Inventorius</h1>
+      <div v-else>
+        <p class="title-name">{{ additionalList.first_name }} {{ additionalList.last_name }}</p>
+        <h1>Inventorius</h1>
+      </div>
       <button class="add-btn" @click="addGearOpen = true">
 <!--        <img src="../assets/icons/Plus.svg" alt="">-->
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -51,10 +55,10 @@
                    :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
           </td>
           <td @click="selectRow(index, $event)" class="no-padding">
-            <router-link :to="'/inventory/'+ gear.id">{{ item.name }}</router-link>
+            <router-link :to="'/inventory/'+ gear.id">{{ gear.name }}</router-link>
           </td>
           <td @click="selectRow(index, $event)">{{ gear.updated_at.split('T')[0] }}</td>
-          <td @click="selectRow(index, $event)">{{ statusText(gear.lent) }}</td>
+          <td @click="selectRow(index, $event)">{{ statusText(gear.lent, gear.own) }}</td>
           <td class="actions-cell">
             <table-actions :id="gear.id" /> <!-- item.id -->
           </td>
@@ -120,6 +124,7 @@
       if(this.$route.params.user_id){
         this.user_id = this.$route.params.user_id;
         this.getData(this.url +'/user/' + this.user_id);
+        this.getAdditionalData('https://inventor-system.herokuapp.com/api/users/' + this.user_id)
       } else {
         this.getData(this.url);
       }
@@ -130,8 +135,8 @@
       },
     },
     methods: {
-    statusText(lent){
-      return lent ? "paskolintas" : "Savininkas";
+    statusText(lent, own){
+      return !own ? "Pasiskolinta" : lent ? "Paskolintas" : "Savininkas";
     },
     setFilter(filter) {
       this.filter = filter;
@@ -230,6 +235,17 @@
     display: flex;
     align-items: flex-end;
     margin: 3em 0;
+  }
+
+  .title-name {
+    font-size: 2rem;
+    padding: 0;
+    margin: 0;
+    /*color: var(--clr-dark-grey);*/
+    color: var(--clr-grey);
+    font-family: var(--ff-bebas-neue);
+    /*font-size: var(--fs-button);*/
+    letter-spacing: 0.065em;
   }
 
   .add-btn {

@@ -7,6 +7,7 @@
       return {
         list: [],
         additionalList: [],
+        notificationsList: [],
         config: {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`
@@ -15,22 +16,19 @@
         // user: {},
       }
     },
+
     methods: {
       getData(url) {
         this.$http.get(url, this.config)
           .then(response => {
             console.log(response.data);
             this.list = response.data;
+            this.getNotifications();
+
             // this.refreshUsersToken();
           }).catch(error => {
-            console.error(error);
-            if(error.response.data.message === "Token has expired" ||
-                error.response.data.message === "The token has been blacklisted" ||
-                error.response.data.status === 401 ){
-              localStorage.clear();
-              this.$router.push({name: 'login'});
-            }
-        })
+            this.getDataError(error)
+          })
       },
 
       getDataError(error){
@@ -110,6 +108,22 @@
         })
       },
 
+      getNotifications(){
+        this.$http.get('https://inventor-system.herokuapp.com/api/requests', this.config)
+            .then(response => {
+              // console.log("notitifations: ", response.data);
+              this.notificationsList = response.data.filter(request => request.status !== 1);
+            }).catch(error => {
+          console.error(error);
+          if(error.response.status === 500){
+            if(error.response.data.message === "Token has expired" ||
+                error.response.data.message === "The token has been blacklisted"){
+              localStorage.clear();
+              this.$router.push({name: 'login'});
+            }
+          }
+        })
+      },
     }
   }
 </script>

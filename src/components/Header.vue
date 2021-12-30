@@ -12,9 +12,11 @@
     <div class="expand-container">
       <button id="notifications-btn" @click="notificationOpen = !notificationOpen">
         <img src="../assets/icons/Notification-bell.svg" alt="">
-        <span v-show="notification" id="unread-notification"></span>
+        <span v-show="notificationsList.length" id="unread-notification"></span>
       </button>
-      <notification-card v-show="notificationOpen" @close="notificationOpen = false"/>
+      <notification-card v-show="notificationOpen" @close="notificationOpen = false" >
+        <request-component :requestsList="notificationsList"/>
+      </notification-card>
     </div>
 
     <div class="expand-container">
@@ -38,12 +40,14 @@
   import ActionCard from "@/components/ActionCard";
   import UserCard from "@/components/UserCard";
   import DataMixin from "@/components/mixins/DataMixin";
+  import RequestComponent from "@/views/RequestComponent";
 
   // import jwt_decode from "jwt-decode";
 
   export default {
     name: "Header",
     components: {
+      RequestComponent,
       UserCard,
       ActionCard,
       NotificationCard
@@ -58,13 +62,7 @@
       }
     },
     created() {
-      // console.log('header created')
-
-      // create user mixin (header and UserCard)
-      // const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
-      // this.$store.commit('setUser', {id, first_name, last_name, email, isAdmin: !!role })
-      // console.log(this.user);
-
+      this.getNotifications();
     },
     computed: {
       nameInitials() {

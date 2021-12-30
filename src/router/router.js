@@ -71,6 +71,11 @@ const router = new VueRouter({
             children: [
                 {
                    path: ":user_id",
+                    meta: {
+                        middleware: [
+                            admin
+                        ]
+                    },
                 }
             ]
         },

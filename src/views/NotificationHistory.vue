@@ -4,20 +4,12 @@
 
     <main>
 
-      <div v-if="requestList.length">
+      <div v-if="notificationsList.length">
         <h3>Neatsakytos užklausos</h3>
-        <div v-for="request in requestList" :key="request.id" class="message">
-          <div>
-            <p class="date">{{ request.created_at.split('T')[0] }}</p>
-<!--            <p>{{ findName(request.lender_id) }} jums {{ requestType(request.status) }} <strong>{{ request.gear[0].name }}</strong>.</p>-->
-            <p>{{ constructMessage(request, 'request') }} <strong>{{ request.gear[0].name }}</strong>.</p>
-          </div>
-
-          <div class="btn-container">
-            <button class="btn faded" @click="discardRequest(request.id)">Atmesti</button>
-            <button class="btn" @click="acceptRequest(request.id, request.status)">Priimti</button>
-          </div>
-        </div>
+        <request-component :requestsList="notificationsList"
+                    :namesList="userList"
+                    @responded="refresh"
+        />
       </div>
 
       <h3>Pranešimų istorija</h3>
@@ -40,10 +32,13 @@
 <script>
   import Header from "@/components/Header";
   import DataMixin from "@/components/mixins/DataMixin";
+  import RequestComponent from "@/views/RequestComponent";
+
   export default {
     name: "NotificationHistory",
     mixins: [ DataMixin ],
     components: {
+      RequestComponent,
       Header,
     },
     data() {
@@ -56,60 +51,61 @@
     created(){
       console.log("notification history list:")
       this.getData(this.url);
-      this.getAdditionalData(this.addit_url);
+      // this.getNotifications();
       this.getNames();
-    },
-
-    computed:{
-      requestList(){
-        return this.additionalList.filter(request => request.status !== 1);
-      }
     },
 
     methods: {
 
-      constructMessage(item, type) {
+      refresh() {
+        console.log('me is not here')
+        this.getData(this.url);
+      },
 
-        if(type === 'request'){
-          switch (item.status){
-            case 0:
-              return `${this.findName(item.lender_id)} jums skolina`;
-            case 2:
-              return `${this.findName(item.lender_id)} jums grąžina`;
-            case 3:
-              return `${this.findName(item.lender_id)} jums perleidžia`;
-          }
-        } else if(type === 'history' && item.user_id === this.$store.getters.user.id) {
+      constructMessage(item, type) {
+        // console.log(item.lender_id);
+        // console.log(item.sender_id);
+        // if(type === 'request'){
+        //   switch (item.status){
+        //     case 0:
+        //       return `${this.findName(item.lender_id)} jums skolina`;
+        //     case 2:
+        //       return `${this.findName(item.lender_id)} jums grąžina`;
+        //     case 3:
+        //       return `${this.findName(item.lender_id)} jums perleidžia`;
+        //   }
+        // } else
+        if(type === 'history' && item.user_id === this.$store.getters.user.id) {
           switch (item.event){
             case 0:
-              return `${this.findName(item.lender_id)} jums paskolino`;
+              return `${this.findName(item.sender_id)} jums paskolino`;
             case 1:
-              return `${this.findName(item.lender_id)} jums grąžino`;
+              return `${this.findName(item.sender_id)} jums grąžino`;
             case 2:
-              return `${this.findName(item.lender_id)} jums atidavė`;
+              return `${this.findName(item.sender_id)} jums atidavė`;
           }
         } else if (type === 'history' && item.user_id !== this.$store.getters.user.id) {
           switch (item.event){
             case 0:
-              return `Jūs paskolinote ${this.findName(item.lender_id)}`;
+              return `Jūs paskolinote ${this.findName(item.user_id)}`;
             case 1:
-              return `Jūs grąžinote ${this.findName(item.lender_id)}`;
+              return `Jūs grąžinote ${this.findName(item.user_id)}`;
             case 2:
-              return `Jūs perleidote ${this.findName(item.lender_id)}`;
+              return `Jūs perleidote ${this.findName(item.user_id)}`;
           }
         } else return 'elp' //
 
 
 
-        if(type === 'history') {
-          if (item.user_id === this.$store.getters.user.id) {
-            return `${this.findName(item.lender_id)} jums ${this.requestType(item.event, 'to-user')}`
-          } else {
-            return `Jūs ${this.requestType(item.event, 'user')} ${this.findName(item.lender_id)} `
-          }
-        } else {
-          return `${this.findName(item.lender_id)} jums ${this.requestType(item.event)}`
-        }
+      //   if(type === 'history') {
+      //     if (item.user_id === this.$store.getters.user.id) {
+      //       return `${this.findName(item.lender_id)} jums ${this.requestType(item.event, 'to-user')}`
+      //     } else {
+      //       return `Jūs ${this.requestType(item.event, 'user')} ${this.findName(item.lender_id)} `
+      //     }
+      //   } else {
+      //     return `${this.findName(item.lender_id)} jums ${this.requestType(item.event)}`
+      //   }
       },
 
       getNames() {
@@ -123,10 +119,12 @@
 
       findName(id) {
         if(this.userList.length){
-          let user = this.userList.filter(user => user.id = id)[0];
+          let user = this.userList.filter(user => user.id === id)[0];
           return user ? user.first_name + ' ' + user.last_name : "Nežinomas"
         }
+        return ''
       },
+
       requestType(status, type) {
         if(type === 'user') {
           switch (status) {
@@ -151,35 +149,6 @@
         }
       },
 
-      acceptRequest(id, status){
-        let url = ''
-        switch (status){
-          case 0: // skolina
-            url = 'https://inventor-system.herokuapp.com/api/requests/acceptLend/';
-            break;
-          case 2: // grąžina
-            url = 'https://inventor-system.herokuapp.com/api/requests/acceptReturn/';
-            break;
-          case 3: // perleidžia
-            url = 'https://inventor-system.herokuapp.com/api/requests/acceptGiveaway/';
-            break;
-        }
-        this.$http.post(url + id, {}, this.config)
-            .then(response => {
-              this.getAdditionalData(this.addit_url);
-              this.getData(this.url);
-              console.log(response.data)
-            })
-      },
-
-      discardRequest(id) {
-        this.$http.delete('https://inventor-system.herokuapp.com/api/requests/'+ id, this.config)
-          .then(response => {
-            this.getAdditionalData(this.addit_url);
-            // this.getData(this.url);
-            console.log(response.data)
-          })
-      }
     }
   }
 </script>
@@ -220,20 +189,9 @@
     color: var(--clr-darker-grey)
   }
 
-  .btn-container .btn{
-    margin-left: .5em;
-  }
+/*.faded:focus,*/
 
-  .faded {
-    border-color: var(--clr-grey);
-  }
-
-  /*.faded:focus,*/
-  .faded:hover {
-    border-color: var(--clr-accent);
-  }
-
-  .reverse-flex {
+.reverse-flex {
     display: flex;
     flex-direction: column-reverse;
   }

@@ -8,14 +8,14 @@
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
       </button>
-
-      <select class="company-filter" v-model="companyFilter">
-        <option selected value="">Visos įmonės</option>
-        <option v-for="item in additionalList" :key="item.name" :value="item.id">{{ item.name }}</option>
-      </select>
+      <!-- Company filter-->
+<!--      <select class="company-filter" v-model="companyFilter">-->
+<!--        <option selected value="">Visos įmonės</option>-->
+<!--        <option v-for="item in additionalList" :key="item.name" :value="item.id">{{ item.name }}</option>-->
+<!--      </select>-->
     </div> <!-- /title container-->
 
-    <search />
+    <search @setSearch="setSearch"/>
 
     <table-component>
       <tr class="head-row">
@@ -172,8 +172,10 @@
       },
 
       ownersName(id){
-        let {first_name, last_name} = this.additionalList.find(user => user.id === id);
-        return `${first_name} ${last_name}`
+        if(this.additionalList.length) {
+          let {first_name, last_name} = this.additionalList.find(user => user.id === id);
+          return `${first_name} ${last_name}`
+        }
       },
       // addGearError() {
       //

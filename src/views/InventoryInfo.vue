@@ -18,7 +18,7 @@
                    v-if="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
            >Skolinti</button>
            <button class="action-btn"
-                   v-show="statusText === 'Savininkas' || this.$store.getters.isAdmin === true"
+                   v-show="statusText === 'Savininkas' || this.$store.getters.isAdmin === true && !list.lent"
                    @click="openSelect('Perleisti')"
            >Perleisti</button>
            <button class="action-btn"
@@ -74,7 +74,7 @@
            <h3>Istorija</h3>
          </div>
          <table-component>
-           <tr v-for="item in 19" :key="item">
+           <tr>
              <td class="no-padding">
                <img v-if="true" src="../assets/icons/lend.svg" alt="">
                <img v-else-if="true" src="../assets/icons/return.svg" alt="">
@@ -82,6 +82,21 @@
              </td>
              <td>Jonas Jonauskas</td>
              <td>Paskolino</td>
+             <td>Petrui Petrauskui</td>
+             <td>2021-12-14</td>
+           </tr>
+           <tr v-for="history in historyList" :key="history.id">
+             <td class="no-padding">
+               <img v-if="true" src="../assets/icons/lend.svg" alt="">
+               <img v-else-if="true" src="../assets/icons/return.svg" alt="">
+               <img v-else src="../assets/icons/transfer.svg" alt="">
+             </td>
+             <td>{{ history.sender_id }}</td>
+
+             <td v-if="history.event === 0">Paskolino</td>
+             <td v-else-if="history.event === 1">Grąžino</td>
+             <td v-else-if="history.event === 2">Atidavė</td>
+
              <td>Petrui Petrauskui</td>
              <td>2021-12-14</td>
            </tr>
@@ -109,14 +124,14 @@
 
    <!-- Nurasyti action -->
    <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false">
-     <p>Ar tikrai norite nurašyti <strong>This Item</strong>?</p>
-     <button class="btn" @click="writeOffItem">Taip</button>
+     <p>Ar tikrai norite nurašyti <strong>{{ list.name }}</strong>?</p>
+     <button class="btn" @click="writeOffItem(list.id)">Taip</button>
    </modulus-full>
 
    <!-- Grazinti action -->
    <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false">
      <p>Ar esate pasiruošę grąžinti <strong>This Item</strong>?</p>
-     <button class="btn" @click="returnItem">Taip</button>
+     <button class="btn" @click="returnItem(list.id)">Taip</button>
    </modulus-full>
 
  </div>
@@ -154,6 +169,7 @@
         errorMsg: '',
         // status
         history: {},
+        historyList: {},
       }
     },
     created() {
@@ -177,7 +193,6 @@
         }
       }
     },
-
     computed: {
       statusText(){
         if(this.$store.getters.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
@@ -190,11 +205,10 @@
         // else '';
       }
     },
-
     methods: {
       getHistory() {
         this.$http.get('https://inventor-system.herokuapp.com/api/gearHistory/' + this.$route.params.inventory_id, this.config)
-          .then(response => console.log('history:',response.data))
+          .then(response => this.historyList = response.data)
           .catch(err => console.error(err))
       },
 
@@ -206,6 +220,13 @@
 
       returnItem() {
         console.log('return');
+        this.postData('https://inventor-system.herokuapp.com/api/requests/return/' + this.$route.params.inventory_id,
+            {},
+            () => {
+          this.returnCardOpen = false;
+          this.getData(this.url + this.$route.params.inventory_id);
+            }
+        )
         // if everything is ok:
         this.returnCardOpen = false;
       },
@@ -216,9 +237,16 @@
       },
 
       writeOffItem() {
-        console.log('nurašytas');
-        // if everything is ok:
-        this.writeOffCardOpen = false;
+
+        this.$http.delete('https://inventor-system.herokuapp.com/api/gear/' + this.$route.params.inventory_id, this.config)
+            .then(() => {
+              console.log('nurašytas');
+              this.writeOffCardOpen = false;
+              this.$router.go(-1);
+              // display msg, kad nurašytas
+            })
+            .catch(error => console.error(error))
+
       },
 
       gearAction(user_id){
@@ -230,7 +258,9 @@
         if(this.actionType === 'Skolinti'){
           url = 'https://inventor-system.herokuapp.com/api/requests/lend/'
         } else if(this.actionType === 'Perleisti'){
-          url = 'https://inventor-system.herokuapp.com/api/requests/giveaway/';
+          if(user_id === this.$store.getters.user.id && this.$store.getters.user.isAdmin){
+            url = 'https://inventor-system.herokuapp.com/api/requests/giveYourself/';
+          } else url = 'https://inventor-system.herokuapp.com/api/requests/giveaway/';
         }
 
         this.postData(
@@ -248,6 +278,9 @@
                   this.errorMsg = "Inventorius turi neatsakytą užklausą";
                   break;
                 // case "":
+                case "You cannot give away lent gear":
+                  this.errorMsg = "Negalite perleisti paskolinto inventoriaus";
+                  break;
                 default:
                   this.errorMsg = err.response.data.message;
               }
