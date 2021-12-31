@@ -2,7 +2,9 @@
   <div class="notification-card">
     <button class="close-btn" @click="$emit('close')">&times;</button>
 
-    <slot></slot>
+    <div class="scroll-container">
+      <slot></slot>
+    </div>
 
 <!--    <div v-if="false">-->
 <!--      <p>Šiuo metu naujų pranešimų neturite.</p>-->
@@ -37,6 +39,7 @@
     color: var(--clr-grey);
     text-decoration: none;
     float: right;
+    margin-top: .5em;
   }
 
   a:hover {
@@ -65,7 +68,23 @@
     top: .5em;
     right: .5em;
     line-height: 1;
-    color: var(--clr-dark-grey)
+    color: var(--clr-dark-grey);
+    background: white;
+  }
+
+  .scroll-container{
+    max-height: 430px;
+    overflow-y: auto;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color:var(--clr-light-grey);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 90%;
   }
 
   /*.date {*/

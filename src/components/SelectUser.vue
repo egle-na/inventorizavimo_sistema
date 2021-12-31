@@ -1,7 +1,24 @@
 <template>
   <ModulusFull @close="closeCard">
+    <form @submit.prevent="$emit('submitAction', selectedUser)">
     <h3>{{ type }}</h3>
     <p>Pasirinkite darbuotoją:</p>
+
+    <slot></slot> <!-- nėra? -->
+
+    <select class="user-select" v-model="selectedUser" required>
+      <option selected hidden>Pasirinkite darbuotoją:</option>
+      <option v-for="user in userList" :key=" user.id"
+              :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>
+    </select>
+
+<!--    <input type="text" v-model="selectedUser">-->
+
+    <div class="btn-container">
+      <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+      <button class="btn">{{ type }}</button>
+    </div>
+    </form>
 
 <!--    &lt;!&ndash; Search container &ndash;&gt;-->
 <!--    <div class="search-container">-->
@@ -22,20 +39,6 @@
 <!--      </ul>-->
 <!--    </div>&lt;!&ndash; /search container &ndash;&gt;-->
 
-    <slot></slot>
-
-    <select class="user-select" v-model="selectedUser">
-      <option selected hidden>Pasirinkite darbuotoją:</option>
-      <option v-for="user in userList" :key=" user.id"
-              :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>
-    </select>
-
-<!--    <input type="text" v-model="selectedUser">-->
-
-    <div class="btn-container">
-      <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
-      <button class="btn" @click="$emit('submitAction', selectedUser)">{{ type }}</button>
-    </div>
   </ModulusFull>
 </template>
 
@@ -44,7 +47,7 @@
 
   export default {
     name: "SelectUser",
-    components: {ModulusFull},
+    components: { ModulusFull },
     props: [ 'type', 'list', 'errorMsg', 'gear_owner'],
     data() {
       return {

@@ -136,15 +136,6 @@
         companyFilter: '',
         rowExpanded: '',
         addGearOpen: false,
-        // list: [],
-        // newGear: {
-        //   name: '',
-        //   serial_number: '',
-        //   // quantity: '',
-        //   unit_price: '',
-        //   long_term: true,
-        //   user_id: this.$store.getters.user.id,
-        // },
       }
     },
     created() {
@@ -159,13 +150,7 @@
           this.rowExpanded = item;
         }
       },
-      // addNewGear() {
-      //   this.postData(
-      //       'https://inventor-system.herokuapp.com/api/gear',
-      //       this.newGear,
-      //       this.addGearSuccess,
-      //       this.addGearError )
-      // },
+
       addGearSuccess() {
         this.addGearOpen = false;
         this.getData(this.url);

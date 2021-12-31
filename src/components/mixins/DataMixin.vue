@@ -18,16 +18,18 @@
     },
 
     methods: {
-      getData(url) {
+      getData(url, successFn, failFn) {
         this.$http.get(url, this.config)
           .then(response => {
             console.log(response.data);
             this.list = response.data;
-            this.getNotifications();
+            // this.getNotifications();
+            if(successFn) successFn();
 
             // this.refreshUsersToken();
           }).catch(error => {
-            this.getDataError(error)
+            if(failFn) failFn();
+            this.getDataError(error);
           })
       },
 
@@ -71,11 +73,11 @@
         this.$http.post( url, data, this.config)
           .then(response => {
             console.log(response.data);
-            successFn();
+            if(successFn) successFn();
             // this.$router.push(routeTo)
           }).catch(error => {
             console.error(error);
-            failFn(error);
+            if(failFn) failFn(error);
           })
       },
 
@@ -83,11 +85,11 @@
         this.$http.delete( url, this.config)
           .then(response => {
             console.log(response.data);
-            successFn();
+            if(successFn) successFn();
             // this.$router.push(routeTo)
           }).catch(error => {
             console.error(error);
-            failFn(error);
+            if(failFn) failFn(error);
         })
       },
 
@@ -109,10 +111,12 @@
       },
 
       getNotifications(){
-        this.$http.get('https://inventor-system.herokuapp.com/api/requests', this.config)
+        console.log('get notif')
+        this.$http.get('https://inventor-system.herokuapp.com/api/requests/pending', this.config)
             .then(response => {
               // console.log("notitifations: ", response.data);
-              this.notificationsList = response.data.filter(request => request.status !== 1);
+              // this.notificationsList = response.data.filter(request => request.status !== 1);
+              this.notificationsList = response.data;
             }).catch(error => {
           console.error(error);
           if(error.response.status === 500){

@@ -40,7 +40,7 @@
          <p>{{ list.description }}</p>
          <div>
            <h3>Savininkas</h3>
-           <p >{{ ownersName }}</p>
+           <p >{{ ownerName }}</p>
          </div>
          <div>
            <h3>Kodas</h3>
@@ -74,31 +74,34 @@
            <h3>Istorija</h3>
          </div>
          <table-component>
-           <tr>
-             <td class="no-padding">
-               <img v-if="true" src="../assets/icons/lend.svg" alt="">
-               <img v-else-if="true" src="../assets/icons/return.svg" alt="">
-               <img v-else src="../assets/icons/transfer.svg" alt="">
-             </td>
-             <td>Jonas Jonauskas</td>
-             <td>Paskolino</td>
-             <td>Petrui Petrauskui</td>
-             <td>2021-12-14</td>
-           </tr>
+<!--           <tr>--> <!-- Pavizdys -->
+<!--             <td class="no-padding">-->
+<!--               <img v-if="history.event === 0" src="../assets/icons/lend.svg" alt="">-->
+<!--               <img v-else-if="history.event === 1" src="../assets/icons/return.svg" alt="">-->
+<!--               <img v-else-if="history.event === 2" src="../assets/icons/transfer.svg" alt="">-->
+<!--             </td>-->
+<!--             <td>Jonas Jonauskas</td>-->
+<!--             <td>Paskolino</td>-->
+<!--             <td>Petrui Petrauskui</td>-->
+<!--             <td>2021-12-14</td>-->
+<!--           </tr>-->
            <tr v-for="history in historyList" :key="history.id">
              <td class="no-padding">
-               <img v-if="true" src="../assets/icons/lend.svg" alt="">
-               <img v-else-if="true" src="../assets/icons/return.svg" alt="">
+               <img v-if="history.event === 0" src="../assets/icons/lend.svg" alt="">
+               <img v-else-if="history.event === 1" src="../assets/icons/return.svg" alt="">
+               <img v-else-if="history.event === 2" src="../assets/icons/transfer.svg" alt="">
                <img v-else src="../assets/icons/transfer.svg" alt="">
              </td>
-             <td>{{ history.sender_id }}</td>
+             <td title="Kas?" v-if="history.event === 1">{{ findName(history.user_id) }}</td>
+             <td title="Kas?" v-else >{{ findName(history.sender_id) }}</td>
 
              <td v-if="history.event === 0">Paskolino</td>
              <td v-else-if="history.event === 1">Grąžino</td>
              <td v-else-if="history.event === 2">Atidavė</td>
 
-             <td>Petrui Petrauskui</td>
-             <td>2021-12-14</td>
+             <td title="Kam?" v-if="history.event === 1">{{ findName(history.sender_id) }}</td>
+             <td title="Kam?" v-else>{{ findName(history.user_id) }}</td>
+             <td title="Kada?">{{ history.created_at.split('T')[0] }}</td>
            </tr>
          </table-component>
        </div><!-- /history container -->
@@ -110,7 +113,7 @@
    <select-user v-if="selectUserOpen"
                 @close="selectUserOpen = false"
                 @submitAction="gearAction"
-                :list="additionalList"
+                :list="userList"
                 :type="actionType"
                 :gear_owner="list.user_id"
                 :errorMsg="errorMsg"
@@ -122,13 +125,13 @@
 <!--     </select>-->
    </select-user>
 
-   <!-- Nurasyti action -->
+   <!-- Nurašyti action -->
    <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false">
      <p>Ar tikrai norite nurašyti <strong>{{ list.name }}</strong>?</p>
      <button class="btn" @click="writeOffItem(list.id)">Taip</button>
    </modulus-full>
 
-   <!-- Grazinti action -->
+   <!-- Grąžinti action -->
    <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false">
      <p>Ar esate pasiruošę grąžinti <strong>This Item</strong>?</p>
      <button class="btn" @click="returnItem(list.id)">Taip</button>
@@ -144,10 +147,11 @@
   import SelectUser from "@/components/SelectUser";
   import ModulusFull from "@/components/ModulusFull";
   import DataMixin from "@/components/mixins/DataMixin";
+  import UsersMixin from "@/components/mixins/UsersMixin";
 
   export default {
     name: "InventoryInfo",
-    mixins: [ DataMixin ],
+    mixins: [ DataMixin, UsersMixin ],
     components: {
       ModulusFull,
       SelectUser,
@@ -175,25 +179,37 @@
     created() {
       if(this.$store.getters.isAdmin === true){
         this.url = 'https://inventor-system.herokuapp.com/api/gear/all/'
-        this.users_url = 'https://inventor-system.herokuapp.com/api/users/all'
+        // this.users_url = 'https://inventor-system.herokuapp.com/api/users/all'
       }
-      this.getData(this.url + this.$route.params.inventory_id);
-      this.getAdditionalData(this.users_url)
+      this.getData(this.url + this.$route.params.inventory_id, '', () => {
+        this.$router.push({name: 'user-inventory'});
+      });
+
+      this.getNames();
       this.getHistory();
     },
-    watch: {
-      list: function () {
-        if(this.list.user_id === this.$store.getters.user.id) {
-          this.ownersName = `${this.$store.getters.user.first_name} ${this.$store.getters.user.last_name}`
-        }
-        if (this.list.user_id && !this.ownersName) {
-          this.$http.get('https://inventor-system.herokuapp.com/api/users/' + this.list.user_id, this.config)
-              .then(response => this.ownersName = `${response.data.first_name} ${response.data.last_name}`)
-              .catch(error => error.response.data.message)
-        }
-      }
-    },
+    // watch: {
+    //   list: function () {
+        // console.log(this.additionalList[0])
+        //   this.ownersName = `${this.additionalList.filter(user => user.id === this.list.user_id)[0].first_name} ${this.additionalList.filter(user => user.id === this.list.user_id)[0].last_name}`
+        // if(this.list.user_id === this.$store.getters.user.id) {
+        //   this.ownersName = `${this.$store.getters.user.first_name} ${this.$store.getters.user.last_name}`
+        // }
+        // if (this.list.user_id && !this.ownersName) {
+
+          // this.$http.get('https://inventor-system.herokuapp.com/api/users/' + this.list.user_id, this.config)
+          //     .then(response => this.ownersName = `${response.data.first_name} ${response.data.last_name}`)
+          //     .catch(error => error.response.data.message)
+        // }
+    //   }
+    // },
     computed: {
+      ownerName() {
+        if(this.userList.length){
+          // return `${this.additionalList.filter(user => user.id === this.list.user_id)[0].first_name} ${this.additionalList.filter(user => user.id === this.list.user_id)[0].last_name}`;
+          return this.findName(this.list.user_id);
+        } else return ''
+      },
       statusText(){
         if(this.$store.getters.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
           return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
@@ -246,7 +262,6 @@
               // display msg, kad nurašytas
             })
             .catch(error => console.error(error))
-
       },
 
       gearAction(user_id){

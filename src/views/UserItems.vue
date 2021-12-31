@@ -19,8 +19,13 @@
 
       <div class="filter-container">
         <button class="filter-btn"
+                v-if="!this.$route.params.user_id"
                 :class="{'filter-selected': filter === 'owned'}"
                 @click="setFilter('owned')">Mano įranga</button>
+        <button class="filter-btn"
+                v-else
+                :class="{'filter-selected': filter === 'owned'}"
+                @click="setFilter('owned')">Asmeninė</button>
         <button class="filter-btn"
                 :class="{'filter-selected': filter === 'borrowed'}"
                 @click="setFilter('borrowed')">Pasiskolinta</button>
@@ -44,26 +49,34 @@
         <th>Statusas</th>
         <th>Veiksmai</th>
       </tr>
-      <tbody v-for="(item, index) in list" :key="index">
-        <tr v-for="gear in item.gear" :key="gear.id"
-            :class="{'row-selected-simple': rowsSelected.includes(index)}"
-        >
-          <td>
-            <input type="checkbox"
-                   :checked="rowsSelected.includes(index)"
-                   @click="toggleSelect(index)"
-                   :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
-          </td>
-          <td @click="selectRow(index, $event)" class="no-padding">
-            <router-link :to="'/inventory/'+ gear.id">{{ gear.name }}</router-link>
-          </td>
-          <td @click="selectRow(index, $event)">{{ gear.updated_at.split('T')[0] }}</td>
-          <td @click="selectRow(index, $event)">{{ statusText(gear.lent, gear.own) }}</td>
-          <td class="actions-cell">
-            <table-actions :id="gear.id" /> <!-- item.id -->
-          </td>
-        </tr>
-      </tbody>
+      <tr v-for="(gear, index) in filteredList" :key="gear.id" :class="{'row-selected-simple': rowsSelected.includes(index)}">
+        <td @click="selectRow(index, $event)">
+          <input type="checkbox"
+                 :checked="rowsSelected.includes(index)"
+                 :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
+<!--                 @click="toggleSelect(index)"-->
+        </td>
+        <td @click="selectRow(index, $event)" class="no-padding">
+<!--          <router-link :to="'/inventory/'+ gear.id" :event="!anySelected ? 'click' : ''">{{ gear.name }}</router-link> &lt;!&ndash; event change to v-slot &ndash;&gt;-->
+          <router-link :to="'/inventory/'+ gear.id">{{ gear.name }}</router-link> <!-- event change to v-slot -->
+        </td>
+        <td @click="selectRow(index, $event)">{{ gear.updated_at.split('T')[0] }}</td>
+        <td @click="selectRow(index, $event)">{{ statusText(gear.lent, gear.own) }}</td>
+        <td class="actions-cell">
+          <table-actions>
+            <!-- Skolinti (jei savininkas arba pasiskolinta) -->
+            <!-- Grąžinti (jei paskolntas) -->
+            <!-- Perleist (jei savinikas) -->
+            <!-- Generuoti pdf -->
+            <!-- Ištrinti (jei savininkas) -->
+            <btn-edit @btnClicked="openEditUser(item.id)" />
+            <span class="action-divider" />
+            <btn-add-inventory @btnClicked="addGearToUser(item.id)" />
+            <span class="action-divider" />
+            <btn-delete @btnClicked="openDeleteUser(item.id)" />
+          </table-actions> <!-- item.id -->
+        </td>
+      </tr>
     </table-component>
 
   </main>
@@ -83,10 +96,16 @@
   import DataMixin from "@/components/mixins/DataMixin";
   import ModulusFull from "@/components/ModulusFull";
   import AddItem from "@/components/AddItem";
+  import BtnEdit from "@/components/BtnEdit";
+  import BtnAddInventory from "@/components/BtnAddInventory";
+  import BtnDelete from "@/components/BtnDelete";
   export default {
     name: "UserItems",
     mixins: [ DataMixin ],
     components: {
+      BtnDelete,
+      BtnAddInventory,
+      BtnEdit,
       AddItem,
       ModulusFull,
       TableComponent,
@@ -101,23 +120,6 @@
         rowsSelected: [],
         lastSelected: '',
         user_id: this.$store.getters.user.id,
-        // list: [
-        //   {name: 'a Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'b Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'c Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'd Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'e Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'f Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'g Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'h Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'i Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'j Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'k Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'l Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'm Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'n Dell 24 Monitor-S2421H', variable: 'alive'},
-        //   {name: 'o Dell 24 Monitor-S2421H', variable: 'alive'},
-        // ],
       }
     },
     created() {
@@ -133,14 +135,34 @@
       anySelected() {
         return this.rowsSelected.length > 0;
       },
+      filteredList() {
+        let unpackedList = [];
+        for(let i = 0; i < this.list.length; i++){
+          for(let j = 0; j < this.list[i].gear.length; j++){
+            unpackedList.push(this.list[i].gear[j]);
+          }
+        }
+
+        switch (this.filter){
+          case "all":
+            return unpackedList;
+          case "owned":
+            return unpackedList.filter(gear => gear.own === 1);
+          case "borrowed":
+            return unpackedList.filter(gear => gear.own === 0);
+          default :
+            return this.list;
+        }
+      }
     },
     methods: {
     statusText(lent, own){
       return !own ? "Pasiskolinta" : lent ? "Paskolintas" : "Savininkas";
     },
+
     setFilter(filter) {
+      this.rowsSelected = this.filter !== filter && [];
       this.filter = filter;
-      console.log(filter);
     },
 
     selectRow(id, event){
@@ -162,6 +184,7 @@
           if(id > this.lastSelected){ // uncheck multiple from down to up
               console.log("uncheck multiple from down to up");
             for(let i = id; i >= this.lastSelected; i--) {
+              console.log(id, this.lastSelected)
               deselect.push(i);
             }
           } else { // uncheck multiple from up to down
@@ -174,11 +197,10 @@
         }
         this.lastSelected = id;
       } else { // if shift key not pressed
-        if(this.rowsSelected.length) { // something is selected
           this.toggleSelect(id);
-          this.lastSelected = id;
+        if(!this.rowsSelected.length) { // something is selected
+          this.lastSelected = "";
         }
-        this.lastSelected = "";
       }
     },
 
@@ -193,10 +215,11 @@
       } else {
         this.rowsSelected = this.rowsSelected.filter(item => item !== id);
       }
+      this.lastSelected = id;
     },
 
     selectAll(){
-      for(let i = 0; i < this.list.length; i++){
+      for(let i = 0; i < this.filteredList.length; i++){
         this.rowsSelected.push(i);
       }
       console.log('all')

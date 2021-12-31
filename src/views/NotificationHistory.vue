@@ -13,7 +13,7 @@
       </div>
 
       <h3>Pranešimų istorija</h3>
-      <div class="reverse-flex">
+      <div>
         <div v-for="notification in list" :key="notification.id" class="message">
 <!--          <p>{{ findName(notification.lender_id) }} jums {{ requestType(notification.event, 'history') }} <strong>{{ notification.gear[0].name }}</strong>.</p>-->
           <p>{{ constructMessage(notification, 'history') }} <strong>{{ notification.gear[0].name }}</strong>.</p>
@@ -32,7 +32,7 @@
 <script>
   import Header from "@/components/Header";
   import DataMixin from "@/components/mixins/DataMixin";
-  import RequestComponent from "@/views/RequestComponent";
+  import RequestComponent from "@/components/RequestComponent";
 
   export default {
     name: "NotificationHistory",
@@ -44,17 +44,16 @@
     data() {
       return {
         url: 'https://inventor-system.herokuapp.com/api/history',
-        addit_url: 'https://inventor-system.herokuapp.com/api/requests',
-        userList: [],
+        // addit_url: 'https://inventor-system.herokuapp.com/api/requests',
+        userList: [], // User mixin
       }
     },
     created(){
       console.log("notification history list:")
       this.getData(this.url);
-      // this.getNotifications();
+      this.getNotifications();
       this.getNames();
     },
-
     methods: {
 
       refresh() {
@@ -80,7 +79,8 @@
             case 0:
               return `${this.findName(item.sender_id)} jums paskolino`;
             case 1:
-              return `${this.findName(item.sender_id)} jums grąžino`;
+              // return `${this.findName(item.sender_id)} jums grąžino`;
+              return `Jūs grąžinote ${this.findName(item.user_id)}`;
             case 2:
               return `${this.findName(item.sender_id)} jums atidavė`;
           }
@@ -108,7 +108,7 @@
       //   }
       },
 
-      getNames() {
+      getNames() { // User mixin
         this.$http.get('https://inventor-system.herokuapp.com/api/users', this.config)
             .then(response => {
               console.log(response.data)
@@ -117,7 +117,7 @@
         })
       },
 
-      findName(id) {
+      findName(id) { // User mixin
         if(this.userList.length){
           let user = this.userList.filter(user => user.id === id)[0];
           return user ? user.first_name + ' ' + user.last_name : "Nežinomas"
@@ -191,9 +191,9 @@
 
 /*.faded:focus,*/
 
-.reverse-flex {
-    display: flex;
-    flex-direction: column-reverse;
-  }
+/*.reverse-flex {*/
+/*    display: flex;*/
+/*    flex-direction: column-reverse;*/
+/*  }*/
 
 </style>

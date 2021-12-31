@@ -10,7 +10,6 @@
 <script>
   export default {
     name: 'BtnEdit',
-    // props: [ 'id' ],
   }
 </script>
 <style scoped>

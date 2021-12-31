@@ -40,7 +40,7 @@
   import ActionCard from "@/components/ActionCard";
   import UserCard from "@/components/UserCard";
   import DataMixin from "@/components/mixins/DataMixin";
-  import RequestComponent from "@/views/RequestComponent";
+  import RequestComponent from "@/components/RequestComponent";
 
   // import jwt_decode from "jwt-decode";
 

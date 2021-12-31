@@ -7,7 +7,7 @@
       </div>
 
       <div class="btn-container">
-        <button class="btn faded" @click="discardRequest(request.id);$emit('responded')">Atmesti</button>
+        <button class="btn faded" @click="declineRequest(request.id);$emit('responded')">Atmesti</button>
         <button class="btn" @click="acceptRequest(request.id, request.status)">Priimti</button>
       </div>
     </div>
@@ -59,6 +59,7 @@
         }
         this.$http.post(url + id, {}, this.config)
             .then(() => {
+              // this.$router.go(0); // man nepatinka šitas
               console.log('elp');
 
               this.$emit('responded'); // doesnt work
@@ -69,8 +70,8 @@
             })
       },
 
-      discardRequest(id) {
-        this.$http.delete('https://inventor-system.herokuapp.com/api/requests/'+ id, this.config)
+      declineRequest(id) {
+        this.$http.post('https://inventor-system.herokuapp.com/api/requests/declineReturn/'+ id,{}, this.config)
             .then(() => {
               // this.getAdditionalData(this.addit_url);
               // this.getData(this.url);
@@ -88,7 +89,7 @@
           case 0:
             return `${this.findName(item.lender_id)} jums skolina`;
           case 2:
-            return `${this.findName(item.lender_id)} jums grąžina`;
+            return `${this.findName(item.user_id)} jums grąžina`;
           case 3:
             return `${this.findName(item.lender_id)} jums perleidžia`;
         }
