@@ -3,7 +3,7 @@
   <admin-desk>
     <div class="title-container">
       <h1>Įranga</h1>
-      <button @click="addGearOpen = true" class="add-btn">
+      <button @click="addGearOpen = true" class="add-btn" title="Pridėti inventorių">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
@@ -50,7 +50,9 @@
               </tr>
               <tr v-for="gear in item.gear" :key="gear.id" class="expanded-trow">
                 <td class="cell-min">1</td>
-                <td>{{ gear.serial_number }}</td>
+                <td class="no-padding">
+                  <router-link :to="'/inventory/'+ gear.id">{{ gear.serial_number }}</router-link>
+                </td>
                 <td>{{ ownersName(gear.user_id) }}</td>
                 <td v-if="gear.long_term">Ilgalaikis</td>
                 <td v-else>Trumpalaikis</td>

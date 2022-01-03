@@ -5,7 +5,7 @@
     <!-- title -->
     <div class="title-container">
       <h1>Darbuotojai</h1>
-      <button class="add-btn" @click="addUserCardOpen=true">
+      <button class="add-btn" title="Pridėti darbuotoją" @click="addUserCardOpen=true">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
@@ -38,7 +38,7 @@
 <!--            <span class="action-divider" />-->
             <btn-edit @btnClicked="openEditUser(item.id)" />
             <span class="action-divider" />
-            <btn-add-inventory @btnClicked="addGearToUser(item.id)" />
+            <btn-add-inventory title="Priskirti įrangos" @btnClicked="addGearToUser(item.id)" />
             <span class="action-divider" />
             <btn-delete @btnClicked="openDeleteUser(item.id)" />
 

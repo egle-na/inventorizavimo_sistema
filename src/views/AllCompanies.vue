@@ -3,7 +3,7 @@
   <admin-desk >
     <div class="title-container">
       <h1>Įmonės</h1>
-      <button class="add-btn" @click="openAddCompanyCard">
+      <button class="add-btn" title="Pridėti įmonę" @click="openAddCompanyCard">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
@@ -27,7 +27,7 @@
           <table-actions>
             <btn-edit @btnClicked="openEditCompanyCard(item.id, item.name)" />
             <span class="action-divider" />
-            <btn-add-inventory @btnClicked="openAddUserCard(item.id)" />
+            <btn-add-inventory @btnClicked="openAddUserCard(item.id)" title="Pridėti darbuotoją" />
             <span class="action-divider" />
             <btn-delete @btnClicked="openDeleteCompanyCard(item.id, item.name)" />
           </table-actions>

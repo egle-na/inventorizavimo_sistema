@@ -1,5 +1,5 @@
 <template>
-    <button title="Priskirti įrangos" @click="$emit('btnClicked')">
+    <button @click="$emit('btnClicked')">
       <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path fill-rule="evenodd" clip-rule="evenodd"
               d="M11.35 9.65V0H9.65V9.65H0V11.35H9.65V21H11.35V11.35H21V9.65H11.35Z" fill="#646464"/>

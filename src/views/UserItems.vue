@@ -35,11 +35,32 @@
       </div> <!-- /filter container-->
     </div> <!-- /title container-->
 
+    <!-- Deal with selected r-->
+    <div :class="{'hidden': !anySelected}" class="selection-actions">
+      <p>Pasirinkta: <span>{{ rowsSelected.length }}</span></p>
+      <table-actions class="actions">
+        <button title="Grąžinti">
+          <img src="../assets/icons/hand-return.svg" alt="">
+        </button>
+        <span class="action-divider" />
+        <button title="Skolinti">
+          <img src="../assets/icons/hand-lend.svg" alt="">
+        </button>
+        <span class="action-divider" />
+        <button title="Perduoti">
+          <img src="../assets/icons/hand-transfer.svg" alt="">
+        </button>
+        <span class="action-divider" />
+        <btn-delete />
+      </table-actions>
+    </div>
+
     <!-- Table -->
     <table-component>
       <tr class="head-row">
-        <th>
+        <th class="no-padding">
           <input type="checkbox"
+                 title="Pasirinkti Viską"
                  :class="{'checkbox-hidden': !anySelected}"
                  :checked="anySelected"
                  @click="$event.target.checked ? selectAll() :  rowsSelected = []">
@@ -50,7 +71,7 @@
         <th>Veiksmai</th>
       </tr>
       <tr v-for="(gear, index) in filteredList" :key="gear.id" :class="{'row-selected-simple': rowsSelected.includes(index)}">
-        <td @click="selectRow(index, $event)">
+        <td @click="selectRow(index, $event)" class="no-padding">
           <input type="checkbox"
                  :checked="rowsSelected.includes(index)"
                  :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
@@ -64,22 +85,42 @@
         <td @click="selectRow(index, $event)">{{ statusText(gear.lent, gear.own) }}</td>
         <td class="actions-cell">
           <table-actions>
+            <button title="Grąžinti" v-if="!gear.own && gear.lent">
+              <img src="../assets/icons/hand-return.svg" alt="">
+            </button>
+            <span class="action-divider" v-if="!gear.own && gear.lent" />
+            <button title="Skolinti" v-if="(gear.own && !gear.lent)|| (!gear.own && gear.lent)">
+              <img src="../assets/icons/hand-lend.svg" alt="">
+            </button>
+            <span class="action-divider" v-if="(gear.own && !gear.lent)|| (!gear.own && gear.lent)" />
+            <button title="Perduoti" v-if="gear.own && !gear.lent">
+              <img src="../assets/icons/hand-transfer.svg" alt="">
+            </button>
+
             <!-- Skolinti (jei savininkas arba pasiskolinta) -->
             <!-- Grąžinti (jei paskolntas) -->
             <!-- Perleist (jei savinikas) -->
             <!-- Generuoti pdf -->
             <!-- Ištrinti (jei savininkas) -->
-            <btn-edit @btnClicked="openEditUser(item.id)" />
-            <span class="action-divider" />
-            <btn-add-inventory @btnClicked="addGearToUser(item.id)" />
-            <span class="action-divider" />
-            <btn-delete @btnClicked="openDeleteUser(item.id)" />
+<!--            <btn-edit @btnClicked="openEditUser(item.id)" />-->
+<!--            <btn-add-inventory @btnClicked="addGearToUser(item.id)" />-->
+            <span class="action-divider"  v-if="gear.own && !gear.lent" />
+            <btn-delete @btnClicked="openDeleteGear(item.id)" />
           </table-actions> <!-- item.id -->
         </td>
       </tr>
     </table-component>
 
   </main>
+
+  <!-- Nurašyti action -->
+  <modulus-full v-show="deleteGearOpen" @close="deleteGearOpen = false; errorMsg = ''">
+    <p>Ar tikrai norite nurašyti <strong>{{  }}</strong>?</p>
+    <div class="btn-container">
+      <p class="error-msg">{{errorMsg}}</p>
+      <button class="btn" @click="deleteGear(list.id)">Taip</button>
+    </div>
+  </modulus-full>
 
   <!-- Add item card -->
   <modulus-full v-if="addGearOpen" @close="addGearOpen = false">
@@ -96,16 +137,16 @@
   import DataMixin from "@/components/mixins/DataMixin";
   import ModulusFull from "@/components/ModulusFull";
   import AddItem from "@/components/AddItem";
-  import BtnEdit from "@/components/BtnEdit";
-  import BtnAddInventory from "@/components/BtnAddInventory";
+  // import BtnEdit from "@/components/BtnEdit";
+  // import BtnAddInventory from "@/components/BtnAddInventory";
   import BtnDelete from "@/components/BtnDelete";
   export default {
     name: "UserItems",
     mixins: [ DataMixin ],
     components: {
       BtnDelete,
-      BtnAddInventory,
-      BtnEdit,
+      // BtnAddInventory,
+      // BtnEdit,
       AddItem,
       ModulusFull,
       TableComponent,
@@ -116,10 +157,12 @@
       return {
         url: 'https://inventor-system.herokuapp.com/api/gear',
         addGearOpen: false,
+        deleteGearOpen: false,
         filter: 'all',
         rowsSelected: [],
         lastSelected: '',
         user_id: this.$store.getters.user.id,
+        errorMsg: '',
       }
     },
     created() {
@@ -257,7 +300,7 @@
   .title-container {
     display: flex;
     align-items: flex-end;
-    margin: 3em 0;
+    margin: 3em 0 1em;
   }
 
   .title-name {
@@ -322,6 +365,12 @@
     border-color: var(--clr-accent);
   }
 
+  .no-padding input {
+    margin-left: .9em;
+    /*width: 120%;*/
+    align-self: center;
+  }
+
   .checkbox-hidden {
     opacity: 0;
   }
@@ -336,6 +385,25 @@
 
   table .row-selected-simple:hover {
     background: #0054A620;
+  }
+
+  .hidden{
+    visibility: hidden;
+  }
+
+  .selection-actions{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .selection-actions .actions {
+    /*display: block;*/
+    margin-left: 1.5em;
+  }
+
+  .actions {
+    width: 230px;
   }
 
 </style>

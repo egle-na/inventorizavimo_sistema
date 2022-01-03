@@ -111,7 +111,7 @@
 
    <!-- Skolinti/Perleisti action -->
    <select-user v-if="selectUserOpen"
-                @close="selectUserOpen = false"
+                @close="selectUserOpen = false; errorMsg = ''"
                 @submitAction="gearAction"
                 :list="userList"
                 :type="actionType"
@@ -126,13 +126,16 @@
    </select-user>
 
    <!-- Nurašyti action -->
-   <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false">
+   <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false; errorMsg = ''">
      <p>Ar tikrai norite nurašyti <strong>{{ list.name }}</strong>?</p>
-     <button class="btn" @click="writeOffItem(list.id)">Taip</button>
+     <div class="btn-container">
+       <p class="error-msg">{{errorMsg}}</p>
+       <button class="btn" @click="writeOffItem(list.id)">Taip</button>
+     </div>
    </modulus-full>
 
    <!-- Grąžinti action -->
-   <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false">
+   <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false; errorMsg = ''">
      <p>Ar esate pasiruošę grąžinti <strong>This Item</strong>?</p>
      <button class="btn" @click="returnItem(list.id)">Taip</button>
    </modulus-full>
@@ -211,13 +214,14 @@
         } else return ''
       },
       statusText(){
+        // if(this.$store.getters.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
         if(this.$store.getters.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
           return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
         } else if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
           if(this.list.lent){ // jei paskolinta
             return 'Paskolintas';
           } else return 'Savininkas'; // nepaskolinta
-        } else return "Pasiskolinta"
+        } else return "Pasiskolinta";
         // else '';
       }
     },
@@ -259,9 +263,14 @@
               console.log('nurašytas');
               this.writeOffCardOpen = false;
               this.$router.go(-1);
+              this.errorMsg = '';
               // display msg, kad nurašytas
             })
-            .catch(error => console.error(error))
+            .catch(error => {
+              if(error.response.data.message === "Gear has a request" ){
+                this.errorMsg = 'Inventorius turi neatsakytą užklausą.';
+              } else this.errorMsg = error.response.data.message;
+            })
       },
 
       gearAction(user_id){

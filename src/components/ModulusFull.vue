@@ -105,4 +105,9 @@
     float: right;
   }
 
+  .error-msg {
+    margin: 0 auto 0 0;
+    color: #FF6464;
+  }
+
 </style>
