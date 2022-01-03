@@ -87,11 +87,11 @@
       constructMessage(item) {
         switch (item.status) {
           case 0:
-            return `${this.findName(item.lender_id)} jums skolina`;
+            return `${this.findName(item.sender_id)} jums skolina`;
           case 2:
             return `${this.findName(item.user_id)} jums grąžina`;
           case 3:
-            return `${this.findName(item.lender_id)} jums perleidžia`;
+            return `${this.findName(item.sender_id)} jums perleidžia`;
         }
       },
 

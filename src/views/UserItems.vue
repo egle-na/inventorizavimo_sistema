@@ -85,27 +85,23 @@
         <td @click="selectRow(index, $event)">{{ statusText(gear.lent, gear.own) }}</td>
         <td class="actions-cell">
           <table-actions>
-            <button title="Grąžinti" v-if="!gear.own && gear.lent">
+
+            <button title="Grąžinti" v-if="!gear.own && gear.lent" @click="openCard('return', gear.id)">
               <img src="../assets/icons/hand-return.svg" alt="">
             </button>
             <span class="action-divider" v-if="!gear.own && gear.lent" />
+
             <button title="Skolinti" v-if="(gear.own && !gear.lent)|| (!gear.own && gear.lent)">
               <img src="../assets/icons/hand-lend.svg" alt="">
             </button>
-            <span class="action-divider" v-if="(gear.own && !gear.lent)|| (!gear.own && gear.lent)" />
+            <span class="action-divider" v-if="(gear.own && !gear.lent)" />
+
             <button title="Perduoti" v-if="gear.own && !gear.lent">
               <img src="../assets/icons/hand-transfer.svg" alt="">
             </button>
-
-            <!-- Skolinti (jei savininkas arba pasiskolinta) -->
-            <!-- Grąžinti (jei paskolntas) -->
-            <!-- Perleist (jei savinikas) -->
-            <!-- Generuoti pdf -->
-            <!-- Ištrinti (jei savininkas) -->
-<!--            <btn-edit @btnClicked="openEditUser(item.id)" />-->
-<!--            <btn-add-inventory @btnClicked="addGearToUser(item.id)" />-->
             <span class="action-divider"  v-if="gear.own && !gear.lent" />
-            <btn-delete @btnClicked="openDeleteGear(item.id)" />
+
+            <btn-delete v-show="gear.own && !gear.lent" @btnClicked="openCard('delete', gear.id)" />
           </table-actions> <!-- item.id -->
         </td>
       </tr>
@@ -113,19 +109,26 @@
 
   </main>
 
-  <!-- Nurašyti action -->
-  <modulus-full v-show="deleteGearOpen" @close="deleteGearOpen = false; errorMsg = ''">
-    <p>Ar tikrai norite nurašyti <strong>{{  }}</strong>?</p>
-    <div class="btn-container">
-      <p class="error-msg">{{errorMsg}}</p>
-      <button class="btn" @click="deleteGear(list.id)">Taip</button>
-    </div>
-  </modulus-full>
-
   <!-- Add item card -->
   <modulus-full v-if="addGearOpen" @close="addGearOpen = false">
     <add-item :user="user_id" @success="addGearSuccess"/>
   </modulus-full>
+
+  <!-- Grąžinti action -->
+  <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false; errorMsg = ''">
+    <p>Ar esate pasiruošę grąžinti <strong>This Item</strong>?</p>
+    <button class="btn" @click="returnItem(list.id)">Taip</button>
+  </modulus-full>
+
+  <!-- Nurašyti action -->
+  <modulus-full v-if="deleteCardOpen" @close="deleteCardOpen = false; errorMsg = ''">
+    <p>Ar tikrai norite nurašyti <strong>{{ gearName(deleteCardOpen) }}</strong>?</p>
+    <div class="btn-container">
+      <p class="error-msg">{{errorMsg}}</p>
+      <button class="btn" @click="deleteGear(deleteCardOpen)">Taip</button>
+    </div>
+  </modulus-full>
+
 
 </div>
 </template>
@@ -140,13 +143,12 @@
   // import BtnEdit from "@/components/BtnEdit";
   // import BtnAddInventory from "@/components/BtnAddInventory";
   import BtnDelete from "@/components/BtnDelete";
+  import GearActionsMixin from "@/components/mixins/GearActionsMixin";
   export default {
     name: "UserItems",
-    mixins: [ DataMixin ],
+    mixins: [ DataMixin, GearActionsMixin ],
     components: {
       BtnDelete,
-      // BtnAddInventory,
-      // BtnEdit,
       AddItem,
       ModulusFull,
       TableComponent,
@@ -157,7 +159,10 @@
       return {
         url: 'https://inventor-system.herokuapp.com/api/gear',
         addGearOpen: false,
-        deleteGearOpen: false,
+        returnCardOpen: false,
+        lendCardOpen: false,
+        transferCardOpen: false,
+        deleteCardOpen: false,
         filter: 'all',
         rowsSelected: [],
         lastSelected: '',
@@ -199,91 +204,103 @@
       }
     },
     methods: {
-    statusText(lent, own){
-      return !own ? "Pasiskolinta" : lent ? "Paskolintas" : "Savininkas";
-    },
+      gearName(id) {
+        return this.filteredList.find(gear => gear.id === id).name;
+      },
+      statusText(lent, own){
+        return !own ? "Pasiskolinta" : lent ? "Paskolintas" : "Savininkas";
+      },
 
-    setFilter(filter) {
-      this.rowsSelected = this.filter !== filter && [];
-      this.filter = filter;
-    },
+      setFilter(filter) {
+        this.rowsSelected = this.filter !== filter && [];
+        this.filter = filter;
+      },
 
-    selectRow(id, event){
-      if(event.shiftKey){ // if shift key pressed
+      selectRow(id, event){
+        if(event.shiftKey){ // if shift key pressed
 
-        if(!this.rowsSelected.includes(id)){ // check multiple
-          if(id > this.lastSelected){ // check multiple from down to up
-            for(let i = id; i >= this.lastSelected; i--) {
-              this.addIfNotSelected(i);
+          if(!this.rowsSelected.includes(id)){ // check multiple
+            if(id > this.lastSelected){ // check multiple from down to up
+              for(let i = id; i >= this.lastSelected; i--) {
+                this.addIfNotSelected(i);
+              }
+            } else { // check multiple from up to down
+              for(let i = id; i <= this.lastSelected; i++) {
+                this.addIfNotSelected(i);
+              }
             }
-          } else { // check multiple from up to down
-            for(let i = id; i <= this.lastSelected; i++) {
-              this.addIfNotSelected(i);
+
+          } else { // uncheck multiple
+            let deselect = [];
+            if(id > this.lastSelected){ // uncheck multiple from down to up
+                console.log("uncheck multiple from down to up");
+              for(let i = id; i >= this.lastSelected; i--) {
+                console.log(id, this.lastSelected)
+                deselect.push(i);
+              }
+            } else { // uncheck multiple from up to down
+                console.log("uncheck multiple from up to down");
+              for(let i = id; i <= this.lastSelected; i++) {
+                deselect.push(i);
+              }
             }
+            this.rowsSelected = this.rowsSelected.filter(item => !deselect.includes(item));
           }
-
-        } else { // uncheck multiple
-          let deselect = [];
-          if(id > this.lastSelected){ // uncheck multiple from down to up
-              console.log("uncheck multiple from down to up");
-            for(let i = id; i >= this.lastSelected; i--) {
-              console.log(id, this.lastSelected)
-              deselect.push(i);
-            }
-          } else { // uncheck multiple from up to down
-              console.log("uncheck multiple from up to down");
-            for(let i = id; i <= this.lastSelected; i++) {
-              deselect.push(i);
-            }
+          this.lastSelected = id;
+        } else { // if shift key not pressed
+            this.toggleSelect(id);
+          if(!this.rowsSelected.length) { // something is selected
+            this.lastSelected = "";
           }
-          this.rowsSelected = this.rowsSelected.filter(item => !deselect.includes(item));
+        }
+      },
+
+      addIfNotSelected(item){
+        if(!this.rowsSelected.includes(item))
+        this.rowsSelected.push(item);
+      },
+
+      toggleSelect(id){
+        if(!this.rowsSelected.includes(id)){
+          this.rowsSelected.push(id);
+        } else {
+          this.rowsSelected = this.rowsSelected.filter(item => item !== id);
         }
         this.lastSelected = id;
-      } else { // if shift key not pressed
-          this.toggleSelect(id);
-        if(!this.rowsSelected.length) { // something is selected
-          this.lastSelected = "";
+      },
+
+      selectAll(){
+        for(let i = 0; i < this.filteredList.length; i++){
+          this.rowsSelected.push(i);
         }
-      }
-    },
+        console.log('all')
+        this.lastSelected = '';
+      },
 
-    addIfNotSelected(item){
-      if(!this.rowsSelected.includes(item))
-      this.rowsSelected.push(item);
-    },
+      listSelected(){
+        const sendList = this.rowsSelected.map(row => this.list[row]);
+        sendList.forEach(item => console.log(item.name));
+      },
 
-    toggleSelect(id){
-      if(!this.rowsSelected.includes(id)){
-        this.rowsSelected.push(id);
-      } else {
-        this.rowsSelected = this.rowsSelected.filter(item => item !== id);
-      }
-      this.lastSelected = id;
-    },
+      addGearSuccess() {
+        console.log('success');
+        this.addGearOpen = false;
+        if(this.$route.params.user_id){
+          this.getData(this.url + '/user/' + this.user_id);
+        } else {
+          this.getData(this.url);
+        }
+      },
 
-    selectAll(){
-      for(let i = 0; i < this.filteredList.length; i++){
-        this.rowsSelected.push(i);
-      }
-      console.log('all')
-      this.lastSelected = '';
-    },
+      openCard(name, id) {
+        if(name === 'return'){
+          this.returnCardOpen = id;
 
-    listSelected(){
-      const sendList = this.rowsSelected.map(row => this.list[row]);
-      sendList.forEach(item => console.log(item.name));
+        } else if(name === 'delete'){
+          this.deleteCardOpen = id;
+        }
+      },
     },
-
-    addGearSuccess() {
-      console.log('success');
-      this.addGearOpen = false;
-      if(this.$route.params.user_id){
-        this.getData(this.url + '/user/' + this.user_id);
-      } else {
-        this.getData(this.url);
-      }
-    }
-  },
 
 
   }

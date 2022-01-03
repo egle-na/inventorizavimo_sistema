@@ -16,7 +16,7 @@
       <div>
         <div v-for="notification in list" :key="notification.id" class="message">
 <!--          <p>{{ findName(notification.lender_id) }} jums {{ requestType(notification.event, 'history') }} <strong>{{ notification.gear[0].name }}</strong>.</p>-->
-          <p>{{ constructMessage(notification, 'history') }} <strong>{{ notification.gear[0].name }}</strong>.</p>
+          <p>{{ constructMessage(notification) }} <strong>{{ notification.gear[0].name }}</strong>.</p>
           <p class="date">{{ notification.created_at.split('T')[0] }}</p>
         </div>
       </div>
@@ -61,7 +61,7 @@
         this.getData(this.url);
       },
 
-      constructMessage(item, type) {
+      constructMessage(item) {
         // console.log(item.lender_id);
         // console.log(item.sender_id);
         // if(type === 'request'){
@@ -74,17 +74,17 @@
         //       return `${this.findName(item.lender_id)} jums perleidžia`;
         //   }
         // } else
-        if(type === 'history' && item.user_id === this.$store.getters.user.id) {
+        if(item.user_id === this.$store.getters.user.id) {
           switch (item.event){
             case 0:
               return `${this.findName(item.sender_id)} jums paskolino`;
             case 1:
-              // return `${this.findName(item.sender_id)} jums grąžino`;
-              return `Jūs grąžinote ${this.findName(item.user_id)}`;
+              return `${this.findName(item.sender_id)} jums grąžino`;
+              // return `Jūs grąžinote ${this.findName(item.sender_id)}`;
             case 2:
               return `${this.findName(item.sender_id)} jums atidavė`;
           }
-        } else if (type === 'history' && item.user_id !== this.$store.getters.user.id) {
+        } else if (item.user_id !== this.$store.getters.user.id) {
           switch (item.event){
             case 0:
               return `Jūs paskolinote ${this.findName(item.user_id)}`;
@@ -93,7 +93,7 @@
             case 2:
               return `Jūs perleidote ${this.findName(item.user_id)}`;
           }
-        } else return 'elp' //
+        } else return 'Nežinomas' //
 
 
 

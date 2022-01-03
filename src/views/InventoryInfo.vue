@@ -7,7 +7,7 @@
      <div class="title-container">
        <h1>{{ list.name }} <span>{{ statusText }}</span></h1>
 
-       <div class="actions">
+       <div class="actions" v-if="statusText !== 'Paskolintas'">
          <button @click="actionCardOpen = !actionCardOpen">
            <img src="../assets/icons/action-dots.svg" alt="">
          </button>
@@ -25,10 +25,14 @@
                    v-show="statusText === 'Pasiskolinta'"
                    @click="returnCardOpen = true"
            >Grąžinti</button>
-           <button class="action-btn" @click="generatePDF">Generuoti PDF</button>
+           <button class="action-btn" @click="generatePDF(list.id)">Generuoti PDF</button>
            <button class="action-btn" @click="writeOffCardOpen = true">Nurašyti</button>
          </action-card>
        </div>
+       <button v-else class="btn" @click="generatePDF(list.id)">
+         Generuoti PDF
+       </button>
+
      </div><!-- /Title container -->
 
      <!-- Main -->
@@ -130,7 +134,7 @@
      <p>Ar tikrai norite nurašyti <strong>{{ list.name }}</strong>?</p>
      <div class="btn-container">
        <p class="error-msg">{{errorMsg}}</p>
-       <button class="btn" @click="writeOffItem(list.id)">Taip</button>
+       <button class="btn" @click="deleteGear(list.id)">Taip</button>
      </div>
    </modulus-full>
 
@@ -151,10 +155,11 @@
   import ModulusFull from "@/components/ModulusFull";
   import DataMixin from "@/components/mixins/DataMixin";
   import UsersMixin from "@/components/mixins/UsersMixin";
+  import GearActionsMixin from "@/components/mixins/GearActionsMixin";
 
   export default {
     name: "InventoryInfo",
-    mixins: [ DataMixin, UsersMixin ],
+    mixins: [ DataMixin, UsersMixin, GearActionsMixin ],
     components: {
       ModulusFull,
       SelectUser,
@@ -191,21 +196,6 @@
       this.getNames();
       this.getHistory();
     },
-    // watch: {
-    //   list: function () {
-        // console.log(this.additionalList[0])
-        //   this.ownersName = `${this.additionalList.filter(user => user.id === this.list.user_id)[0].first_name} ${this.additionalList.filter(user => user.id === this.list.user_id)[0].last_name}`
-        // if(this.list.user_id === this.$store.getters.user.id) {
-        //   this.ownersName = `${this.$store.getters.user.first_name} ${this.$store.getters.user.last_name}`
-        // }
-        // if (this.list.user_id && !this.ownersName) {
-
-          // this.$http.get('https://inventor-system.herokuapp.com/api/users/' + this.list.user_id, this.config)
-          //     .then(response => this.ownersName = `${response.data.first_name} ${response.data.last_name}`)
-          //     .catch(error => error.response.data.message)
-        // }
-    //   }
-    // },
     computed: {
       ownerName() {
         if(this.userList.length){
@@ -223,7 +213,10 @@
           } else return 'Savininkas'; // nepaskolinta
         } else return "Pasiskolinta";
         // else '';
-      }
+      },
+      // statusText(){
+      //   return !this.list.own ? this.list.lent ? "Pasiskolinta" : "Savininkas" : "Savininkas";
+      // },
     },
     methods: {
       getHistory() {
@@ -238,7 +231,7 @@
         this.actionCardOpen = false;
       },
 
-      returnItem() {
+      returnItem() { // actions mixin
         console.log('return');
         this.postData('https://inventor-system.herokuapp.com/api/requests/return/' + this.$route.params.inventory_id,
             {},
@@ -251,12 +244,12 @@
         this.returnCardOpen = false;
       },
 
-      generatePDF() {
-        console.log('PDF sugeneruotas');
-        this.actionCardOpen = false;
-      },
+      // generatePDF() { // gear Actions mixin
+      //   console.log('PDF sugeneruotas');
+      //   this.actionCardOpen = false;
+      // },
 
-      writeOffItem() {
+      writeOffItem() { // actions mixin deleteGear
 
         this.$http.delete('https://inventor-system.herokuapp.com/api/gear/' + this.$route.params.inventory_id, this.config)
             .then(() => {
@@ -273,7 +266,7 @@
             })
       },
 
-      gearAction(user_id){
+      gearAction(user_id){ // actions mixin
         let url = '';
         // if(user_id === this.$store.getters.user.id){
         //   this.errorMsg = `Inventoriaus sau ${this.actionType.toLowerCase()} negalima.`
