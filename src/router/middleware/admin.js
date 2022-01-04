@@ -1,5 +1,5 @@
 export default function admin ({ next, store }){
-    if(!store.getters.isAdmin) {
+    if(!store.getters.user.isAdmin) {
         return next({
             name: 'user-inventory'
         })

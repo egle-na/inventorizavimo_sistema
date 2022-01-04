@@ -12,10 +12,10 @@
     <div class="expand-container">
       <button id="notifications-btn" @click="notificationOpen = !notificationOpen">
         <img src="../assets/icons/Notification-bell.svg" alt="">
-        <span v-show="notificationsList.length" id="unread-notification"></span>
+        <span v-show="$store.getters.notifications.length" id="unread-notification"></span>
       </button>
       <notification-card v-show="notificationOpen" @close="notificationOpen = false" >
-        <request-component :requestsList="notificationsList"/>
+        <request-component />
       </notification-card>
     </div>
 
@@ -41,6 +41,7 @@
   import UserCard from "@/components/UserCard";
   import DataMixin from "@/components/mixins/DataMixin";
   import RequestComponent from "@/components/RequestComponent";
+  import usersMixin from "@/components/mixins/UsersMixin";
 
   // import jwt_decode from "jwt-decode";
 
@@ -53,7 +54,7 @@
       NotificationCard
     },
     // props: [ 'notification', 'name' ],
-    mixins: [ DataMixin ],
+    mixins: [ DataMixin, usersMixin ],
     data() {
       return {
         notification: true,
@@ -62,6 +63,9 @@
       }
     },
     created() {
+      if(!this.$store.getters.allUsers.length){
+        this.getUsersList();
+      }
       this.getNotifications();
     },
     computed: {

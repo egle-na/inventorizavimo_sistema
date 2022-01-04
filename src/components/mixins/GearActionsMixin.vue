@@ -41,6 +41,7 @@
               } else this.errorMsg = error.response.data.message;
             })
       },
+
       gearAction(user_id, id, actionType){
         console.log(user_id, id);
         let url = '';
@@ -85,6 +86,7 @@
 
       generatePDF() {
         console.log('PDF sugeneruotas');
+        this.$http.get()
         this.actionCardOpen = false;
       },
     }

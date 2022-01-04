@@ -1,48 +1,54 @@
 <template>
   <div>
-    <div v-for="request in notificationsList" :key="request.id" class="message">
+    <div v-for="request in $store.getters.notifications" :key="request.id" class="message">
       <div>
         <p class="date">{{ request.created_at.split('T')[0] }}</p>
         <p>{{ constructMessage(request) }} <strong>{{ request.gear[0].name }}</strong>.</p>
       </div>
 
       <div class="btn-container">
-        <button class="btn faded" @click="declineRequest(request.id);$emit('responded')">Atmesti</button>
+        <button class="btn faded" @click="declineRequest(request.id, request.status);$emit('responded')">Atmesti</button>
         <button class="btn" @click="acceptRequest(request.id, request.status)">Priimti</button>
       </div>
     </div>
-    <div v-if="!notificationsList.length">
+    <div v-if="!$store.getters.notifications.length">
       <p>Šiuo metu naujų pranešimų neturite.</p>
     </div>
   </div>
 </template>
 <script>
   import DataMixin from "@/components/mixins/DataMixin";
+  import UsersMixin from "@/components/mixins/UsersMixin";
 
   export default {
     name: 'RequestComponent',
     props: [ 'requestsList', 'namesList' ],
-    mixins: [ DataMixin ],
+    mixins: [ DataMixin, UsersMixin ],
     data() {
       return {
-        usersList: []
+        // usersList: []
       }
     },
     created() {
-      this.getNotifications();
-      this.notificationsList = this.requestsList;
-      this.usersList = this.namesList;
+      // this.getNotifications();
+      // this.notificationsList = this.requestsList;
+      // this.usersList = this.namesList;
       // if(!this.namesList && this.notificationsList.length) {
       //   this.getNames();
       // } else this.usersList = this.namesList
     },
-    watch: {
-      notificationsList() {
-        if(!this.usersList){
-          this.getNames();
-        }
-      }
-    },
+    // computed:{
+    //   requests() {
+    //     return this.$store.state.notifications;
+    //   }
+    // },
+    // watch: {
+    //   notificationsList() {
+    //     if(!this.usersList){
+    //       this.getNames();
+    //     }
+    //   }
+    // },
     methods: {
       acceptRequest(id, status){
         let url = ''
@@ -60,28 +66,26 @@
         this.$http.post(url + id, {}, this.config)
             .then(() => {
               // this.$router.go(0); // man nepatinka šitas
-              console.log('elp');
+              // console.log('elp');
 
-              this.$emit('responded'); // doesnt work
-              console.log('me is here')
+              // this.$emit('responded'); // doesnt work
+              // console.log('me is here')
               this.getNotifications();
               // this.getAdditionalData(this.addit_url);
               // this.getData(this.url);
             })
       },
 
-      declineRequest(id) {
-        this.$http.post('https://inventor-system.herokuapp.com/api/requests/declineReturn/'+ id,{}, this.config)
-            .then(() => {
-              // this.getAdditionalData(this.addit_url);
-              // this.getData(this.url);
-              console.log('elp');
-
-              this.$emit("responded");
-              console.log('me is here', this)
-
-              this.getNotifications();
-            })
+      declineRequest(id, status) {
+        if (status === 2) {
+          this.$http.post('https://inventor-system.herokuapp.com/api/requests/declineReturn/' + id,{}, this.config)
+              .then(this.getNotifications) // is it too short?
+              .catch(this.getNotifications)
+        } else {
+          this.$http.delete('https://inventor-system.herokuapp.com/api/requests/' + id, this.config)
+              .then(this.getNotifications)
+              .catch(this.getNotifications)
+        }
       },
 
       constructMessage(item) {
@@ -94,24 +98,6 @@
             return `${this.findName(item.sender_id)} jums perleidžia`;
         }
       },
-
-      findName(id) {
-        if(this.usersList){
-          let user = this.usersList.filter(user => user.id === id)[0];
-          return user ? user.first_name + ' ' + user.last_name : "Nežinomas"
-        }
-        return ''
-      },
-
-      getNames() {
-        this.$http.get('https://inventor-system.herokuapp.com/api/users', this.config)
-            .then(response => {
-              console.log(response.data)
-              this.usersList = response.data;
-            }).catch(() => {
-        })
-      },
-
     }
   }
 </script>

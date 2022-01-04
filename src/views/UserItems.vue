@@ -142,7 +142,7 @@
   <select-user v-if="selectUserOpen"
                @close="selectUserOpen = false; errorMsg = ''"
                @submitAction="gearAction( ...arguments, selectUserOpen.id, selectUserOpen.type )"
-               :list="userList"
+               :list="$store.getters.allUsers"
                :type="selectUserOpen.type"
                :gear_owner="selectUserOpen.owner_id"
                :errorMsg="errorMsg"
@@ -207,7 +207,7 @@
       } else {
         this.getData(this.url);
       }
-      this.getNames(); // store
+      // this.getNames(); // store
     },
     computed: {
       anySelected() {

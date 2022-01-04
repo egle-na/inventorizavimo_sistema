@@ -7,7 +7,7 @@
       return {
         list: [],
         additionalList: [],
-        notificationsList: [],
+        // notificationsList: [],
         config: {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`
@@ -111,12 +111,13 @@
       },
 
       getNotifications(){
-        console.log('get notif')
+        // console.log('get notif')
         this.$http.get('https://inventor-system.herokuapp.com/api/requests/pending', this.config)
             .then(response => {
               // console.log("notitifations: ", response.data);
               // this.notificationsList = response.data.filter(request => request.status !== 1);
-              this.notificationsList = response.data;
+              // this.notificationsList = response.data;
+              this.$store.commit('setNotifications', response.data);
             }).catch(error => {
           console.error(error);
           if(error.response.status === 500){

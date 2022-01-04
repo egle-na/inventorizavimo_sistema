@@ -4,26 +4,29 @@
 
     <main>
 
-      <div v-if="notificationsList.length">
+      <div v-if="$store.getters.notifications.length">
         <h3>Neatsakytos užklausos</h3>
-        <request-component :requestsList="notificationsList"
-                    :namesList="userList"
-                    @responded="refresh"
-        />
+        <request-component />
+<!--            :requestsList="notificationsList"-->
+<!--                    :namesList="$store.getters.allUsers"-->
+
+
       </div>
 
       <h3>Pranešimų istorija</h3>
-      <div>
+      <div v-if="!list.length">
+        <p>Pranešimų dar neturite.</p>
+      </div>
+
+      <div v-else>
         <div v-for="notification in list" :key="notification.id" class="message">
 <!--          <p>{{ findName(notification.lender_id) }} jums {{ requestType(notification.event, 'history') }} <strong>{{ notification.gear[0].name }}</strong>.</p>-->
-          <p>{{ constructMessage(notification) }} <strong>{{ notification.gear[0].name }}</strong>.</p>
+<!--          <p>{{ constructMessage(notification) }} <strong>{{ notification.gear[0].name }}</strong>.</p>-->
+          <p>{{ constructMessage(notification) }} <strong>{{ getGearName(notification) }}</strong>.</p>
           <p class="date">{{ notification.created_at.split('T')[0] }}</p>
         </div>
       </div>
 
-      <div v-if="!list.length">
-        <p>Pranešimų dar neturite.</p>
-      </div>
 
     </main>
   </div>
@@ -33,10 +36,11 @@
   import Header from "@/components/Header";
   import DataMixin from "@/components/mixins/DataMixin";
   import RequestComponent from "@/components/RequestComponent";
+  import UsersMixin from "@/components/mixins/UsersMixin";
 
   export default {
     name: "NotificationHistory",
-    mixins: [ DataMixin ],
+    mixins: [ DataMixin, UsersMixin ],
     components: {
       RequestComponent,
       Header,
@@ -45,16 +49,33 @@
       return {
         url: 'https://inventor-system.herokuapp.com/api/history',
         // addit_url: 'https://inventor-system.herokuapp.com/api/requests',
-        userList: [], // User mixin
+        // userList: [], // User mixin
       }
     },
     created(){
       console.log("notification history list:")
       this.getData(this.url);
-      this.getNotifications();
-      this.getNames();
+      // this.getNotifications();
+      // this.getNames();
+    },
+    // watch:{
+    //   '$store.state.notifications'() {
+    //     console.log('got notifications');
+    //   }
+    // },
+    computed: {
+      // requests() {
+      //   return this.$store.getters.notifications;
+      // }
     },
     methods: {
+
+      getGearName(notification) {
+        if(notification.gear.length){
+          return notification.gear[0].name;
+        }
+        return 'nežinomą inventorių';
+      },
 
       refresh() {
         console.log('me is not here')
@@ -62,18 +83,6 @@
       },
 
       constructMessage(item) {
-        // console.log(item.lender_id);
-        // console.log(item.sender_id);
-        // if(type === 'request'){
-        //   switch (item.status){
-        //     case 0:
-        //       return `${this.findName(item.lender_id)} jums skolina`;
-        //     case 2:
-        //       return `${this.findName(item.lender_id)} jums grąžina`;
-        //     case 3:
-        //       return `${this.findName(item.lender_id)} jums perleidžia`;
-        //   }
-        // } else
         if(item.user_id === this.$store.getters.user.id) {
           switch (item.event){
             case 0:
@@ -108,46 +117,46 @@
       //   }
       },
 
-      getNames() { // User mixin
-        this.$http.get('https://inventor-system.herokuapp.com/api/users', this.config)
-            .then(response => {
-              console.log(response.data)
-              this.userList = response.data;
-            }).catch(() => {
-        })
-      },
+      // getNames() { // User mixin
+      //   this.$http.get('https://inventor-system.herokuapp.com/api/users', this.config)
+      //       .then(response => {
+      //         console.log(response.data)
+      //         this.userList = response.data;
+      //       }).catch(() => {
+      //   })
+      // },
 
-      findName(id) { // User mixin
-        if(this.userList.length){
-          let user = this.userList.filter(user => user.id === id)[0];
-          return user ? user.first_name + ' ' + user.last_name : "Nežinomas"
-        }
-        return ''
-      },
+      // findName(id) { // User mixin
+      //   if(this.userList.length){
+      //     let user = this.userList.filter(user => user.id === id)[0];
+      //     return user ? user.first_name + ' ' + user.last_name : "Nežinomas"
+      //   }
+      //   return ''
+      // },
 
-      requestType(status, type) {
-        if(type === 'user') {
-          switch (status) {
-            case 0:
-              return 'paskolino';
-            case 1:
-              return 'grąžino';
-            case 2:
-              return 'atidavė';
-          }
-        } else {
-          switch (status) {
-            case 0:
-              return 'skolina';
-            case 1:
-              return 'paskolino';
-            case 2:
-              return 'grąžina';
-            case 3:
-              return 'perleidžia';
-          }
-        }
-      },
+      // requestType(status, type) {
+      //   if(type === 'user') {
+      //     switch (status) {
+      //       case 0:
+      //         return 'paskolino';
+      //       case 1:
+      //         return 'grąžino';
+      //       case 2:
+      //         return 'atidavė';
+      //     }
+      //   } else {
+      //     switch (status) {
+      //       case 0:
+      //         return 'skolina';
+      //       case 1:
+      //         return 'paskolino';
+      //       case 2:
+      //         return 'grąžina';
+      //       case 3:
+      //         return 'perleidžia';
+      //     }
+      //   }
+      // },
 
     }
   }

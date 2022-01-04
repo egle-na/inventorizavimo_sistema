@@ -18,7 +18,7 @@
                    v-if="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
            >Skolinti</button>
            <button class="action-btn"
-                   v-show="statusText === 'Savininkas' || this.$store.getters.isAdmin === true && !list.lent"
+                   v-show="statusText === 'Savininkas' || this.$store.getters.user.isAdmin === true && !list.lent"
                    @click="openSelect('Perleisti')"
            >Perleisti</button>
            <button class="action-btn"
@@ -67,7 +67,7 @@
                    v-show="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
                    @click="openSelect('Skolinti')">Skolinti</button>
            <button class="btn"
-                   v-show="statusText === 'Savininkas' || this.$store.getters.isAdmin === true"
+                   v-show="statusText === 'Savininkas' || this.$store.getters.user.isAdmin === true"
                    @click="openSelect('Perleisti')">Perleisti</button>
          </div>
        </div><!-- /info container -->
@@ -78,7 +78,7 @@
            <h3>Istorija</h3>
          </div>
          <table-component>
-<!--           <tr>--> <!-- Pavizdys -->
+<!--           <tr>--> <!-- Pvz -->
 <!--             <td class="no-padding">-->
 <!--               <img v-if="history.event === 0" src="../assets/icons/lend.svg" alt="">-->
 <!--               <img v-else-if="history.event === 1" src="../assets/icons/return.svg" alt="">-->
@@ -117,17 +117,16 @@
    <select-user v-if="selectUserOpen"
                 @close="selectUserOpen = false; errorMsg = ''"
                 @submitAction="gearAction(...arguments, list.id, actionType)"
-                :list="userList"
+                :list="$store.getters.allUsers"
                 :type="actionType"
                 :gear_owner="list.user_id"
-                :errorMsg="errorMsg"
-   >
+                :errorMsg="errorMsg" />
 <!--     <select class="user-select" v-model="selectedUser">-->
 <!--       <option selected hidden>Pasirinkite darbuotoją:</option>-->
 <!--       <option v-for="user in additionalList" :key=" user.id"-->
 <!--               :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>-->
 <!--     </select>-->
-   </select-user>
+<!--   </select-user>-->
 
    <!-- Nurašyti action -->
    <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false; errorMsg = ''">
@@ -188,7 +187,7 @@
       }
     },
     created() {
-      if(this.$store.getters.isAdmin === true){
+      if(this.$store.getters.user.isAdmin === true){
         this.url = 'https://inventor-system.herokuapp.com/api/gear/all/' + this.$route.params.inventory_id;
         // this.users_url = 'https://inventor-system.herokuapp.com/api/users/all'
       }
@@ -196,19 +195,19 @@
         this.$router.push({name: 'user-inventory'});
       });
 
-      this.getNames();
+      // this.getNames();
       this.getHistory();
     },
     computed: {
       ownerName() {
-        if(this.userList.length){
+        if(this.$store.getters.allUsers.length){
           // return `${this.additionalList.filter(user => user.id === this.list.user_id)[0].first_name} ${this.additionalList.filter(user => user.id === this.list.user_id)[0].last_name}`;
           return this.findName(this.list.user_id);
         } else return ''
       },
       statusText(){
-        // if(this.$store.getters.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
-        if(this.$store.getters.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
+        // if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
+        if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
           return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
         } else if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
           if(this.list.lent){ // jei paskolinta

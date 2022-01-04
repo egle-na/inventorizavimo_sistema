@@ -10,7 +10,7 @@
         <li><router-link to="/all-inventory">Inventorius</router-link></li>
 <!--        <li><router-link to="/add-user">Pridėti Darbuotoją</router-link></li>-->
 <!--        <li><router-link to="/add-inventory">Pridėti įrangą</router-link></li>-->
-        <li><router-link to="/settings">Nustatymai</router-link></li>
+<!--        <li><router-link to="/settings">Nustatymai</router-link></li>-->
       </ul>
     </div>
 
@@ -54,7 +54,7 @@
     min-height: 100px;
     height: 100%;
     /*max-height: 350px;*/
-    max-height: 250px;
+    max-height: 210px;
 
   }
 

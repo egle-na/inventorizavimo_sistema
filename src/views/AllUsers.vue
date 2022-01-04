@@ -127,11 +127,12 @@
   import BtnAddInventory from "@/components/BtnAddInventory";
   import BtnEdit from "@/components/BtnEdit";
   import AddItem from "@/components/AddItem";
+  import usersMixin from "@/components/mixins/UsersMixin";
   // import BtnView from "@/components/BtnView";
 
   export default {
     name: "AllUsers",
-    mixins: [ DataMixin ],
+    mixins: [ DataMixin, usersMixin ],
     data(){
       return {
         url: "https://inventor-system.herokuapp.com/api/users/all",
@@ -172,7 +173,8 @@
       if( this.$route.params.company_id ){
         this.params.company = this.$route.params.company_id;
       }
-      this.getData(this.url);
+      this.getDataQuery(this.url, this.params);
+      this.getUsersList(); // get users list
       this.getAdditionalData("https://inventor-system.herokuapp.com/api/companies")
     },
     methods: {
@@ -188,6 +190,7 @@
       userAdded(){
         console.log("success");
         this.getData(this.url);
+        this.getUsersList(); // store updated users list
         this.addUserCardOpen = false;
       },
 
@@ -228,8 +231,9 @@
           ).then(() => {
             this.editUserCardOpen = false;
             // this.errorMsg = '';
-            this.refreshUsersToken();
-            this.getData(this.url);
+            this.refreshUsersToken(); // do I?
+            this.getDataQuery(this.url, this.params);
+            this.getUsersList(); // store updated users list
           }).catch(err => {
             if(err.response.status === 401){
               this.$router.push('/')
@@ -248,6 +252,7 @@
         this.selectedUser = {};
         this.addGearOpen = false;
         this.getDataQuery(this.url, this.params);
+        // get updated users list?
       },
 
       openEditUser(id){

@@ -58,19 +58,21 @@
     },
     methods: {
 
-      userName(user){
-        return user.first_name + ' ' + user.last_name
-      },
+      // userName(user){
+      //   return user.first_name + ' ' + user.last_name
+      // },
 
       doSearch(event) {
         this.searchName = event.target.value;
 
       },
+
       closeSearchList() { // idk, doesn't feel right
         setTimeout (() => {
           this.searchActive = false;
         }, 200)
       },
+
       closeCard() {
         this.searchName = '';
         this.$emit('close');
