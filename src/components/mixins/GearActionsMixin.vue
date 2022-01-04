@@ -86,7 +86,7 @@
 
       generatePDF() {
         console.log('PDF sugeneruotas');
-        this.$http.get()
+        // this.$http.get()
         this.actionCardOpen = false;
       },
     }
