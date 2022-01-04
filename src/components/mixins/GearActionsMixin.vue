@@ -84,10 +84,28 @@
         )
       },
 
-      generatePDF() {
+      generatePDF(id, name) {
         console.log('PDF sugeneruotas');
-        // this.$http.get()
-        this.actionCardOpen = false;
+        // if(this.$store.getters.user.isAdmin) {
+        //
+        // }
+        this.$http.get('https://inventor-system.herokuapp.com/api/gear/pdf/' + id, {...this.config, responseType: 'arraybuffer'})
+            .then(response => {
+              const blob = new Blob([response.data], {type: 'application/pdf'});
+              if(window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveBlob(blob, name);
+              }
+              else{
+                const elem = window.document.createElement('a');
+                elem.href = window.URL.createObjectURL(blob);
+                elem.download = name;
+                document.body.appendChild(elem);
+                elem.click();
+                document.body.removeChild(elem);
+                // window.URL.revokeObjectURL(blob);
+              }
+              this.actionCardOpen = false;
+            })
       },
     }
   }

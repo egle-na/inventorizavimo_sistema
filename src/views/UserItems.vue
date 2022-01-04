@@ -39,18 +39,15 @@
     <div :class="{'hidden': !anySelected}" class="selection-actions">
       <p>Pasirinkta: <span>{{ rowsSelected.length }}</span></p>
       <table-actions class="actions">
-        <button title="Grąžinti" v-if="!$route.params.user_id">
-          <img src="../assets/icons/hand-return.svg" alt="">
-        </button>
+        <btn-return title="Grąžinti" v-if="!$route.params.user_id" />
         <span class="action-divider" v-if="!$route.params.user_id" />
-        <button title="Skolinti" v-if="!$route.params.user_id">
-          <img src="../assets/icons/hand-lend.svg" alt="">
-        </button>
+
+        <btn-lend title="Skolinti" v-if="!$route.params.user_id" />
         <span class="action-divider" v-if="!$route.params.user_id" />
-        <button title="Perduoti">
-          <img src="../assets/icons/hand-transfer.svg" alt="">
-        </button>
+
+        <btn-transfer title="Perduoti" />
         <span class="action-divider" />
+
         <btn-delete />
       </table-actions>
     </div>
@@ -86,25 +83,21 @@
         <td class="actions-cell">
           <table-actions>
 
-            <button title="Grąžinti"
+            <btn-downloadPDF v-if="gear.own && gear.lent" />
+
+            <btn-return title="Grąžinti"
                     v-if="!gear.own && gear.lent && !$route.params.user_id"
-                    @click="openCard('return', gear.id)">
-              <img src="../assets/icons/hand-return.svg" alt="">
-            </button>
+                    @btnClicked="openCard('return', gear.id)" />
             <span class="action-divider" v-if="!gear.own && gear.lent && !$route.params.user_id" />
 
-            <button title="Skolinti"
+            <btn-lend title="Skolinti"
                     v-if="((gear.own && !gear.lent) || (!gear.own && gear.lent)) && !$route.params.user_id"
-                    @click="openCard('Skolinti', gear.id)">
-              <img src="../assets/icons/hand-lend.svg" alt="">
-            </button>
+                    @btnClicked="openCard('Skolinti', gear.id)" />
             <span class="action-divider" v-if="(gear.own && !gear.lent) && !$route.params.user_id" />
 
-            <button title="Perduoti"
+            <btn-transfer title="Perduoti"
                     v-if="gear.own && !gear.lent"
-                    @click="openCard('Perleisti', gear.id)">
-              <img src="../assets/icons/hand-transfer.svg" alt="">
-            </button>
+                    @btnClicked="openCard('Perleisti', gear.id)" />
             <span class="action-divider"  v-if="gear.own && !gear.lent" />
 
             <btn-delete v-show="gear.own && !gear.lent" @btnClicked="openCard('delete', gear.id)" />
@@ -171,10 +164,19 @@
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
   import SelectUser from "@/components/SelectUser";
   import UsersMixin from "@/components/mixins/UsersMixin";
+  import BtnDownloadPDF from "@/views/BtnDownloadPDF";
+  import BtnReturn from "@/components/BtnReturn";
+  import BtnLend from "@/components/BtnLend";
+  import BtnTransfer from "@/components/BtnTransfer";
+
   export default {
     name: "UserItems",
     mixins: [ DataMixin, GearActionsMixin, UsersMixin ],
     components: {
+      BtnTransfer,
+      BtnLend,
+      BtnReturn,
+      BtnDownloadPDF,
       SelectUser,
       BtnDelete,
       AddItem,

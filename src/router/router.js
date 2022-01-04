@@ -18,6 +18,7 @@ import auth from "@/router/middleware/auth";
 import admin from "@/router/middleware/admin";
 import CreatePassword from "@/views/CreatePassword";
 import jwt_decode from "jwt-decode";
+// import axios from "axios";
 
 Vue.use(VueRouter);
 
@@ -181,6 +182,16 @@ router.beforeEach((to, from, next) => {
         next,
         store
     }
+
+    // axios.post('https://inventor-system.herokuapp.com/api/auth/refresh',
+    //     {},
+    //     { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }})
+    //     .then(response => {
+    //         localStorage.setItem("access_token", response.data.access_token);
+    //
+    //     }).catch(() => {
+    //         localStorage.clear();
+    // }) // ar taip tinka?
     return middleware[0]({
         ...context
     })

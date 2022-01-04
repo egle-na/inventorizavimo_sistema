@@ -25,11 +25,11 @@
                    v-show="statusText === 'Pasiskolinta'"
                    @click="returnCardOpen = true"
            >Grąžinti</button>
-           <button class="action-btn" @click="generatePDF(list.id)">Generuoti PDF</button>
+           <button class="action-btn" @click="generatePDF(list.id, list.name)">Generuoti PDF</button>
            <button class="action-btn" @click="writeOffCardOpen = true">Nurašyti</button>
          </action-card>
        </div>
-       <button v-else class="btn" @click="generatePDF(list.id)">
+       <button v-else class="btn" @click="generatePDF(list.id, list.name)">
          Generuoti PDF
        </button>
 

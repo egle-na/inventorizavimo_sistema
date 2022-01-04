@@ -174,7 +174,7 @@
         this.params.company = this.$route.params.company_id;
       }
       this.getDataQuery(this.url, this.params);
-      this.getUsersList(); // get users list
+      // this.getUsersList(); // get users list
       this.getAdditionalData("https://inventor-system.herokuapp.com/api/companies")
     },
     methods: {

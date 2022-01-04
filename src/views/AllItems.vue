@@ -8,11 +8,6 @@
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
       </button>
-      <!-- Company filter-->
-<!--      <select class="company-filter" v-model="companyFilter">-->
-<!--        <option selected value="">Visos įmonės</option>-->
-<!--        <option v-for="item in additionalList" :key="item.name" :value="item.id">{{ item.name }}</option>-->
-<!--      </select>-->
     </div> <!-- /title container-->
 
     <search @setSearch="setSearch"/>
@@ -72,37 +67,6 @@
 
   <modulus-full v-if="addGearOpen" @close="addGearOpen = false">
     <add-item :user="$store.getters.user.id" @success="addGearSuccess"/>
-<!--      <h2>Pridėti Įrangą</h2>-->
-
-<!--      <form-item @onSubmit="addNewGear">-->
-<!--        <input type="text" placeholder="Pavadinimas" required class="input-long" v-model="newGear.name" >-->
-<!--        <textarea placeholder="Aprašymas" required class="input-long" />&lt;!&ndash; nepriskirta &ndash;&gt;-->
-<!--        <div>-->
-<!--          <input type="text" placeholder="Kodas" required >&lt;!&ndash; nepriskirta &ndash;&gt;-->
-<!--          <input type="text" placeholder="Serijos Numeris" required v-model="newGear.serial_number" >-->
-<!--        </div>-->
-<!--        <div class="relative-container">-->
-<!--          <input type="text" placeholder="Kiekis" required >&lt;!&ndash; nepriskirta &ndash;&gt;-->
-<!--          <input type="number" step=".01" placeholder="Vieneto Kaina" id="unit-price" required v-model="newGear.unit_price">-->
-<!--          <label for="unit-price" id="euro-sign">€</label>-->
-<!--        </div>-->
-
-<!--        <div class="btn-container">-->
-<!--          <div>-->
-<!--            <label>-->
-<!--              <input type="radio" name="long-term" value="true" v-model="newGear.long_term">-->
-<!--              Ilgalaikė įranga-->
-<!--            </label>-->
-
-<!--            <label>-->
-<!--              <input type="radio" name="long-term" value="false" v-model="newGear.long_term">-->
-<!--              Trumpalaikė įranga-->
-<!--            </label>-->
-<!--          </div>-->
-
-<!--          <button class="btn">Pridėti</button>-->
-<!--        </div>-->
-<!--      </form-item>-->
   </modulus-full>
 
 </div>
@@ -115,7 +79,6 @@
   import TableActions from "@/components/TableActions";
   import DataMixin from "@/components/mixins/DataMixin";
   import ModulusFull from "@/components/ModulusFull";
-  // import FormItem from "@/components/FormItem";
   import AddItem from "@/components/AddItem";
   import BtnDelete from "@/components/BtnDelete";
   export default {
@@ -124,7 +87,6 @@
     components: {
       BtnDelete,
       AddItem,
-      // FormItem,
       ModulusFull,
       TableActions,
       Search,
@@ -134,14 +96,12 @@
     data() {
       return {
         url: 'https://inventor-system.herokuapp.com/api/gear/all',
-        addit_get_url: 'https://inventor-system.herokuapp.com/api/users/all',
         companyFilter: '',
         rowExpanded: '',
         addGearOpen: false,
       }
     },
     created() {
-      this.getAdditionalData(this.addit_get_url);
       this.getData(this.url);
     },
     methods: {
@@ -159,14 +119,11 @@
       },
 
       ownersName(id){
-        if(this.additionalList.length) {
-          let {first_name, last_name} = this.additionalList.find(user => user.id === id);
+        if(this.$store.getters.allUsers.length) {
+          let {first_name, last_name} = this.$store.getters.allUsers.find(user => user.id === id);
           return `${first_name} ${last_name}`
         }
       },
-      // addGearError() {
-      //
-      // }
     },
 
   }
