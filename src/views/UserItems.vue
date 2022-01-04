@@ -39,14 +39,14 @@
     <div :class="{'hidden': !anySelected}" class="selection-actions">
       <p>Pasirinkta: <span>{{ rowsSelected.length }}</span></p>
       <table-actions class="actions">
-        <button title="Grąžinti">
+        <button title="Grąžinti" v-if="!$route.params.user_id">
           <img src="../assets/icons/hand-return.svg" alt="">
         </button>
-        <span class="action-divider" />
-        <button title="Skolinti">
+        <span class="action-divider" v-if="!$route.params.user_id" />
+        <button title="Skolinti" v-if="!$route.params.user_id">
           <img src="../assets/icons/hand-lend.svg" alt="">
         </button>
-        <span class="action-divider" />
+        <span class="action-divider" v-if="!$route.params.user_id" />
         <button title="Perduoti">
           <img src="../assets/icons/hand-transfer.svg" alt="">
         </button>
@@ -86,17 +86,23 @@
         <td class="actions-cell">
           <table-actions>
 
-            <button title="Grąžinti" v-if="!gear.own && gear.lent" @click="openCard('return', gear.id)">
+            <button title="Grąžinti"
+                    v-if="!gear.own && gear.lent && !$route.params.user_id"
+                    @click="openCard('return', gear.id)">
               <img src="../assets/icons/hand-return.svg" alt="">
             </button>
-            <span class="action-divider" v-if="!gear.own && gear.lent" />
+            <span class="action-divider" v-if="!gear.own && gear.lent && !$route.params.user_id" />
 
-            <button title="Skolinti" v-if="(gear.own && !gear.lent)|| (!gear.own && gear.lent)">
+            <button title="Skolinti"
+                    v-if="((gear.own && !gear.lent) || (!gear.own && gear.lent)) && !$route.params.user_id"
+                    @click="openCard('Skolinti', gear.id)">
               <img src="../assets/icons/hand-lend.svg" alt="">
             </button>
-            <span class="action-divider" v-if="(gear.own && !gear.lent)" />
+            <span class="action-divider" v-if="(gear.own && !gear.lent) && !$route.params.user_id" />
 
-            <button title="Perduoti" v-if="gear.own && !gear.lent">
+            <button title="Perduoti"
+                    v-if="gear.own && !gear.lent"
+                    @click="openCard('Perleisti', gear.id)">
               <img src="../assets/icons/hand-transfer.svg" alt="">
             </button>
             <span class="action-divider"  v-if="gear.own && !gear.lent" />
@@ -115,9 +121,12 @@
   </modulus-full>
 
   <!-- Grąžinti action -->
-  <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false; errorMsg = ''">
-    <p>Ar esate pasiruošę grąžinti <strong>This Item</strong>?</p>
-    <button class="btn" @click="returnItem(list.id)">Taip</button>
+  <modulus-full v-if="returnCardOpen" @close="returnCardOpen = false; errorMsg = ''">
+    <p>Ar esate pasiruošę grąžinti <strong>{{ gearName(returnCardOpen) }}</strong>?</p>
+    <div class="btn-container">
+      <p class="error-msg">{{ errorMsg }}</p>
+      <button class="btn" @click="returnItem(returnCardOpen)">Taip</button>
+    </div>
   </modulus-full>
 
   <!-- Nurašyti action -->
@@ -128,6 +137,22 @@
       <button class="btn" @click="deleteGear(deleteCardOpen)">Taip</button>
     </div>
   </modulus-full>
+
+  <!-- Skolinti/Perleisti action -->
+  <select-user v-if="selectUserOpen"
+               @close="selectUserOpen = false; errorMsg = ''"
+               @submitAction="gearAction( ...arguments, selectUserOpen.id, selectUserOpen.type )"
+               :list="userList"
+               :type="selectUserOpen.type"
+               :gear_owner="selectUserOpen.owner_id"
+               :errorMsg="errorMsg"
+  >
+    <!--     <select class="user-select" v-model="selectedUser">-->
+    <!--       <option selected hidden>Pasirinkite darbuotoją:</option>-->
+    <!--       <option v-for="user in additionalList" :key=" user.id"-->
+    <!--               :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>-->
+    <!--     </select>-->
+  </select-user>
 
 
 </div>
@@ -144,10 +169,13 @@
   // import BtnAddInventory from "@/components/BtnAddInventory";
   import BtnDelete from "@/components/BtnDelete";
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
+  import SelectUser from "@/components/SelectUser";
+  import UsersMixin from "@/components/mixins/UsersMixin";
   export default {
     name: "UserItems",
-    mixins: [ DataMixin, GearActionsMixin ],
+    mixins: [ DataMixin, GearActionsMixin, UsersMixin ],
     components: {
+      SelectUser,
       BtnDelete,
       AddItem,
       ModulusFull,
@@ -160,9 +188,10 @@
         url: 'https://inventor-system.herokuapp.com/api/gear',
         addGearOpen: false,
         returnCardOpen: false,
-        lendCardOpen: false,
-        transferCardOpen: false,
+        // lendCardOpen: false,
+        selectUserOpen: false,
         deleteCardOpen: false,
+        // actionType: '',
         filter: 'all',
         rowsSelected: [],
         lastSelected: '',
@@ -178,6 +207,7 @@
       } else {
         this.getData(this.url);
       }
+      this.getNames(); // store
     },
     computed: {
       anySelected() {
@@ -205,7 +235,9 @@
     },
     methods: {
       gearName(id) {
-        return this.filteredList.find(gear => gear.id === id).name;
+        if(this.filteredList.length) {
+          return this.filteredList.find(gear => gear.id === id).name;
+        }
       },
       statusText(lent, own){
         return !own ? "Pasiskolinta" : lent ? "Paskolintas" : "Savininkas";
@@ -298,6 +330,10 @@
 
         } else if(name === 'delete'){
           this.deleteCardOpen = id;
+
+        } else if(name === 'Perleisti' || name === 'Skolinti'){
+          let owner_id = this.filteredList.find(gear => gear.id === id).user_id;
+          this.selectUserOpen = {id, type: name, owner_id};
         }
       },
     },

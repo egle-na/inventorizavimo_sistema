@@ -2,18 +2,21 @@
   export default {
     name: "GearActionsMixin",
     methods: {
-      returnItem() {
+      returnItem(id) {
         console.log('return');
-        this.postData('https://inventor-system.herokuapp.com/api/requests/return/' + this.$route.params.inventory_id,
+        // id = this.$route.params.inventory_id
+        this.postData('https://inventor-system.herokuapp.com/api/requests/return/' + id,
             {},
             () => {
               this.returnCardOpen = false;
-              this.getData(this.url + this.$route.params.inventory_id);
+              this.getData(this.url);
+            },
+            (error) => {
+              this.errorMsg = error.response.data.message; // išversti
             }
         )
-        // if everything is ok:
-        this.returnCardOpen = false;
       },
+
       // writeOffItem() {
       deleteGear(id) {
         // id = this.$route.params.inventory_id;
@@ -38,22 +41,23 @@
               } else this.errorMsg = error.response.data.message;
             })
       },
-      gearAction(user_id){
+      gearAction(user_id, id, actionType){
+        console.log(user_id, id);
         let url = '';
         // if(user_id === this.$store.getters.user.id){
         //   this.errorMsg = `Inventoriaus sau ${this.actionType.toLowerCase()} negalima.`
         // }
 
-        if(this.actionType === 'Skolinti'){
+        if(actionType === 'Skolinti'){
           url = 'https://inventor-system.herokuapp.com/api/requests/lend/'
-        } else if(this.actionType === 'Perleisti'){
+        } else if(actionType === 'Perleisti'){
           if(user_id === this.$store.getters.user.id && this.$store.getters.user.isAdmin){
             url = 'https://inventor-system.herokuapp.com/api/requests/giveYourself/';
           } else url = 'https://inventor-system.herokuapp.com/api/requests/giveaway/';
         }
 
         this.postData(
-            url + this.$route.params.inventory_id,
+            url + id,
             { user_id },
             () => {
               this.actionType = '';

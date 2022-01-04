@@ -116,7 +116,7 @@
    <!-- Skolinti/Perleisti action -->
    <select-user v-if="selectUserOpen"
                 @close="selectUserOpen = false; errorMsg = ''"
-                @submitAction="gearAction"
+                @submitAction="gearAction(...arguments, list.id, actionType)"
                 :list="userList"
                 :type="actionType"
                 :gear_owner="list.user_id"
@@ -133,15 +133,18 @@
    <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false; errorMsg = ''">
      <p>Ar tikrai norite nurašyti <strong>{{ list.name }}</strong>?</p>
      <div class="btn-container">
-       <p class="error-msg">{{errorMsg}}</p>
+       <p class="error-msg">{{ errorMsg }}</p>
        <button class="btn" @click="deleteGear(list.id)">Taip</button>
      </div>
    </modulus-full>
 
    <!-- Grąžinti action -->
    <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false; errorMsg = ''">
-     <p>Ar esate pasiruošę grąžinti <strong>This Item</strong>?</p>
-     <button class="btn" @click="returnItem(list.id)">Taip</button>
+     <p>Ar esate pasiruošę grąžinti <strong>{{ list.name }}</strong>?</p>
+     <div class="btn-container">
+       <p class="error-msg">{{ errorMsg }}</p>
+       <button class="btn" @click="returnItem(list.id)">Taip</button>
+     </div>
    </modulus-full>
 
  </div>
@@ -169,7 +172,7 @@
     },
     data() {
       return {
-        url: 'https://inventor-system.herokuapp.com/api/gear/',
+        url: 'https://inventor-system.herokuapp.com/api/gear/' + this.$route.params.inventory_id,
         users_url: 'https://inventor-system.herokuapp.com/api/users',
         actionCardOpen: false,
         selectUserOpen: false,
@@ -186,10 +189,10 @@
     },
     created() {
       if(this.$store.getters.isAdmin === true){
-        this.url = 'https://inventor-system.herokuapp.com/api/gear/all/'
+        this.url = 'https://inventor-system.herokuapp.com/api/gear/all/' + this.$route.params.inventory_id;
         // this.users_url = 'https://inventor-system.herokuapp.com/api/users/all'
       }
-      this.getData(this.url + this.$route.params.inventory_id, '', () => {
+      this.getData(this.url, '', () => {
         this.$router.push({name: 'user-inventory'});
       });
 
@@ -231,40 +234,40 @@
         this.actionCardOpen = false;
       },
 
-      returnItem() { // actions mixin
-        console.log('return');
-        this.postData('https://inventor-system.herokuapp.com/api/requests/return/' + this.$route.params.inventory_id,
-            {},
-            () => {
-          this.returnCardOpen = false;
-          this.getData(this.url + this.$route.params.inventory_id);
-            }
-        )
-        // if everything is ok:
-        this.returnCardOpen = false;
-      },
+      // returnItem() { // actions mixin
+      //   console.log('return');
+      //   this.postData('https://inventor-system.herokuapp.com/api/requests/return/' + this.$route.params.inventory_id,
+      //       {},
+      //       () => {
+      //     this.returnCardOpen = false;
+      //     this.getData(this.url);
+      //       }
+      //   )
+      //   // if everything is ok:
+      //   this.returnCardOpen = false;
+      // },
 
       // generatePDF() { // gear Actions mixin
       //   console.log('PDF sugeneruotas');
       //   this.actionCardOpen = false;
       // },
 
-      writeOffItem() { // actions mixin deleteGear
-
-        this.$http.delete('https://inventor-system.herokuapp.com/api/gear/' + this.$route.params.inventory_id, this.config)
-            .then(() => {
-              console.log('nurašytas');
-              this.writeOffCardOpen = false;
-              this.$router.go(-1);
-              this.errorMsg = '';
-              // display msg, kad nurašytas
-            })
-            .catch(error => {
-              if(error.response.data.message === "Gear has a request" ){
-                this.errorMsg = 'Inventorius turi neatsakytą užklausą.';
-              } else this.errorMsg = error.response.data.message;
-            })
-      },
+      // writeOffItem() { // actions mixin deleteGear
+      //
+      //   this.$http.delete('https://inventor-system.herokuapp.com/api/gear/' + this.$route.params.inventory_id, this.config)
+      //       .then(() => {
+      //         console.log('nurašytas');
+      //         this.writeOffCardOpen = false;
+      //         this.$router.go(-1);
+      //         this.errorMsg = '';
+      //         // display msg, kad nurašytas
+      //       })
+      //       .catch(error => {
+      //         if(error.response.data.message === "Gear has a request" ){
+      //           this.errorMsg = 'Inventorius turi neatsakytą užklausą.';
+      //         } else this.errorMsg = error.response.data.message;
+      //       })
+      // },
 
       gearAction(user_id){ // actions mixin
         let url = '';
