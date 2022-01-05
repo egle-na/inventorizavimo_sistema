@@ -46,6 +46,10 @@
            <h3>Savininkas</h3>
            <p >{{ ownerName }}</p>
          </div>
+<!--         <div v-if="statusText === 'Paskolintas'">--> <!-- nėra kaip paprastai sužinoti kam paskolinta -->
+<!--           <h3>Paskolinta</h3>-->
+<!--           <p >{{ findName(list.) }}</p> -->
+<!--         </div>-->
          <div>
            <h3>Kodas</h3>
            <p>{{ list.code }}</p>
@@ -78,17 +82,6 @@
            <h3>Istorija</h3>
          </div>
          <table-component>
-<!--           <tr>--> <!-- Pvz -->
-<!--             <td class="no-padding">-->
-<!--               <img v-if="history.event === 0" src="../assets/icons/lend.svg" alt="">-->
-<!--               <img v-else-if="history.event === 1" src="../assets/icons/return.svg" alt="">-->
-<!--               <img v-else-if="history.event === 2" src="../assets/icons/transfer.svg" alt="">-->
-<!--             </td>-->
-<!--             <td>Jonas Jonauskas</td>-->
-<!--             <td>Paskolino</td>-->
-<!--             <td>Petrui Petrauskui</td>-->
-<!--             <td>2021-12-14</td>-->
-<!--           </tr>-->
            <tr v-for="history in historyList" :key="history.id">
              <td class="no-padding">
                <img v-if="history.event === 0" src="../assets/icons/lend.svg" alt="">
@@ -121,12 +114,6 @@
                 :type="actionType"
                 :gear_owner="list.user_id"
                 :errorMsg="errorMsg" />
-<!--     <select class="user-select" v-model="selectedUser">-->
-<!--       <option selected hidden>Pasirinkite darbuotoją:</option>-->
-<!--       <option v-for="user in additionalList" :key=" user.id"-->
-<!--               :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>-->
-<!--     </select>-->
-<!--   </select-user>-->
 
    <!-- Nurašyti action -->
    <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false; errorMsg = ''">
@@ -207,22 +194,18 @@
       },
       statusText(){
         // if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
-        if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
-          return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
-        } else if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
+        if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
           if(this.list.lent){ // jei paskolinta
             return 'Paskolintas';
           } else return 'Savininkas'; // nepaskolinta
+        } else if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
+          return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
         } else return "Pasiskolinta";
-        // else '';
       },
-      // statusText(){
-      //   return !this.list.own ? this.list.lent ? "Pasiskolinta" : "Savininkas" : "Savininkas";
-      // },
     },
     methods: {
       getHistory() {
-        this.$http.get('https://inventor-system.herokuapp.com/api/gearHistory/' + this.$route.params.inventory_id, this.config)
+        this.$http.get('https://inventor-system.herokuapp.com/api/gear-history/' + this.$route.params.inventory_id, this.config)
           .then(response => this.historyList = response.data)
           .catch(err => console.error(err))
       },
@@ -232,83 +215,6 @@
         this.selectUserOpen = true;
         this.actionCardOpen = false;
       },
-
-      // returnItem() { // actions mixin
-      //   console.log('return');
-      //   this.postData('https://inventor-system.herokuapp.com/api/requests/return/' + this.$route.params.inventory_id,
-      //       {},
-      //       () => {
-      //     this.returnCardOpen = false;
-      //     this.getData(this.url);
-      //       }
-      //   )
-      //   // if everything is ok:
-      //   this.returnCardOpen = false;
-      // },
-
-      // generatePDF() { // gear Actions mixin
-      //   console.log('PDF sugeneruotas');
-      //   this.actionCardOpen = false;
-      // },
-
-      // writeOffItem() { // actions mixin deleteGear
-      //
-      //   this.$http.delete('https://inventor-system.herokuapp.com/api/gear/' + this.$route.params.inventory_id, this.config)
-      //       .then(() => {
-      //         console.log('nurašytas');
-      //         this.writeOffCardOpen = false;
-      //         this.$router.go(-1);
-      //         this.errorMsg = '';
-      //         // display msg, kad nurašytas
-      //       })
-      //       .catch(error => {
-      //         if(error.response.data.message === "Gear has a request" ){
-      //           this.errorMsg = 'Inventorius turi neatsakytą užklausą.';
-      //         } else this.errorMsg = error.response.data.message;
-      //       })
-      // },
-
-      gearAction(user_id){ // actions mixin
-        let url = '';
-        // if(user_id === this.$store.getters.user.id){
-        //   this.errorMsg = `Inventoriaus sau ${this.actionType.toLowerCase()} negalima.`
-        // }
-
-        if(this.actionType === 'Skolinti'){
-          url = 'https://inventor-system.herokuapp.com/api/requests/lend/'
-        } else if(this.actionType === 'Perleisti'){
-          if(user_id === this.$store.getters.user.id && this.$store.getters.user.isAdmin){
-            url = 'https://inventor-system.herokuapp.com/api/requests/giveYourself/';
-          } else url = 'https://inventor-system.herokuapp.com/api/requests/giveaway/';
-        }
-
-        this.postData(
-            url + this.$route.params.inventory_id,
-            { user_id },
-            () => {
-              this.actionType = '';
-              this.selectUserOpen = false;
-              this.errorMsg = '';
-              // show a message that request is pending, change status(get new data)?
-            },
-            (err) => {
-              switch (err.response.data.message) {
-                case "Gear already has a request":
-                  this.errorMsg = "Inventorius turi neatsakytą užklausą";
-                  break;
-                // case "":
-                case "You cannot give away lent gear":
-                  this.errorMsg = "Negalite perleisti paskolinto inventoriaus";
-                  break;
-                default:
-                  this.errorMsg = err.response.data.message;
-              }
-              // this.errorMsg = err.response.data.message;
-              // console.log(err.response);
-            }
-        )
-      }
-
     },
   }
 </script>
@@ -378,7 +284,12 @@
   }
 
   .specs div h3 {
+    width: fit-content;
     margin-bottom: -2px;
+  }
+
+  .specs h3:first-child{
+    width: fit-content;
   }
 
   .specs .btn-container{
@@ -424,6 +335,19 @@
   .no-padding img {
     max-width: initial;
     padding-left:.4em; /* gal abi puses? */
+  }
+
+  @media (max-width: 550px) {
+    .main-content {
+      flex-direction: column;
+    }
+    .specs,
+    .history {
+      width: 100%;
+    }
+    .specs {
+      margin-bottom: 2em;
+    }
   }
 
 

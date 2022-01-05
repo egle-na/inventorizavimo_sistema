@@ -48,11 +48,26 @@
   input:valid,
   select:valid,
   textarea:valid {
-    border-bottom-color: #0054A6;
+    border-bottom-color: var(--clr-accent);
+  }
+
+  input.input-error {
+    border-color: #FF6464;
+    margin-bottom: 0;
   }
 
   button {
     float: right;
+  }
+  .error-msg{
+    /*margin-top: 0;*/
+    color: #FF6464;
+  }
+
+  @media (max-width: 550px){
+    input:not([type='checkbox'], .input-long) {
+      width: 100%;
+    }
   }
 
 </style>

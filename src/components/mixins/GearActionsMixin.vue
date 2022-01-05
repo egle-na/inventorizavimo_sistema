@@ -53,7 +53,7 @@
           url = 'https://inventor-system.herokuapp.com/api/requests/lend/'
         } else if(actionType === 'Perleisti'){
           if(user_id === this.$store.getters.user.id && this.$store.getters.user.isAdmin){
-            url = 'https://inventor-system.herokuapp.com/api/requests/giveYourself/';
+            url = 'https://inventor-system.herokuapp.com/api/requests/give-yourself/';
           } else url = 'https://inventor-system.herokuapp.com/api/requests/giveaway/';
         }
 
@@ -64,6 +64,7 @@
               this.actionType = '';
               this.selectUserOpen = false;
               this.errorMsg = '';
+              this.getData(this.url);
               // show a message that request is pending, change status(get new data)?
             },
             (err) => {
@@ -75,6 +76,11 @@
                 case "You cannot give away lent gear":
                   this.errorMsg = "Negalite perleisti paskolinto inventoriaus";
                   break;
+                case "Sorry, gear not found.":
+                  if (actionType === 'Perleisti' && this.$store.getters.user.isAdmin){
+                    this.errorMsg = "Svetimo inventoriaus perleisti kitiems negalite.";
+                  } else this.errorMsg = "Negalite "+ actionType +" šio inventoriaus";
+                  break
                 default:
                   this.errorMsg = err.response.data.message;
               }

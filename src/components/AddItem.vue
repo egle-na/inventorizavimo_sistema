@@ -7,10 +7,12 @@
       <textarea placeholder="Aprašymas" class="input-long" v-model="newGear.description" required /><!-- nepriskirta -->
       <div>
         <input type="text" placeholder="Kodas" required v-model="newGear.code">
-        <input type="text" placeholder="Serijos Numeris" v-model="newGear.serial_number" required >
+        <input type="text" placeholder="Serijos Numeris" v-model="newGear.serial_number" required
+               :class="{'input-error': errorInput.serial_number}" @focus="delete errorInput.serial_number">
+        <p v-if="errorInput.serial_number" class="error-msg">{{ errorInput.serial_number }}</p>
       </div>
       <div class="relative-container">
-        <input type="text" placeholder="Kiekis" required v-model="newGear.amount" ><!-- nepriskirta -->
+        <input type="number" step="1" max="50" placeholder="Kiekis" required v-model="newGear.amount" ><!-- nepriskirta -->
         <input type="number" step=".01" placeholder="Vieneto Kaina" id="unit-price" required v-model="newGear.unit_price">
         <label for="unit-price" id="euro-sign">€</label>
       </div>
@@ -30,13 +32,12 @@
 
         <button class="btn">Pridėti</button>
       </div>
+      <p v-if="errorInput.message" class="error-msg">{{ errorInput.message }}</p>
     </form-item>
   </div>
 </template>
 
 <script>
-  // import SideMenu from "@/components/SideMenu";
-  // import Header from "@/components/Header";
   import FormItem from "@/components/FormItem";
   import DataMixin from "@/components/mixins/DataMixin";
 
@@ -53,6 +54,7 @@
       return {
         list:[],
         longTerm: "LongTerm",
+        errorInput: {},
         newGear: {
           description:'',
           name: '',
@@ -70,9 +72,6 @@
         return this.longTerm === "LongTerm";
       }
     },
-    // created() {
-    //   this.getData("https://inventor-system.herokuapp.com/api/companies");
-    // },
     methods: {
       addNewGear() {
         this.postData(
@@ -83,9 +82,19 @@
       },
       addGearSuccess() {
         this.$emit('success');
+        this.errorInput = {};
       },
-      addGearError() {
-
+      addGearError(error) {
+        this.errorInput = {};
+        if (error.response.data.error){
+          if(error.response.data.error.serial_number) {
+          this.errorInput.serial_number = "Inventorius su tokiu serijos numeriu jau pridėtas";
+          }
+        }
+        if (error.response.data.message === "Gear does not match with other ones with the same code") {
+          this.errorInput.message = "Duomenys nesutampa su kitu šio kodo inventoriumi"
+        }
+        // console.log(error.response.data.message)
       }
     }
   }
@@ -120,6 +129,12 @@
     width: fit-content;
   }
 
+  @media (max-width: 550px) {
+    #euro-sign {
+      bottom: 2.9em;
+    }
+  }
+
   .btn-container {
     display: flex;
     justify-content: space-between;
@@ -143,6 +158,7 @@
   .btn-container .btn {
     align-self: flex-end;
   }
+
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {

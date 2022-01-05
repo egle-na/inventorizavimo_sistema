@@ -28,7 +28,7 @@
         <th></th>
       </tr>
       <tr v-for="item in list" :key="item.id">
-        <td class="no-padding"><router-link :to="{name: 'user-inventory', params: {user_id: item.id}}">{{ item.first_name }} {{ item.last_name }}</router-link></td>
+        <td class="no-padding"><router-link :to="{path: 'user-inventory/' + item.id}">{{ item.first_name }} {{ item.last_name }}</router-link></td>
         <td>{{ item.email }}</td>
         <td>{{ item.gear_count }}</td>
         <td class="actions-cell">

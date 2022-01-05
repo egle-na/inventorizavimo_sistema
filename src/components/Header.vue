@@ -26,6 +26,7 @@
         <user-card />
         <router-link :to="{name: 'user-inventory', params:{}}">Mano Inventorius</router-link>
         <router-link to="/notifications">Visi pranešimai</router-link>
+        <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" class="mobile">Admin</router-link>
         <button>Keisti slaptažodį</button>
         <button @click="logOut">Atsijungti</button>
 
@@ -163,6 +164,15 @@
   .action-card a,
   .action-card button:not(.close-btn){
     padding: .5em 1em;
+  }
+
+  @media (max-width: 550px){
+    nav{
+      display: none;
+    }
+    .expand-container {
+      position: initial;
+    }
   }
 
 </style>

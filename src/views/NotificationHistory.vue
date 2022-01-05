@@ -6,7 +6,7 @@
 
       <div v-if="$store.getters.notifications.length">
         <h3>Neatsakytos užklausos</h3>
-        <request-component />
+        <request-component @accepted="refresh" />
 <!--            :requestsList="notificationsList"-->
 <!--                    :namesList="$store.getters.allUsers"-->
 
@@ -53,23 +53,10 @@
       }
     },
     created(){
-      console.log("notification history list:")
       this.getData(this.url);
-      // this.getNotifications();
-      // this.getNames();
     },
-    // watch:{
-    //   '$store.state.notifications'() {
-    //     console.log('got notifications');
-    //   }
-    // },
-    computed: {
-      // requests() {
-      //   return this.$store.getters.notifications;
-      // }
-    },
-    methods: {
 
+    methods: {
       getGearName(notification) {
         if(notification.gear.length){
           return notification.gear[0].name;
@@ -78,7 +65,6 @@
       },
 
       refresh() {
-        console.log('me is not here')
         this.getData(this.url);
       },
 

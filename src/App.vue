@@ -38,14 +38,6 @@ export default {
     --fs-table-header: 1.25rem; /* 20px */
     --fs-side-menu: 1.5rem;     /* 24px */
     --fs-button: 1.8rem;      /* nebe 30px 1.875 */
-    /*--fs-title: 4rem;           !* 64px media 30px *!*/
-
-    /* Add item modal title 48px */
-    /* header profile bubble --fs-button 30px */
-    /* side menu profile bubble 34px */
-    /* side menu profile name --ff-side-menu 24px */
-    /* side menu profile email --ff-side-menu 24px */
-
   }
 
   * { box-sizing: border-box; }
@@ -94,6 +86,7 @@ export default {
     background: none;
     border: none;
     cursor: pointer;
+    min-width: max-content;
   }
 
   .btn {
@@ -152,6 +145,31 @@ export default {
     border-width: 3px;
     border-color: var(--clr-accent);
     outline: none;
+  }
+
+  .mobile {
+    display: none;
+  }
+
+  @media (max-width: 550px){
+    :root {
+      --clr-accent: #022222;
+    }
+    .mobile {
+      display: initial;
+    }
+
+    .non-mobile {
+      display: none;
+    }
+
+    h1 {
+      font-size: 2.9rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+    }
   }
 
 

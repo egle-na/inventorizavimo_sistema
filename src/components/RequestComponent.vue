@@ -54,13 +54,13 @@
         let url = ''
         switch (status){
           case 0: // skolina
-            url = 'https://inventor-system.herokuapp.com/api/requests/acceptLend/';
+            url = 'https://inventor-system.herokuapp.com/api/requests/accept-lend/';
             break;
           case 2: // grąžina
-            url = 'https://inventor-system.herokuapp.com/api/requests/acceptReturn/';
+            url = 'https://inventor-system.herokuapp.com/api/requests/accept-return/';
             break;
           case 3: // perleidžia
-            url = 'https://inventor-system.herokuapp.com/api/requests/acceptGiveaway/';
+            url = 'https://inventor-system.herokuapp.com/api/requests/accept-giveaway/';
             break;
         }
         this.$http.post(url + id, {}, this.config)
@@ -71,6 +71,7 @@
               // this.$emit('responded'); // doesnt work
               // console.log('me is here')
               this.getNotifications();
+              this.$emit('accepted');
               // this.getAdditionalData(this.addit_url);
               // this.getData(this.url);
             })
@@ -78,7 +79,7 @@
 
       declineRequest(id, status) {
         if (status === 2) {
-          this.$http.post('https://inventor-system.herokuapp.com/api/requests/declineReturn/' + id,{}, this.config)
+          this.$http.post('https://inventor-system.herokuapp.com/api/requests/decline-return/' + id,{}, this.config)
               .then(this.getNotifications) // is it too short?
               .catch(this.getNotifications)
         } else {

@@ -74,6 +74,26 @@
   a {
     text-decoration: none;
   }
+  @media (max-width: 550px){
+    .action-card {
+      right: 3%;
+    }
+    .close-btn {
+      font-size: 2rem;
+      padding: .5em;
+      top: 0;
+      right: 0;
+      margin: 0;
+    }
+    .action-card a:nth-child(2),
+    button:not(.close-btn):nth-child(2) {
+      padding-top: 1em;
+    }
+    .action-card a,
+    button:not(.close-btn) {
+      padding: .5em 1.8em .5em 1em;
+    }
+  }
 
 
 </style>

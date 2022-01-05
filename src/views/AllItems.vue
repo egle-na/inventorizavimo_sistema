@@ -53,7 +53,7 @@
                 <td v-else>Trumpalaikis</td>
                 <td class="actions-cell">
                   <table-actions>
-                    <btn-delete/>
+                    <btn-delete @btnClicked="deleteCardOpen = gear.id; gearName = gear.name" />
                   </table-actions>
                 </td>
               </tr>
@@ -69,6 +69,15 @@
     <add-item :user="$store.getters.user.id" @success="addGearSuccess"/>
   </modulus-full>
 
+  <!-- Nurašyti action -->
+  <modulus-full v-if="deleteCardOpen" @close="deleteCardOpen = false; errorMsg = ''; gearName = ''">
+    <p>Ar tikrai norite nurašyti <strong>{{ gearName }}</strong>?</p>
+    <div class="btn-container">
+      <p class="error-msg">{{errorMsg}}</p>
+      <button class="btn" @click="deleteGear(deleteCardOpen)">Taip</button>
+    </div>
+  </modulus-full>
+
 </div>
 </template>
 
@@ -81,9 +90,10 @@
   import ModulusFull from "@/components/ModulusFull";
   import AddItem from "@/components/AddItem";
   import BtnDelete from "@/components/BtnDelete";
+  import GearActionsMixin from "@/components/mixins/GearActionsMixin";
   export default {
     name: "AllItems",
-    mixins: [ DataMixin ],
+    mixins: [ DataMixin, GearActionsMixin ],
     components: {
       BtnDelete,
       AddItem,
@@ -99,6 +109,9 @@
         companyFilter: '',
         rowExpanded: '',
         addGearOpen: false,
+        deleteCardOpen: false,
+        errorMsg: '',
+        gearName: '',
       }
     },
     created() {

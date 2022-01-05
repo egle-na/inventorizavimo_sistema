@@ -11,13 +11,12 @@
         <h1>Inventorius</h1>
       </div>
       <button class="add-btn" @click="addGearOpen = true">
-<!--        <img src="../assets/icons/Plus.svg" alt="">-->
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
       </button>
 
-      <div class="filter-container">
+      <div class="filter-container non-mobile">
         <button class="filter-btn"
                 v-if="!this.$route.params.user_id"
                 :class="{'filter-selected': filter === 'owned'}"
@@ -33,29 +32,54 @@
                 :class="{'filter-selected': filter === 'all'}"
                 @click="setFilter('all')">Visi</button>
       </div> <!-- /filter container-->
-    </div> <!-- /title container-->
 
-    <!-- Deal with selected r-->
-    <div :class="{'hidden': !anySelected}" class="selection-actions">
-      <p>Pasirinkta: <span>{{ rowsSelected.length }}</span></p>
-      <table-actions class="actions">
-        <btn-return title="Grąžinti" v-if="!$route.params.user_id" />
-        <span class="action-divider" v-if="!$route.params.user_id" />
+      <!-- Mobile Filter -->
+      <div class="mobile mobile-filter-card">
+        <button @click="mobileFilterOpen = !mobileFilterOpen">
+          <img src="../assets/icons/action-dots.svg" alt="">
+        </button>
+        <action-card class="mobile-filter" v-show="mobileFilterOpen" @close="mobileFilterOpen = false">
+          <button class="first" v-if="!this.$route.params.user_id" @click="setFilter('owned')">Mano įranga</button>
+          <button v-else @click="setFilter('owned')">Asmeninė</button>
+          <button @click="setFilter('borrowed')">Pasiskolinta</button>
+          <button @click="setFilter('all')">Visi</button>
+        </action-card>
+      </div> <!-- /mobile filter -->
+    </div> <!-- /title container -->
 
-        <btn-lend title="Skolinti" v-if="!$route.params.user_id" />
-        <span class="action-divider" v-if="!$route.params.user_id" />
+    <!-- Deal with selected -->
+    <div class="selection-actions">
+      <div class="mobile flex">
+        <input type="checkbox"
+               title="Pasirinkti Viską"
+               :class="{'checkbox-hidden': !anySelected}"
+               :checked="anySelected"
+               @click="$event.target.checked ? selectAll() :  rowsSelected = []">
+        <span class="mobile" v-if="anySelected">: {{ rowsSelected.length }}</span>
+      </div>
 
-        <btn-transfer title="Perduoti" />
-        <span class="action-divider" />
+      <div :class="{'hidden': !anySelected}" class="flex">
+        <span class="non-mobile">Pasirinkta: {{ rowsSelected.length }}</span>
+        <table-actions class="actions">
+          <btn-return title="Grąžinti" v-if="!$route.params.user_id" />
+          <span class="action-divider" v-if="!$route.params.user_id" />
 
-        <btn-delete />
-      </table-actions>
+          <btn-lend title="Skolinti" v-if="!$route.params.user_id" />
+          <span class="action-divider" v-if="!$route.params.user_id" />
+
+          <btn-transfer title="Perduoti" />
+          <span class="action-divider" />
+
+          <btn-delete />
+        </table-actions>
+      </div>
     </div>
 
     <!-- Table -->
     <table-component>
-      <tr class="head-row">
-        <th class="no-padding">
+      <!-- header row -->
+      <tr class="head-row non-mobile">
+        <th class="no-padding checkbox-cell">
           <input type="checkbox"
                  title="Pasirinkti Viską"
                  :class="{'checkbox-hidden': !anySelected}"
@@ -63,49 +87,61 @@
                  @click="$event.target.checked ? selectAll() :  rowsSelected = []">
         </th>
         <th>Pavadinimas</th>
-        <th>Gavimo data</th>
+        <th class="tablet-hide">Gavimo data</th>
         <th>Statusas</th>
         <th>Veiksmai</th>
-      </tr>
-      <tr v-for="(gear, index) in filteredList" :key="gear.id" :class="{'row-selected-simple': rowsSelected.includes(index)}">
-        <td @click="selectRow(index, $event)" class="no-padding">
-          <input type="checkbox"
-                 :checked="rowsSelected.includes(index)"
-                 :class="{'checkbox-hidden': !anySelected}"> <!-- check when clicked on a row -->
-<!--                 @click="toggleSelect(index)"-->
+      </tr><!-- /header row -->
+
+      <tr v-for="(gear, index) in filteredList" :key="gear.id"
+          :class="{'row-selected-simple': rowsSelected.includes(index), 'mobile-focus': mobileActions === gear.id}">
+        <td @click="selectRow(index, $event)" class="no-padding checkbox-cell">
+          <input type="checkbox" :checked="rowsSelected.includes(index)" :class="{'checkbox-hidden': !anySelected}">
         </td>
         <td @click="selectRow(index, $event)" class="no-padding">
 <!--          <router-link :to="'/inventory/'+ gear.id" :event="!anySelected ? 'click' : ''">{{ gear.name }}</router-link> &lt;!&ndash; event change to v-slot &ndash;&gt;-->
           <router-link :to="'/inventory/'+ gear.id">{{ gear.name }}</router-link> <!-- event change to v-slot -->
         </td>
-        <td @click="selectRow(index, $event)">{{ gear.updated_at.split('T')[0] }}</td>
-        <td @click="selectRow(index, $event)">{{ statusText(gear.lent, gear.own) }}</td>
-        <td class="actions-cell">
-          <table-actions>
+        <td @click="selectRow(index, $event)" class="tablet-hide non-mobile">{{ gear.updated_at.split('T')[0] }}</td>
+        <td @click="selectRow(index, $event)" class="non-mobile">{{ statusText(gear.lent, gear.own) }}</td>
 
+        <!-- Non Mobile Table Actions -->
+        <td class="actions-cell non-mobile">
+          <table-actions>
             <btn-downloadPDF v-if="gear.own && gear.lent" />
 
-            <btn-return title="Grąžinti"
-                    v-if="!gear.own && gear.lent && !$route.params.user_id"
-                    @btnClicked="openCard('return', gear.id)" />
+            <btn-return v-if="!gear.own && gear.lent && !$route.params.user_id" @btnClicked="openCard('return', gear.id)" />
             <span class="action-divider" v-if="!gear.own && gear.lent && !$route.params.user_id" />
 
-            <btn-lend title="Skolinti"
-                    v-if="((gear.own && !gear.lent) || (!gear.own && gear.lent)) && !$route.params.user_id"
+            <btn-lend v-if="((gear.own && !gear.lent) || (!gear.own && gear.lent)) && !$route.params.user_id"
                     @btnClicked="openCard('Skolinti', gear.id)" />
             <span class="action-divider" v-if="(gear.own && !gear.lent) && !$route.params.user_id" />
 
-            <btn-transfer title="Perduoti"
-                    v-if="gear.own && !gear.lent"
-                    @btnClicked="openCard('Perleisti', gear.id)" />
+            <btn-transfer v-if="gear.own && !gear.lent" @btnClicked="openCard('Perleisti', gear.id)" />
             <span class="action-divider"  v-if="gear.own && !gear.lent" />
 
             <btn-delete v-show="gear.own && !gear.lent" @btnClicked="openCard('delete', gear.id)" />
-          </table-actions> <!-- item.id -->
+          </table-actions>
+        </td>
+
+        <!-- Mobile Table Actions -->
+        <td class="mobile mobile-actions">
+          <button @click="mobileActions = gear.id">
+            <img src="../assets/icons/action-dots.svg" alt="">
+          </button>
+          <action-card class="mobile-filter" v-if="mobileActions === gear.id" @close="mobileActions = false">
+            <button v-if="!gear.own && gear.lent && !$route.params.user_id" @click="openCard('return', gear.id)" >Grąžinti</button>
+
+            <button v-if="((gear.own && !gear.lent) || (!gear.own && gear.lent)) && !$route.params.user_id"
+                    @click="openCard('Skolinti', gear.id)" >Skolinti</button>
+
+            <button v-if="gear.own && !gear.lent" @click="openCard('Perleisti', gear.id)" >Perleisti</button>
+
+            <button v-show="gear.own && !gear.lent" @click="openCard('delete', gear.id)" >Nurašyti</button>
+            <button @click="generatePDF(gear.id, gear.name)">Generuoti PDF</button>
+          </action-card>
         </td>
       </tr>
     </table-component>
-
   </main>
 
   <!-- Add item card -->
@@ -138,14 +174,7 @@
                :list="$store.getters.allUsers"
                :type="selectUserOpen.type"
                :gear_owner="selectUserOpen.owner_id"
-               :errorMsg="errorMsg"
-  >
-    <!--     <select class="user-select" v-model="selectedUser">-->
-    <!--       <option selected hidden>Pasirinkite darbuotoją:</option>-->
-    <!--       <option v-for="user in additionalList" :key=" user.id"-->
-    <!--               :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>-->
-    <!--     </select>-->
-  </select-user>
+               :errorMsg="errorMsg" />
 
 
 </div>
@@ -158,8 +187,6 @@
   import DataMixin from "@/components/mixins/DataMixin";
   import ModulusFull from "@/components/ModulusFull";
   import AddItem from "@/components/AddItem";
-  // import BtnEdit from "@/components/BtnEdit";
-  // import BtnAddInventory from "@/components/BtnAddInventory";
   import BtnDelete from "@/components/BtnDelete";
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
   import SelectUser from "@/components/SelectUser";
@@ -168,11 +195,13 @@
   import BtnReturn from "@/components/BtnReturn";
   import BtnLend from "@/components/BtnLend";
   import BtnTransfer from "@/components/BtnTransfer";
+  import ActionCard from "@/components/ActionCard";
 
   export default {
     name: "UserItems",
     mixins: [ DataMixin, GearActionsMixin, UsersMixin ],
     components: {
+      ActionCard,
       BtnTransfer,
       BtnLend,
       BtnReturn,
@@ -194,6 +223,8 @@
         selectUserOpen: false,
         deleteCardOpen: false,
         // actionType: '',
+        mobileFilterOpen: false,
+        mobileActions: false,
         filter: 'all',
         rowsSelected: [],
         lastSelected: '',
@@ -204,11 +235,10 @@
     created() {
       if(this.$route.params.user_id){
         this.user_id = this.$route.params.user_id;
-        this.getData(this.url +'/user/' + this.user_id);
+        this.url = this.url +'/user/' + this.user_id;
         this.getAdditionalData('https://inventor-system.herokuapp.com/api/users/' + this.user_id)
-      } else {
-        this.getData(this.url);
       }
+      this.getData(this.url);
       // this.getNames(); // store
     },
     computed: {
@@ -248,6 +278,7 @@
       setFilter(filter) {
         this.rowsSelected = this.filter !== filter && [];
         this.filter = filter;
+        this.mobileFilterOpen = false;
       },
 
       selectRow(id, event){
@@ -319,11 +350,7 @@
       addGearSuccess() {
         console.log('success');
         this.addGearOpen = false;
-        if(this.$route.params.user_id){
-          this.getData(this.url + '/user/' + this.user_id);
-        } else {
-          this.getData(this.url);
-        }
+        this.getData(this.url);
       },
 
       openCard(name, id) {
@@ -387,6 +414,7 @@
 
   .filter-container {
     margin-left: auto;
+    flex-shrink: .5;
     /*display: flex;*/
   }
 
@@ -397,6 +425,7 @@
     border-bottom: solid 2px var(--clr-grey);
     padding: .1em .7em;
     margin-left: 1.5em;
+    margin-top: .4em;
 
     transition: border-color 250ms;
   }
@@ -421,9 +450,16 @@
   }
 
   .no-padding input {
-    margin-left: .9em;
+    /*margin-left: .9em;*/
     /*width: 120%;*/
-    align-self: center;
+
+    /*margin: 0 auto;*/
+    /*align-self: center;*/
+  }
+
+  .checkbox-cell {
+    width: 50px;
+    text-align: center;
   }
 
   .checkbox-hidden {
@@ -450,15 +486,56 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    margin: .5em 0;
   }
 
   .selection-actions .actions {
     /*display: block;*/
     margin-left: 1.5em;
   }
+  .flex {
+    display: flex;
+    align-items: center;
+    /*justify-self: flex-end;*/
+  }
+
+  .mobile.flex {
+    display: none;
+  }
 
   .actions {
     width: 230px;
   }
+  /* Filter */
+  @media (max-width: 550px){
+    .mobile-filter-card{
+      margin-left: auto;
+    }
+
+    .checkbox-hidden {
+      opacity: .2;
+    }
+
+    .selection-actions{
+      justify-content: space-between;
+      margin-left: 1.3em;
+    }
+
+    .mobile.flex {
+      display: flex;
+    }
+
+    table .mobile-focus{
+      background: var(--clr-light-grey);
+    }
+  }
+
+  @media (max-width: 730px){
+    .tablet-hide {
+      display: none;
+    }
+
+  }
+
 
 </style>

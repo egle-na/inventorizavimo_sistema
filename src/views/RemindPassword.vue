@@ -4,7 +4,7 @@
     <div class="backdrop">
       <p v-show="passwordResetSent">Slaptažodis išsiųstas elektroniniu pašto adresu: <strong>{{ email }}</strong>.</p>
 
-      <div v-show="!passwordResetSent">
+      <div class="container" v-show="!passwordResetSent">
         <h1>Priminti slaptažodį</h1>
         <form class="form-container" @submit.prevent="remindPassword">
 
@@ -56,6 +56,10 @@
     /*background: var(--clr-white);*/
   }
 
+  .container {
+    max-width: 95%;
+  }
+
   .form-container {
     position: relative;
     display: flex;
@@ -63,6 +67,7 @@
 
     margin: auto;
     width: 400px;
+    max-width: 95%;
   }
 
   h1 {
@@ -82,6 +87,17 @@
 
   .display {
     visibility: initial;
+  }
+
+  @media (max-width: 550px){
+    .error-msg {
+      /*margin-bottom: .3em;*/
+      order: 1;
+    }
+    .form-container button {
+      margin-top: .6em ;
+    }
+
   }
 
 </style>

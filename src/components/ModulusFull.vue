@@ -40,6 +40,7 @@
   .select-user-card {
     position: relative;
     width: 500px;
+    max-width: 97%;
     padding: 2em;
 
     background: var(--clr-white);
@@ -108,6 +109,11 @@
   .error-msg {
     margin: 0 auto 0 0;
     color: #FF6464;
+  }
+  @media(max-width: 550px){
+    .select-user-card {
+      padding: 2em 1.5em;
+    }
   }
 
 </style>

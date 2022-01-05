@@ -105,6 +105,7 @@
     flex-direction: column;
 
     width: 360px;
+    max-width: 95%;
     margin: auto;
   }
 
@@ -124,8 +125,10 @@
 
   #show-psw-btn {
     position: absolute;
-    right: 0;
+    right: 2px;
+    bottom: .2em;
     width: 40px;
+
   }
 
   a {
