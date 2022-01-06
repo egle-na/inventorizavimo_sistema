@@ -337,7 +337,7 @@
     padding-left:.4em; /* gal abi puses? */
   }
 
-  @media (max-width: 550px) {
+  @media (max-width: 580px) {
     .main-content {
       flex-direction: column;
     }

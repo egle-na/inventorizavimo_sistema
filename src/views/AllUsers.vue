@@ -2,20 +2,19 @@
 <div>
   <admin-desk>
 
-    <!-- title -->
+    <!-- Title -->
     <div class="title-container">
-      <h1>Darbuotojai</h1>
-      <button class="add-btn" title="Pridėti darbuotoją" @click="addUserCardOpen=true">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
-        </svg>
-      </button>
+      <div class="no-shrink">
 
-      <select class="company-filter" v-model="params.company" @change="getDataQuery(url, params)">
+        <h1>Darbuotojai</h1>
+        <btn-add title="Pridėti darbuotoją" @btnClicked="addUserCardOpen=true; mobileActions = false"/>
+
+      </div>
+
+      <select class="company-filter" v-model="params.company" @change="getDataQuery(url, params); mobileActions = false">
         <option selected value="" class="placeholder">Visi darbuotojai</option> <!-- Visos įmonės-->
         <option v-for="item in additionalList" :key="item.id" :value="item.id">{{ item.name }}</option>
       </select>
-
     </div> <!-- /title container-->
 
     <Search @setSearch="setSearch" />
@@ -23,15 +22,15 @@
     <table-component>
       <tr class="head-row">
         <th>Vardas Pavardė</th>
-        <th>Elektroninis paštas</th>
-        <th>Įrangos kiekis</th>
+        <th class="tablet-hide">Elektroninis paštas</th>
+        <th>Įranga</th>
         <th></th>
       </tr>
-      <tr v-for="item in list" :key="item.id">
+      <tr v-for="item in list" :key="item.id" :class="{'mobile-focus': mobileActions === item.id}">
         <td class="no-padding"><router-link :to="{path: 'user-inventory/' + item.id}">{{ item.first_name }} {{ item.last_name }}</router-link></td>
-        <td>{{ item.email }}</td>
+        <td class="tablet-hide">{{ item.email }}</td>
         <td>{{ item.gear_count }}</td>
-        <td class="actions-cell">
+        <td class="actions-cell non-mobile">
           <!-- prideti suteikti admino teises-->
           <table-actions>
 <!--            <btn-view :to="'inventory' + item.id" /> &lt;!&ndash; fix &ndash;&gt;-->
@@ -40,18 +39,38 @@
             <span class="action-divider" />
             <btn-add-inventory title="Priskirti įrangos" @btnClicked="addGearToUser(item.id)" />
             <span class="action-divider" />
-            <btn-delete @btnClicked="openDeleteUser(item.id)" />
+            <btn-delete @btnClicked="deleteUserOpen = item.id" />
 
           </table-actions>
+        </td>
+        <td class="mobile mobile-actions">
+          <button @click="openMobileActions(item.id, $event)">
+            <img src="../assets/icons/action-dots.svg" alt="">
+          </button>
+<!--          <action-card class="mobile-filter" v-if="mobileActions === item.id" @close="mobileActions = false">-->
+<!--            <button @click="openEditUser(item.id, item.name)">Redaguoti</button>-->
+
+<!--            <button @click="addGearToUser(item.id)">Priskirti inventorių</button>-->
+
+<!--            <button @click="openDeleteUser(item.id, item.name)">Ištrinti</button>-->
+<!--          </action-card>-->
         </td>
       </tr>
 
     </table-component> <!-- /table container-->
   </admin-desk>
 
+  <!-- Mobile Table Actions -->
+  <action-card :style="{top :mobileActionsPos+'px'}" class="mobile-actions-card" v-if="mobileActions" @close="mobileActions = false">
+    <button @click="openEditUser(mobileActions, 'item.name')">Redaguoti</button>
+
+    <button @click="addGearToUser(mobileActions)">Priskirti inventorių</button>
+
+    <button @click="deleteUserOpen = mobileActions">Ištrinti</button>
+  </action-card>
+
   <!-- add user card-->
   <modulus-full v-if="addUserCardOpen" @close="closeCard">
-<!--    <add-user :companyList="additionalList" @createUser="createUser" />-->
     <h3>Pridėti Darbuotoją</h3>
 
     <form-item @onSubmit="createUser">
@@ -74,7 +93,7 @@
       </select>
 
       <div class="button-container">
-        <p v-if="addUserError" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas</p>
+        <p v-if="addUserError" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.</p>
         <button class="btn" type="submit">Pridėti</button>
       </div>
     </form-item>
@@ -102,14 +121,24 @@
       <label v-show="selectedUser.role === 1"><input type="checkbox" v-model="selectedUser.changeRole">Pašalinti administratoriaus teises</label>
 
       <div class="button-container">
-        <p v-if="addUserError" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas</p>
+        <p v-if="addUserError" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.</p>
         <button class="btn" type="submit">Redaguoti</button>
       </div>
     </form-item>
   </modulus-full>
 
+  <!-- add gear to user card-->
   <modulus-full v-if="addGearOpen" @close="closeCard">
     <add-item :user="selectedUser.id" @success="addGearSuccess"/>
+  </modulus-full>
+
+  <!-- delete user -->
+  <modulus-full v-if="deleteUserOpen" @close="deleteUserOpen = false; errorMsg = ''">
+    <p>Ar tikrai norite nurašyti <strong>{{ findName(deleteUserOpen) }}</strong>?</p>
+    <div class="btn-container">
+      <p class="error-msg">{{errorMsg}}</p>
+      <button class="btn" @click="deleteUser(deleteUserOpen)">Taip</button>
+    </div>
   </modulus-full>
 </div>
 </template>
@@ -128,6 +157,8 @@
   import BtnEdit from "@/components/BtnEdit";
   import AddItem from "@/components/AddItem";
   import usersMixin from "@/components/mixins/UsersMixin";
+  import ActionCard from "@/components/ActionCard";
+  import BtnAdd from "@/views/BtnAdd";
   // import BtnView from "@/components/BtnView";
 
   export default {
@@ -139,9 +170,13 @@
         // companyFilter: '',
         addUserCardOpen: false,
         editUserCardOpen: false,
+        deleteUserOpen: false,
         addUserError: false,
         addGearOpen: false,
         selectedUser: { },
+        mobileActions: false,
+        mobileActionsPos: '',
+        errorMsg: '',
         newUser: {
           first_name: '',
           last_name: '',
@@ -156,6 +191,8 @@
       }
     },
     components: {
+      BtnAdd,
+      ActionCard,
       AddItem,
       // BtnView,
       BtnEdit,
@@ -180,7 +217,7 @@
     methods: {
       createUser() {
         this.postData(
-            this.url,
+            "https://inventor-system.herokuapp.com/api/users",
             this.newUser,
             this.userAdded,
             this.userAddError
@@ -261,13 +298,27 @@
         this.editUserCardOpen = true;
       },
 
-      openDeleteUser(id){
+      deleteUser(id){
         console.log('delete: ', id);
+        this.$http.delete("https://inventor-system.herokuapp.com/api/users/" + id, this.config)
+            .then(() => {
+              this.getDataQuery(this.url, this.params);
+              this.getUsersList();
+              this.mobileActions = false;
+            }).catch(() => {
+              this.errorMsg = 'Negalima ištinti vartotojo dar turinčio priskirto inventoriaus.'
+        })
       },
 
       setSearch(val) {
         this.params.search = val
         this.getDataQuery(this.url, this.params);
+        this.mobileActions = false;
+      },
+
+      openMobileActions(id, event){
+        this.mobileActions = id;
+        this.mobileActionsPos = event.pageY + 10;
       },
 
       closeCard() {
@@ -294,14 +345,13 @@
     display: flex;
     align-items: flex-end;
     margin: 0;
+    flex-wrap: wrap;
   }
 
-  .add-btn {
-    color: var(--clr-grey);
-    padding: 0;
-    margin: 0 .5em;
-    line-height: 1;
-    transform: translateY(50%);
+  .no-shrink{
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-end;
   }
 
   .add-btn path{
@@ -315,6 +365,7 @@
 
   .company-filter {
     margin-left: auto;
+    text-align: right;
     margin-right: 0;
     border-left: none;
     border-bottom: solid 2px var(--clr-accent);
@@ -335,6 +386,10 @@
   td, th {
     border: none;
     text-align: center;
+  }
+  th:first-child,
+  td:first-child {
+    text-align: left;
   }
 
   th {
@@ -357,6 +412,33 @@
   .error-msg {
     color: #FF6464;
     margin: 0 1em 0 0;
+  }
+
+  @media (max-width: 730px) {
+    /*.title-container{*/
+      /*flex-direction: column;*/
+      /*align-items: initial;*/
+    /*}*/
+    .company-filter {
+      width: 100%;
+      margin-top: 1em;
+      max-width: fit-content;
+    }
+  }
+  @media (max-width: 580px) {
+    .title-container{
+      flex-direction: column;
+      align-items: initial;
+    }
+
+    .company-filter {
+      max-width: 100%;
+      text-align: left;
+    }
+
+    .mobile-actions-card{
+      position: absolute;
+    }
   }
 
 </style>

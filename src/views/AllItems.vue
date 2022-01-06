@@ -1,30 +1,28 @@
 <template>
 <div>
   <admin-desk>
+    <!-- Title container -->
     <div class="title-container">
       <h1>Įranga</h1>
-      <button @click="addGearOpen = true" class="add-btn" title="Pridėti inventorių">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
-        </svg>
-      </button>
-    </div> <!-- /title container-->
+      <btn-add @btnClicked="addGearOpen = true" title="Pridėti inventorių" />
+    </div>
 
-    <search @setSearch="setSearch"/>
+    <Search @setSearch="setSearch"/>
 
+    <!-- Table -->
     <table-component>
       <tr class="head-row">
-        <th class="cell-min"></th>
+<!--        <th class="cell-min"></th>-->
         <th>Pavadinimas</th>
-        <th>Kodas</th>
+        <th class="tablet-hide">Kodas</th>
         <th>Kiekis</th>
         <th></th>
       </tr>
       <tbody v-for="item in list" :key="item.id">
         <tr class="main-trow" :class="{'row-selected': rowExpanded === item}">
-          <td class="cell-min"></td>
+<!--          <td class="cell-min"></td>-->
           <td>{{ item.name }}</td>
-          <td>{{ item.code }}</td>
+          <td class="tablet-hide">{{ item.code }}</td>
           <td>{{ item.count }}</td>
           <td class="cell-min">
             <button @click="expandRow(item)">
@@ -37,20 +35,21 @@
           <td colspan="5">
             <table>
               <tr>
-                <th class="cell-min"></th>
-                <th>Serijos Numeris</th>
+                <th class="cell-min non-mobile"></th>
+                <th class="non-mobile">Serijos Numeris</th>
+                <th class="mobile" colspan="2" >Serijos Nr.</th>
                 <th>Savininkas</th>
-                <th>Statusas</th>
+                <th class="tablet-hide">Statusas</th>
                 <th></th>
               </tr>
-              <tr v-for="gear in item.gear" :key="gear.id" class="expanded-trow">
-                <td class="cell-min">1</td>
+              <tr v-for="(gear, index) in item.gear" :key="gear.id" class="expanded-trow">
+                <td class="cell-min">{{ index + 1 }}</td>
                 <td class="no-padding">
                   <router-link :to="'/inventory/'+ gear.id">{{ gear.serial_number }}</router-link>
                 </td>
                 <td>{{ ownersName(gear.user_id) }}</td>
-                <td v-if="gear.long_term">Ilgalaikis</td>
-                <td v-else>Trumpalaikis</td>
+                <td v-if="gear.long_term" class="tablet-hide">Ilgalaikis</td>
+                <td v-else class="tablet-hide">Trumpalaikis</td>
                 <td class="actions-cell">
                   <table-actions>
                     <btn-delete @btnClicked="deleteCardOpen = gear.id; gearName = gear.name" />
@@ -91,10 +90,12 @@
   import AddItem from "@/components/AddItem";
   import BtnDelete from "@/components/BtnDelete";
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
+  import BtnAdd from "@/views/BtnAdd";
   export default {
     name: "AllItems",
     mixins: [ DataMixin, GearActionsMixin ],
     components: {
+      BtnAdd,
       BtnDelete,
       AddItem,
       ModulusFull,
@@ -149,22 +150,6 @@
     display: flex;
     align-items: flex-end;
     margin: 0;
-  }
-
-  .add-btn {
-    color: var(--clr-grey);
-    padding: 0;
-    margin: 0 .5em;
-    line-height: 1;
-    transform: translateY(50%);
-  }
-  .add-btn path{
-    stroke: var(--clr-darker-grey);
-    transition: stroke 200ms;
-  }
-
-  .add-btn:hover path{
-    stroke: var(--clr-accent);
   }
 
   .company-filter {

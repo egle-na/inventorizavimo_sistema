@@ -155,18 +155,23 @@
     }
   }
 
-  @media (max-width: 550px){
-    td {
+  @media (max-width: 580px){
+    td,th {
       border:none;
       border-bottom: 1px solid var(--clr-grey);
     }
-    td:first-child {
-      border-right: 1px solid var(--clr-grey);
-    }
+
     .mobile-actions{
       display: table-cell;
       width: 80px;
       position: relative;
+    }
+
+    table .mobile-focus{
+      background: var(--clr-light-grey);
+    }
+    th.mobile {
+      display: table-cell;
     }
   }
 

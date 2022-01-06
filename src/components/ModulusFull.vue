@@ -110,7 +110,7 @@
     margin: 0 auto 0 0;
     color: #FF6464;
   }
-  @media(max-width: 550px){
+  @media(max-width: 580px){
     .select-user-card {
       padding: 2em 1.5em;
     }

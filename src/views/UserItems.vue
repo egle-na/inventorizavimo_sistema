@@ -7,7 +7,7 @@
     <div class="title-container">
       <h1 v-if="!this.$route.params.user_id">Mano Inventorius</h1>
       <div v-else>
-        <p class="title-name">{{ additionalList.first_name }} {{ additionalList.last_name }}</p>
+        <p class="title-name">{{ findName(parseInt(this.$route.params.user_id)) }}</p>
         <h1>Inventorius</h1>
       </div>
       <button class="add-btn" @click="addGearOpen = true">
@@ -236,7 +236,7 @@
       if(this.$route.params.user_id){
         this.user_id = this.$route.params.user_id;
         this.url = this.url +'/user/' + this.user_id;
-        this.getAdditionalData('https://inventor-system.herokuapp.com/api/users/' + this.user_id)
+        // this.getAdditionalData('https://inventor-system.herokuapp.com/api/users/' + this.user_id)
       }
       this.getData(this.url);
       // this.getNames(); // store
@@ -276,7 +276,9 @@
       },
 
       setFilter(filter) {
-        this.rowsSelected = this.filter !== filter && [];
+        if(this.filter !== filter) {
+          this.rowsSelected = [];
+        }
         this.filter = filter;
         this.mobileFilterOpen = false;
       },
@@ -449,13 +451,13 @@
     border-color: var(--clr-accent);
   }
 
-  .no-padding input {
+  /*.no-padding input {*/
     /*margin-left: .9em;*/
     /*width: 120%;*/
 
     /*margin: 0 auto;*/
     /*align-self: center;*/
-  }
+  /*}*/
 
   .checkbox-cell {
     width: 50px;
@@ -506,8 +508,26 @@
   .actions {
     width: 230px;
   }
+
+  @media (max-width: 960px){
+    .filter-container {
+      display: flex;
+      flex-direction: column-reverse;
+      margin-right: 1em;
+    }
+    .filter-container .filter-btn {
+      padding: 0 1em;
+    }
+  }
+
+  /*@media (max-width: 730px){*/
+  /*  .tablet-hide {*/
+  /*    display: none;*/
+  /*  }*/
+  /*}*/
+
   /* Filter */
-  @media (max-width: 550px){
+  @media (max-width: 580px){
     .mobile-filter-card{
       margin-left: auto;
     }
@@ -525,17 +545,16 @@
       display: flex;
     }
 
-    table .mobile-focus{
-      background: var(--clr-light-grey);
-    }
-  }
-
-  @media (max-width: 730px){
-    .tablet-hide {
+    .filter-container{
       display: none;
     }
 
+    td:first-child {
+      border-right: 1px solid var(--clr-grey);
+    }
   }
+
+
 
 
 </style>

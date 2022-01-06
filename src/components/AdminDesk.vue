@@ -54,15 +54,16 @@
     align-self: center;
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 960px) {
 
     .grid {
-      grid-template: min-content auto / auto;
+      grid-template: 60px 60px calc(100vh - 120px) / auto;
     }
 
     .side-menu {
-      display: none;
+      grid-row: 2 / 3;
     }
+
   }
 
 

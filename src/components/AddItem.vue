@@ -129,7 +129,7 @@
     width: fit-content;
   }
 
-  @media (max-width: 550px) {
+  @media (max-width: 580px) {
     #euro-sign {
       bottom: 2.9em;
     }

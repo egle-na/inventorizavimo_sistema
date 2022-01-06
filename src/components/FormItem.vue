@@ -64,7 +64,7 @@
     color: #FF6464;
   }
 
-  @media (max-width: 550px){
+  @media (max-width: 580px){
     input:not([type='checkbox'], .input-long) {
       width: 100%;
     }

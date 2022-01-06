@@ -9,7 +9,6 @@
 <script>
   export default {
     name: 'BtnAddInventory',
-    // props: [ 'id' ],
   }
 </script>
 <style scoped>

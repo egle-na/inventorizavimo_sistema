@@ -74,7 +74,7 @@
   a {
     text-decoration: none;
   }
-  @media (max-width: 550px){
+  @media (max-width: 580px){
     .action-card {
       right: 3%;
     }

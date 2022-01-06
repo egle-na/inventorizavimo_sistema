@@ -89,7 +89,7 @@
     visibility: initial;
   }
 
-  @media (max-width: 550px){
+  @media (max-width: 580px){
     .error-msg {
       /*margin-bottom: .3em;*/
       order: 1;

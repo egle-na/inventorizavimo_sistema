@@ -19,13 +19,11 @@
 </template>
 
 <script>
-  // import ProfileImgMixin from "@/components/mixins/ProfileImgMixin";
   import UserCard from "@/components/UserCard";
 
   export default {
     name: "SideMenu",
     components: { UserCard },
-    // mixins: [ ProfileImgMixin ],
   }
 </script>
 
@@ -55,7 +53,6 @@
     height: 100%;
     /*max-height: 350px;*/
     max-height: 210px;
-
   }
 
   .side-nav {
@@ -77,11 +74,13 @@
   }
 
   a {
+    position: relative;
     text-decoration: none;
     color: inherit;
   }
 
   a:after {
+    position: relative;
     content: '';
     display: block;
     width: 0;
@@ -90,7 +89,7 @@
     height: 2px;
     background: var(--clr-grey);
 
-    transition: width 250ms;
+    transition: width 250ms, background 250ms;
   }
 
   .router-link-active {
@@ -100,6 +99,73 @@
   .router-link-active:after,
   a:hover:after{
     width: calc(100% + 1.5em);
+  }
+
+  @media (max-width: 960px) {
+    .user-card {
+      display: none;
+    }
+
+    .side-menu-container {
+      display: initial;
+    }
+
+    .side-nav {
+      align-items: center;
+      flex-direction: row;
+      padding-right: 1.5em;
+      margin-bottom: 0;
+      justify-content: space-around;
+    }
+
+    .side-nav-container {
+      min-height: 0;
+    }
+
+    .side-nav li {
+      padding: 0;
+    }
+
+    .router-link-active:after,
+    a:hover:after,
+    a::after{
+      width: calc(100% + 1.5em);
+      left: -.8em;
+    }
+
+    li:first-child a::after{
+      left: 0;
+    }
+
+    li:last-child a::after{
+      left: -1.5em;
+    }
+
+    a:hover:after,
+    .router-link-active:after {
+      background: var(--clr-accent);
+    }
+  }
+
+  @media(max-width: 580px) {
+    .side-nav{
+      padding: 0 .6em;
+      justify-content: space-between;
+
+    }
+    .side-menu-container {
+      font-size: 1.2em;
+    }
+    .router-link-active:after,
+    a:hover:after,
+    a::after{
+      width: calc(100% + .8em);
+      left: -.4em;
+    }
+
+    li:last-child a::after{
+      left: -.8em;
+    }
   }
 
 

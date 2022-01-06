@@ -87,7 +87,7 @@
     height: 90%;
   }
 
-@media (max-width: 550px) {
+@media (max-width: 580px) {
   .notification-card {
     right: 2.5%;
     margin: 1em auto;

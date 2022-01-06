@@ -1,29 +1,29 @@
 <template>
 <div>
   <admin-desk >
+    <!-- Title container-->
     <div class="title-container">
       <h1>Įmonės</h1>
-      <button class="add-btn" title="Pridėti įmonę" @click="openAddCompanyCard">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
-        </svg>
-      </button>
-    </div> <!-- /title container-->
+      <btn-add  title="Pridėti įmonę" @btnClicked="openAddCompanyCard" />
+    </div>
 
     <Search @setSearch="setSearch" />
-    <!-- table -->
+
+    <!-- Table -->
     <table-component>
-      <tr class="head-row">
-        <th>Įmonės pavadinimas</th>
-        <th>Darbuotojų skaičius</th>
-        <th>ID</th>
+      <tr class="head-row non-mobile">
+        <th>Pavadinimas</th>
+        <th class="non-mobile">Darbuotojai</th>
+        <th class="mobile"></th>
+<!--        <th>ID</th>-->
         <th></th>
       </tr>
-      <tr v-for="item in list" :key="item.id">
+      <tr v-for="item in list" :key="item.id" :class="{'mobile-focus': mobileActions === item.id}">
         <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.name }}</router-link></td>
         <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.user_count }}</router-link></td>
-        <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.id }}</router-link></td>
-        <td class="actions-cell">
+<!--        <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.id }}</router-link></td>-->
+        <!-- Non Mobile Table Actions -->
+        <td class="actions-cell non-mobile">
           <table-actions>
             <btn-edit @btnClicked="openEditCompanyCard(item.id, item.name)" />
             <span class="action-divider" />
@@ -32,9 +32,31 @@
             <btn-delete @btnClicked="openDeleteCompanyCard(item.id, item.name)" />
           </table-actions>
         </td>
+        <!-- Mobile Table Actions -->
+        <td class="mobile mobile-actions">
+          <button @click="openMobileActions(item.id, $event)">
+            <img src="../assets/icons/action-dots.svg" alt="">
+          </button>
+<!--          <action-card :style="{top :mobileActionsPos+'px'}" class="mobile-actions-card" v-if="mobileActions === item.id" @close="mobileActions = false">-->
+<!--            <button @click="openEditCompanyCard(item.id, item.name)">Redaguoti</button>-->
+
+<!--            <button @click="openAddUserCard(item.id)">Pridėti Darbuotoją</button>-->
+
+<!--            <button @click="openDeleteCompanyCard(item.id, item.name)">Ištrinti</button>-->
+<!--          </action-card>-->
+        </td>
       </tr>
     </table-component> <!-- /table container-->
   </admin-desk>
+
+  <!-- Mobile Table Actions -->
+  <action-card :style="{top: mobileActionsPos+'px'}" class="mobile-actions-card" v-if="mobileActions" @close="mobileActions = false">
+    <button @click="openEditCompanyCard(mobileActions, 'item.name')">Redaguoti</button>
+
+    <button @click="openAddUserCard(mobileActions)">Pridėti Darbuotoją</button>
+
+    <button @click="openDeleteCompanyCard(mobileActions, 'item.name')">Ištrinti</button>
+  </action-card>
 
   <!-- add company card -->
   <modulus-full v-show="addCompanyOpen" @close="closeCard">
@@ -115,10 +137,14 @@
   import BtnEdit from "@/components/BtnEdit";
   import BtnAddInventory from "@/components/BtnAddInventory";
   import FormItem from "@/components/FormItem";
+  import ActionCard from "@/components/ActionCard";
+  import BtnAdd from "@/views/BtnAdd";
   export default {
     name: "AllCompanies",
     mixins: [ DataMixin ],
     components: {
+      BtnAdd,
+      ActionCard,
       FormItem,
       BtnAddInventory,
       BtnEdit,
@@ -146,6 +172,8 @@
           company_id: '',
           role: 0,
         },
+        mobileActions: false,
+        mobileActionsPos: '',
       }
     },
     created() {
@@ -173,6 +201,11 @@
         this.editCompanyId = id;
         this.newCompanyName = name;
         this.deleteCompanyOpen = true;
+      },
+
+      openMobileActions(id, event){
+        this.mobileActions = id;
+        this.mobileActionsPos = event.pageY + 10;
       },
 
       createCompany() {
@@ -226,6 +259,7 @@
           this.getData(this.url);
           this.newCompanyName = '';
           this.editCompanyId = '';
+          this.mobileActions = false;
           // clear search
         }, () => {})
 
@@ -285,23 +319,6 @@
     margin: 0;
   }
 
-  .add-btn {
-    color: var(--clr-grey);
-    padding: 0;
-    margin: 0 .5em;
-    line-height: 1;
-    transform: translateY(50%);
-  }
-
-  .add-btn path{
-    stroke: var(--clr-darker-grey);
-    transition: stroke 200ms;
-  }
-
-  .add-btn:hover path{
-    stroke: var(--clr-accent);
-  }
-
   .add-input{
     margin-bottom: 1.5em;
   }
@@ -309,7 +326,7 @@
   /* Table Design */
 
   td, th {
-    border: none;
+    /*border: none;*/
     text-align: center;
   }
 
@@ -324,13 +341,27 @@
     text-align: left;
   }
 
-  th:not(:first-child){ /* column dividers fir sticky header */
+  th:not(:first-child){ /* column dividers for sticky header */
     box-shadow:none;
   }
 
   .error-msg {
     color: #FF6464;
     margin: 0 auto 0 0;
+  }
+
+  @media(min-width: 580px){
+    td, th {
+      border: none;
+      /*text-align: center;*/
+    }
+    .mobile-filter{
+      position: absolute;
+    }
+
+    .mobile-actions-card{
+      position: absolute;
+    }
   }
 
 

@@ -5,7 +5,7 @@
     <nav>
       <router-link :to="{name: 'user-inventory', params:{}}">Mano Inventorius</router-link>
 <!--      <router-link to="/add-inventory" >Pridėti įrangą</router-link>-->
-      <router-link to="/notifications">Pranešimai</router-link>
+      <router-link class="tablet-hide" to="/notifications">Pranešimai</router-link>
       <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
     </nav>
 
@@ -166,7 +166,7 @@
     padding: .5em 1em;
   }
 
-  @media (max-width: 550px){
+  @media (max-width: 580px){
     nav{
       display: none;
     }
@@ -174,5 +174,6 @@
       position: initial;
     }
   }
+
 
 </style>

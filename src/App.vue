@@ -151,7 +151,7 @@ export default {
     display: none;
   }
 
-  @media (max-width: 550px){
+  @media (max-width: 580px){
     :root {
       --clr-accent: #022222;
     }
@@ -169,6 +169,12 @@ export default {
 
     h2 {
       font-size: 2rem;
+    }
+  }
+
+  @media(max-width: 730px){
+    .tablet-hide {
+      display: none;
     }
   }
 
