@@ -71,6 +71,19 @@
     color: var(--clr-dark-grey);
   }
 
+  .button-container {
+    display: flex;
+  }
+
+  .error-msg {
+    color: #FF6464;
+    margin: 0 1em 0 0;
+  }
+
+  button {
+    margin-left: auto;
+  }
+
   .search-container {
     position: relative;
     margin-bottom: 1em;

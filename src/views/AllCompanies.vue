@@ -1,6 +1,7 @@
 <template>
 <div>
   <admin-desk >
+
     <!-- Title container-->
     <div class="title-container">
       <h1>Įmonės</h1>
@@ -10,115 +11,116 @@
     <Search @setSearch="setSearch" />
 
     <!-- Table -->
-    <table-component>
+    <table-component v-on:scroll.native="mobileActions = false">
+
       <tr class="head-row non-mobile">
         <th>Pavadinimas</th>
         <th class="non-mobile">Darbuotojai</th>
         <th class="mobile"></th>
-<!--        <th>ID</th>-->
         <th></th>
       </tr>
+
       <tr v-for="item in list" :key="item.id" :class="{'mobile-focus': mobileActions === item.id}">
         <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.name }}</router-link></td>
         <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.user_count }}</router-link></td>
-<!--        <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.id }}</router-link></td>-->
+
         <!-- Non Mobile Table Actions -->
         <td class="actions-cell non-mobile">
-          <table-actions>
+          <table-actions>  <!-- td ikelti vidun -->
+
             <btn-edit @btnClicked="openEditCompanyCard(item.id, item.name)" />
             <span class="action-divider" />
             <btn-add-inventory @btnClicked="openAddUserCard(item.id)" title="Pridėti darbuotoją" />
             <span class="action-divider" />
             <btn-delete @btnClicked="openDeleteCompanyCard(item.id, item.name)" />
+
           </table-actions>
         </td>
+
         <!-- Mobile Table Actions -->
         <td class="mobile mobile-actions">
           <button @click="openMobileActions(item.id, $event)">
             <img src="../assets/icons/action-dots.svg" alt="">
           </button>
-<!--          <action-card :style="{top :mobileActionsPos+'px'}" class="mobile-actions-card" v-if="mobileActions === item.id" @close="mobileActions = false">-->
-<!--            <button @click="openEditCompanyCard(item.id, item.name)">Redaguoti</button>-->
-
-<!--            <button @click="openAddUserCard(item.id)">Pridėti Darbuotoją</button>-->
-
-<!--            <button @click="openDeleteCompanyCard(item.id, item.name)">Ištrinti</button>-->
-<!--          </action-card>-->
         </td>
       </tr>
-    </table-component> <!-- /table container-->
+    </table-component>
   </admin-desk>
 
-  <!-- Mobile Table Actions -->
+  <!-- Mobile table actions card -->
   <action-card :style="{top: mobileActionsPos+'px'}" class="mobile-actions-card" v-if="mobileActions" @close="mobileActions = false">
-    <button @click="openEditCompanyCard(mobileActions, 'item.name')">Redaguoti</button>
-
+    <button @click="openEditCompanyCard(mobileActions)">Redaguoti</button>
     <button @click="openAddUserCard(mobileActions)">Pridėti Darbuotoją</button>
-
-    <button @click="openDeleteCompanyCard(mobileActions, 'item.name')">Ištrinti</button>
+    <button @click="openDeleteCompanyCard(mobileActions)">Ištrinti</button>
   </action-card>
 
-  <!-- add company card -->
+  <!-- Add company card -->
   <modulus-full v-show="addCompanyOpen" @close="closeCard">
     <h3>Pridėti naują įmonę</h3>
-      <form @submit.prevent="createCompany" >
-        <!--    <input ref="firstInput" type="text" placeholder="Įmonės pavadinimas" required class="add-input">-->
-        <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
+      <form @submit.prevent="createCompany">
 
+        <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
         <div class="btn-container">
           <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
           <button class="btn">Pridėti</button>
         </div>
+
       </form>
   </modulus-full>
 
-  <!-- edit company card -->
+  <!-- Edit company card -->
   <modulus-full v-show="editCompanyOpen" @close="closeCard">
     <h3>Redaguoti įmonę</h3>
-      <form @submit.prevent="editCompany(editCompanyId)" >
-        <!--    <input ref="firstInput" type="text" placeholder="Įmonės pavadinimas" required class="add-input">-->
-        <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
+      <form @submit.prevent="editCompany(editCompanyId)">
 
+        <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
         <div class="btn-container">
           <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
           <button class="btn">Redaguoti</button>
         </div>
+
       </form>
   </modulus-full>
 
-  <!-- add user card-->
+  <!-- Add user card-->
+<!--  <modulus-full v-if="addUserOpen && false" @close="closeCard">-->
+<!--    <h3>Pridėti Darbuotoją</h3>-->
+
+<!--    <form-item @onSubmit="addUser">-->
+<!--      <div>-->
+<!--        <input type="text"-->
+<!--               placeholder="Vardas" required-->
+<!--               v-model="newUser.first_name">-->
+<!--        <input type="text"-->
+<!--               placeholder="Pavardė" required-->
+<!--               v-model="newUser.last_name">-->
+<!--      </div>-->
+<!--      <input type="email"-->
+<!--             placeholder="Elektroninis paštas"-->
+<!--             class="input-long" required-->
+<!--             v-model="newUser.email">-->
+
+<!--      <select class="input-long" required v-model="newUser.company_id">-->
+<!--        <option selected hidden class="placeholder" value="">Įmonė</option>-->
+<!--        <option v-for="item in list" :key="item.id" :value="item.id">{{item.name}}</option> &lt;!&ndash; įmonių sąrašas &ndash;&gt;-->
+<!--      </select>-->
+
+<!--      <div class="button-container">-->
+<!--        <p v-if="errorMsg" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas</p>-->
+<!--        <button class="btn" type="submit">Pridėti</button>-->
+<!--      </div>-->
+<!--    </form-item>-->
+<!--  </modulus-full>-->
+
   <modulus-full v-if="addUserOpen" @close="closeCard">
-    <h3>Pridėti Darbuotoją</h3>
-
-    <form-item @onSubmit="addUser">
-      <div>
-        <input type="text"
-               placeholder="Vardas" required
-               v-model="newUser.first_name">
-        <input type="text"
-               placeholder="Pavardė" required
-               v-model="newUser.last_name">
-      </div>
-      <input type="email"
-             placeholder="Elektroninis paštas"
-             class="input-long" required
-             v-model="newUser.email">
-
-      <select class="input-long" required v-model="newUser.company_id">
-        <option selected hidden class="placeholder" value="">Įmonė</option>
-        <option v-for="item in list" :key="item.id" :value="item.id">{{item.name}}</option> <!-- įmonių sąrašas -->
-      </select>
-
-      <div class="button-container">
-        <p v-if="errorMsg" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas</p>
-        <button class="btn" type="submit">Pridėti</button>
-      </div>
-    </form-item>
+    <add-user @createUser="addUser" :companyList="list" :errorMsg="errorMsg" :company_id="addUserOpen" />
   </modulus-full>
 
+  <!-- Delete card-->
   <modulus-full v-if="deleteCompanyOpen" @close="closeCard" >
-    <div>
       <p>Ar tikrai norite ištrinti <strong>{{newCompanyName}}</strong>?</p>
+    <div class="btn-container">
+      <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
       <button class="btn" @click="deleteCompany(editCompanyId)">Taip</button>
     </div>
   </modulus-full>
@@ -127,25 +129,25 @@
 </template>
 
 <script>
+  import DataMixin from "@/components/mixins/DataMixin";
   import AdminDesk from "@/components/AdminDesk";
   import Search from "@/components/Search";
   import TableComponent from "@/components/TableComponent";
   import TableActions from "@/components/TableActions";
   import ModulusFull from "@/components/ModulusFull";
-  import DataMixin from "@/components/mixins/DataMixin";
   import BtnDelete from "@/components/BtnDelete";
   import BtnEdit from "@/components/BtnEdit";
   import BtnAddInventory from "@/components/BtnAddInventory";
-  import FormItem from "@/components/FormItem";
   import ActionCard from "@/components/ActionCard";
   import BtnAdd from "@/views/BtnAdd";
+  import AddUser from "@/components/AddUser";
   export default {
     name: "AllCompanies",
     mixins: [ DataMixin ],
     components: {
+      AddUser,
       BtnAdd,
       ActionCard,
-      FormItem,
       BtnAddInventory,
       BtnEdit,
       BtnDelete,
@@ -182,7 +184,6 @@
     methods: {
       openAddCompanyCard(){
         this.addCompanyOpen = true;
-        // this.$refs.firstInput.focus() // doesnt work
       },
 
       openEditCompanyCard(id, name){
@@ -192,9 +193,7 @@
       },
 
       openAddUserCard(id){
-        // this.editCompanyId = id;
-        this.newUser.company_id = id;
-        this.addUserOpen = true;
+        this.addUserOpen = id;
       },
 
       openDeleteCompanyCard(id, name){
@@ -218,8 +217,7 @@
           this.addCompanyOpen = false;
           this.newCompanyName = '';
           this.errorMsg = "";
-          this.getData(this.url);
-          // clear search
+          this.getData(this.url) // need to clear search input
         }).catch(error => {
           console.log(error);
           if(error.response.status === 400){
@@ -260,9 +258,10 @@
           this.newCompanyName = '';
           this.editCompanyId = '';
           this.mobileActions = false;
-          // clear search
-        }, () => {})
-
+          this.errorMsg = '';
+        }, () => {
+          this.errorMsg = 'Negalima ištrinti įmonės, kurioje dar yra darbuotojų'
+        })
       },
 
       addUser(){
@@ -283,7 +282,6 @@
       },
 
       userAddError(error) {
-        console.log("add user fail");
         if(error.response.status === 400 && error.response.data.message === "The email has already been taken"){
           this.errorMsg = true;
         }
@@ -326,7 +324,6 @@
   /* Table Design */
 
   td, th {
-    /*border: none;*/
     text-align: center;
   }
 
@@ -342,22 +339,17 @@
   }
 
   th:not(:first-child){ /* column dividers for sticky header */
-    box-shadow:none;
-  }
-
-  .error-msg {
-    color: #FF6464;
-    margin: 0 auto 0 0;
+    box-shadow: none;
   }
 
   @media(min-width: 580px){
     td, th {
       border: none;
-      /*text-align: center;*/
     }
-    .mobile-filter{
-      position: absolute;
-    }
+
+    /*.mobile-filter{*/
+    /*  position: absolute;*/
+    /*}*/
 
     .mobile-actions-card{
       position: absolute;

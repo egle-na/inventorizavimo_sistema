@@ -22,8 +22,8 @@
             <option v-for="item in companyList" :key="item.id" :value="item.id">{{item.name}}</option> <!-- įmonių sąrašas -->
           </select>
 
-          <div>
-            <p class="error-msg">Vartotojas šiuo elektroniniu paštu jau užregistruotas</p>
+          <div class="button-container">
+            <p v-if="errorMsg" class="error-msg">Vartotojas šiuo elektroniniu paštu jau užregistruotas</p>
             <button class="btn" type="submit">Pridėti</button>
           </div>
         </form-item>
@@ -37,7 +37,7 @@
 
   export default {
     name: "AddUser",
-    props: [ 'companyList' ],
+    props: [ 'companyList', 'errorMsg', 'company_id' ],
     components: {
       FormItem,
     },
@@ -50,9 +50,13 @@
           company_id: '',
           role: 0,
         },
-
       }
     },
+    created() {
+      if(this.company_id){
+        this.newUser.company_id = this.company_id;
+      }
+    }
   }
 </script>
 
@@ -61,5 +65,19 @@
   h2{
     margin-top: .4em;
   }
+
+  .button-container {
+    display: flex;
+  }
+
+  .error-msg {
+    color: #FF6464;
+    margin: 0 1em 0 0;
+  }
+
+  /*button {*/
+  /*  margin-left: auto;*/
+  /*}*/
+
 
 </style>

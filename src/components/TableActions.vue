@@ -1,33 +1,14 @@
 <template>
   <div class="actions-container">
-<!--    &lt;!&ndash; view &ndash;&gt;-->
-<!--    <BtnView :id="id"/>-->
-<!--    <span class="action-divider" />-->
-
-<!--    &lt;!&ndash; edit &ndash;&gt;-->
-<!--    <BtnEdit/>-->
 
     <slot />
-
-<!--    &lt;!&ndash; add &ndash;&gt;-->
-<!--    <BtnAddInventory/>-->
-<!--    <span class="action-divider" />-->
-
-<!--    &lt;!&ndash; delete &ndash;&gt;-->
-<!--    <btn-delete/>-->
 
   </div>
 </template>
 
 <script>
-  // import BtnDelete from "@/components/BtnDelete";
-  // import BtnAddInventory from "@/components/BtnAddInventory";
-  // import BtnView from "@/components/BtnView";
-
   export default {
     name: "TableActions",
-    // components: {BtnAddInventory, BtnDelete, BtnView },
-    props: [ 'id' ]
   }
 </script>
 

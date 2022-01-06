@@ -19,7 +19,7 @@
 
     <Search @setSearch="setSearch" />
     <!-- table -->
-    <table-component>
+    <table-component v-on:scroll.native="mobileActions = false">
       <tr class="head-row">
         <th>Vardas Pavardė</th>
         <th class="tablet-hide">Elektroninis paštas</th>
@@ -99,6 +99,10 @@
     </form-item>
   </modulus-full>
 
+  <modulus-full v-if="addUserCardOpen" @close="closeCard">
+    <add-user @createUser="createUser" :companyList="additionalList" :errorMsg="errorMsg" />
+  </modulus-full>
+
   <!-- edit user card-->
   <modulus-full v-if="editUserCardOpen" @close="closeCard">
     <h3>Redaguoti Darbuotoją</h3>
@@ -159,6 +163,7 @@
   import usersMixin from "@/components/mixins/UsersMixin";
   import ActionCard from "@/components/ActionCard";
   import BtnAdd from "@/views/BtnAdd";
+  import AddUser from "@/components/AddUser";
   // import BtnView from "@/components/BtnView";
 
   export default {
@@ -191,6 +196,7 @@
       }
     },
     components: {
+      AddUser,
       BtnAdd,
       ActionCard,
       AddItem,

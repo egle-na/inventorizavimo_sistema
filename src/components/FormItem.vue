@@ -58,11 +58,14 @@
 
   button {
     float: right;
+    margin-left: auto;
   }
-  .error-msg{
-    /*margin-top: 0;*/
-    color: #FF6464;
-  }
+
+
+  /*.error-msg{*/
+  /*  !*margin-top: 0;*!*/
+  /*  color: #FF6464;*/
+  /*}*/
 
   @media (max-width: 580px){
     input:not([type='checkbox'], .input-long) {

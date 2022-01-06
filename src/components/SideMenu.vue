@@ -154,8 +154,10 @@
 
     }
     .side-menu-container {
+      z-index: 1;
       font-size: 1.2em;
     }
+
     .router-link-active:after,
     a:hover:after,
     a::after{
