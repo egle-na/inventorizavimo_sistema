@@ -110,10 +110,10 @@
    <select-user v-if="selectUserOpen"
                 @close="selectUserOpen = false; errorMsg = ''"
                 @submitAction="gearAction(...arguments, list.id, actionType)"
-                :list="$store.getters.allUsers"
                 :type="actionType"
                 :gear_owner="list.user_id"
                 :errorMsg="errorMsg" />
+<!--                :list="$store.getters.allUsers"-->
 
    <!-- Nurašyti action -->
    <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false; errorMsg = ''">

@@ -1,16 +1,38 @@
 <template>
   <ModulusFull @close="closeCard">
-    <form @submit.prevent="$emit('submitAction', selectedUser)">
+    <form @submit.prevent="submitAction" @keydown.enter.prevent="submitAction">
     <h3>{{ type }}</h3>
     <p>Pasirinkite darbuotoją:</p>
+<!--   ----------------------------------------------------------------------------------------------    -->
 
-    <slot></slot> <!-- nėra? -->
+    <div v-if="searchActive" class="select-backdrop" @click="searchActive = false"></div>
+    <div class="select-container">
 
-    <select class="user-select" v-model="selectedUser" required>
-      <option selected hidden>Pasirinkite darbuotoją:</option>
-      <option v-for="user in userList" :key=" user.id"
-              :value="user.id">{{user.first_name + ' ' + user.last_name}}</option>
-    </select>
+      <input type="text" placeholder="Vardas Pavardė"
+             v-model="searchUser"
+             @focus="searchActive = true"
+             @keyup="searchActive = true"
+             @input="searchUser = $event.target.value"
+             @keydown.enter="selectUser(filteredList[0].id)"
+             @keydown.down="$event.target.nextElementSibling.firstChild.focus()">
+
+      <div class="select" v-show="searchActive">
+        <button v-for="user in filteredList" :key="user.id"
+                @keydown.enter="selectUser(user.id)"
+                @keydown.down="focusNext($event, 'down')"
+                @keydown.up="focusNext($event,'up')"
+                @click="selectUser(user.id)">{{ findName(user.id) }}</button>
+      </div>
+    </div>
+
+
+<!--   ----------------------------------------------------------------------------------------------    -->
+<!--    <select class="user-select" v-model="selectedUser" required>-->
+<!--      <option selected hidden>Pasirinkite darbuotoją:</option>-->
+<!--      <option v-for="user in userList" :key=" user.id"-->
+<!--              :value="user.id">{{ findName(user.id) }}</option>-->
+<!--    </select>-->
+<!--   ----------------------------------------------------------------------------------------------    -->
 
 <!--    <input type="text" v-model="selectedUser">-->
 
@@ -20,40 +42,48 @@
     </div>
     </form>
 
-<!--    &lt;!&ndash; Search container &ndash;&gt;-->
-<!--    <div class="search-container">-->
-<!--      <input type="text" placeholder="Vardas Pavardė"-->
-<!--             @focus="searchActive = true"-->
-<!--             :value="searchName"-->
-<!--             @blur="closeSearchList"-->
-<!--             @input="doSearch"-->
-<!--             required>-->
-<!--      &lt;!&ndash;        <button>&times;</button>&ndash;&gt;-->
-
-<!--      <ul v-show="searchActive" class="list">-->
-<!--        <li v-if="false" class="no-hover">Toks darbuotojas nerastas</li>-->
-<!--        <li v-else v-for="item in list"-->
-<!--            :key="item.id"-->
-<!--            @click="searchName = userName(item)"-->
-<!--            v-text="userName(item)">Vardenis Pavardenis</li> &lt;!&ndash; @click="select(id)" &ndash;&gt;-->
-<!--      </ul>-->
-<!--    </div>&lt;!&ndash; /search container &ndash;&gt;-->
-
   </ModulusFull>
 </template>
 
 <script>
   import ModulusFull from "@/components/ModulusFull";
+  import UsersMixin from "@/components/mixins/UsersMixin";
 
   export default {
     name: "SelectUser",
+    mixins: [ UsersMixin ],
     components: { ModulusFull },
-    props: [ 'type', 'list', 'errorMsg', 'gear_owner'],
+    props: [ 'type', 'errorMsg', 'gear_owner'],
     data() {
       return {
         searchActive: false,
         // searchName: '',
         selectedUser: '',
+
+        searchUser: '',
+      }
+    },
+    computed: {
+      userList() {
+        if(this.gear_owner.length){
+          if(this.type === "Skolinti" ) {
+            return this.$store.getters.allUsers.filter( user => user.id !== this.$store.getters.user.id && !this.gear_owner.includes(user.id) )
+          } else {
+            return this.$store.getters.user.isAdmin ? this.$store.getters.allUsers.filter(user => !this.gear_owner.includes(user.id))
+                : this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && !this.gear_owner.includes(user.id))
+          }
+        } else {
+          if (this.type === "Skolinti") {
+            return this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner)
+          } else {
+            return this.$store.getters.user.isAdmin ? this.$store.getters.allUsers.filter(user => user.id !== this.gear_owner)
+                : this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner)
+          }
+        }
+      },
+      filteredList() {
+        let search = this.searchUser.toLowerCase()
+        return this.userList.filter(user => this.findName(user.id).toLowerCase().indexOf(search) > -1 );
       }
     },
     methods: {
@@ -61,6 +91,32 @@
       // userName(user){
       //   return user.first_name + ' ' + user.last_name
       // },
+
+      focusNext(event, dir){
+        if (dir === 'down'){
+          if(event.target.nextElementSibling) {
+            event.target.nextElementSibling.focus();
+          }
+        } else if(dir === 'up'){
+          if(event.target.previousSibling){
+            event.target.previousSibling.focus();
+          } else {
+            event.target.parentElement.parentElement.firstChild.focus();
+          }
+        }
+      },
+
+      submitAction() {
+        if(!this.searchActive){
+          this.$emit('submitAction', this.selectedUser);
+        }
+      },
+
+      selectUser(id){
+        this.searchUser = this.findName(id);
+        this.selectedUser = id;
+        setTimeout(() => {this.searchActive = false;}, 200);
+      },
 
       doSearch(event) {
         this.searchName = event.target.value;
@@ -70,7 +126,7 @@
       closeSearchList() { // idk, doesn't feel right
         setTimeout (() => {
           this.searchActive = false;
-        }, 200)
+        }, 100)
       },
 
       closeCard() {
@@ -78,15 +134,7 @@
         this.$emit('close');
       }
     },
-    computed: {
-      userList() {
-        if(this.type === "Skolinti" ) {
-          return this.list.filter( user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner )
-        }
-        return this.$store.getters.user.isAdmin ? this.list.filter(user => user.id !== this.gear_owner)
-            : this.list.filter( user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner )
-      }
-    }
+
   }
 </script>
 
@@ -126,6 +174,50 @@
     margin-right: auto;
     color: #FF6464;
   }
+
+  .select-container {
+    position: relative;
+    margin-bottom: 1em;
+  }
+
+  .select {
+    position: absolute;
+    width: 100%;
+    background: var(--clr-almost-white);
+    border-radius: 0 0 5px 5px;
+  }
+
+  .select button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: .8em 1.5em;
+    border-bottom: solid 2px var(--clr-light-grey);
+  }
+
+  .select button:hover{
+    background: #0054A611;
+    color: var(--clr-accent);
+  }
+
+  .select button:focus {
+    background: #0054A622;
+  }
+
+  .select-backdrop{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  @media (max-width: 580px){
+    .select button{
+      padding: 1em 1.5em;
+    }
+  }
+
 
 
 </style>

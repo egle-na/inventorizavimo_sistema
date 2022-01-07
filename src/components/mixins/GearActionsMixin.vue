@@ -4,8 +4,15 @@
     methods: {
       returnItem(id) {
         console.log('return');
+        let url = 'https://inventor-system.herokuapp.com/api/requests/return/';
+        if(id.length){
+          url = ""
+          // return multiple
+        } else {
+          url += id;
+        }
         // id = this.$route.params.inventory_id
-        this.postData('https://inventor-system.herokuapp.com/api/requests/return/' + id,
+        this.postData(url,
             {},
             () => {
               this.returnCardOpen = false;
@@ -19,6 +26,9 @@
 
       // writeOffItem() {
       deleteGear(id) {
+        if(id.length){
+          // delete multiple
+        }
         // id = this.$route.params.inventory_id;
         this.$http.delete('https://inventor-system.herokuapp.com/api/gear/' + id, this.config)
             .then(() => {
@@ -48,6 +58,10 @@
         // if(user_id === this.$store.getters.user.id){
         //   this.errorMsg = `Inventoriaus sau ${this.actionType.toLowerCase()} negalima.`
         // }
+
+        if(id.length){
+          // return multiple
+        }
 
         if(actionType === 'Skolinti'){
           url = 'https://inventor-system.herokuapp.com/api/requests/lend/'

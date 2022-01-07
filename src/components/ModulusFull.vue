@@ -113,6 +113,7 @@
   .btn-container {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
   }
 
   div:not(.btn-container) .btn {
@@ -128,5 +129,6 @@
       padding: 2em 1.5em;
     }
   }
+
 
 </style>

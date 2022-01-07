@@ -10,7 +10,7 @@
         <p class="title-name">{{ findName(parseInt(this.$route.params.user_id)) }}</p>
         <h1>Inventorius</h1>
       </div>
-      <button class="add-btn" @click="addGearOpen = true">
+      <button class="add-btn" @click="addGearOpen = true; mobileActions = false; rowsSelected = []">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
         </svg>
@@ -61,16 +61,15 @@
       <div :class="{'hidden': !anySelected}" class="flex">
         <span class="non-mobile">Pasirinkta: {{ rowsSelected.length }}</span>
         <table-actions class="actions">
-          <btn-return title="Grąžinti" v-if="!$route.params.user_id" />
+          <btn-return title="Grąžinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
+
+          <btn-lend title="Skolinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleLend')" />
           <span class="action-divider" v-if="!$route.params.user_id" />
 
-          <btn-lend title="Skolinti" v-if="!$route.params.user_id" />
-          <span class="action-divider" v-if="!$route.params.user_id" />
-
-          <btn-transfer title="Perduoti" />
+          <btn-transfer title="Perduoti" @btnClicked="openCard('multipleTransfer')" />
           <span class="action-divider" />
 
-          <btn-delete />
+          <btn-delete @btnClicked="openCard('multipleDelete')" />
         </table-actions>
       </div>
     </div>
@@ -151,30 +150,56 @@
 
   <!-- Grąžinti action -->
   <modulus-full v-if="returnCardOpen" @close="returnCardOpen = false; errorMsg = ''">
-    <p>Ar esate pasiruošę grąžinti <strong>{{ gearName(returnCardOpen) }}</strong>?</p>
-    <div class="btn-container">
-      <p class="error-msg">{{ errorMsg }}</p>
-      <button class="btn" @click="returnItem(returnCardOpen)">Taip</button>
+    <div v-if="returnCardOpen === 'err'">
+      <p>Šių daiktų grąžinti negalima.</p>
+      <button class="btn" @click="returnCardOpen = false">Uždaryti</button>
+    </div>
+    <div v-else>
+      <p>Ar esate pasiruošę grąžinti
+        <strong v-if="!returnCardOpen.length">{{ gearName(returnCardOpen) }}</strong>
+        <strong v-else>Šiuos {{ returnCardOpen.length }} daiktus</strong>?</p>
+      <div class="btn-container">
+        <p class="error-msg">{{ errorMsg }}</p>
+        <button class="btn" @click="returnItem(returnCardOpen)">Taip</button>
+      </div>
     </div>
   </modulus-full>
 
   <!-- Nurašyti action -->
   <modulus-full v-if="deleteCardOpen" @close="deleteCardOpen = false; errorMsg = ''">
-    <p>Ar tikrai norite nurašyti <strong>{{ gearName(deleteCardOpen) }}</strong>?</p>
-    <div class="btn-container">
-      <p class="error-msg">{{errorMsg}}</p>
-      <button class="btn" @click="deleteGear(deleteCardOpen)">Taip</button>
+    <div v-if="deleteCardOpen === 'err'">
+      <p>Šių daiktų nurašyti negalima.</p>
+      <button class="btn" @click="deleteCardOpen = false">Uždaryti</button>
+    </div>
+    <div v-else>
+      <p>Ar tikrai norite nurašyti
+        <strong v-if="!deleteCardOpen.length">{{ gearName(deleteCardOpen) }}</strong>
+        <span v-else>šiuos {{ deleteCardOpen.length }} daiktus</span>?</p>
+      <div class="btn-container">
+        <p class="error-msg">{{errorMsg}}</p>
+        <button class="btn" @click="deleteGear(deleteCardOpen)">Taip</button>
+      </div>
     </div>
   </modulus-full>
 
+  <!-- Skolinti/Perleisti action err -->
+  <modulus-full v-if="selectUserOpen === 'errSkolinti'" @close="selectUserOpen = false">
+    <p>Šių daiktų skolinti negalima.</p>
+    <button class="btn" @click="selectUserOpen = false">Uždaryti</button>
+  </modulus-full>
+  <modulus-full v-else-if="selectUserOpen === 'errPerleisti'" @close="selectUserOpen = false">
+    <p>Šių daiktų perleisti negalima.</p>
+    <button class="btn" @click="selectUserOpen = false">Uždaryti</button>
+  </modulus-full>
+
   <!-- Skolinti/Perleisti action -->
-  <select-user v-if="selectUserOpen"
+  <select-user v-else-if="selectUserOpen"
                @close="selectUserOpen = false; errorMsg = ''"
                @submitAction="gearAction( ...arguments, selectUserOpen.id, selectUserOpen.type )"
-               :list="$store.getters.allUsers"
                :type="selectUserOpen.type"
                :gear_owner="selectUserOpen.owner_id"
                :errorMsg="errorMsg" />
+<!--               :list="$store.getters.allUsers"-->
 
 
 </div>
@@ -365,10 +390,61 @@
         } else if(name === 'Perleisti' || name === 'Skolinti'){
           let owner_id = this.filteredList.find(gear => gear.id === id).user_id;
           this.selectUserOpen = {id, type: name, owner_id};
+
+        } else if(name === 'multipleReturn'){ // RETURN multiple
+
+            this.returnCardOpen = [];
+            for( let i = 0; i < this.rowsSelected.length; i++ ){
+              let gear = this.filteredList[this.rowsSelected[i]];
+              if(!gear.own && gear.lent) {
+                this.returnCardOpen.push(gear);
+              }
+            }
+            if(!this.returnCardOpen.length) { // Jei nieko negalima grąžinti
+              this.returnCardOpen = 'err';
+            } else if(this.returnCardOpen.length === 1){ // Jei galima grąžinti tik vieną
+              this.returnCardOpen = this.returnCardOpen[0].id;
+            }
+
+        } else if(name === 'multipleDelete'){ // DELETE multiple
+
+          this.deleteCardOpen = [];
+          for( let i = 0; i < this.rowsSelected.length; i++ ){
+            let gear = this.filteredList[this.rowsSelected[i]];
+            if(gear.own && !gear.lent) {
+              this.deleteCardOpen.push(gear);
+            }
+          }
+          if(!this.deleteCardOpen.length) { // Jei nieko negalima nurašyti
+            this.deleteCardOpen = 'err';
+          } else if(this.deleteCardOpen.length === 1){ // Jei galima nurašyti tik vieną
+            this.deleteCardOpen = this.deleteCardOpen[0].id;
+          }
+
+        } else if(name === 'multipleTransfer' || name === 'multipleLend'){ // LEND or TRANSFER multiple
+          let type = name === 'multipleTransfer' ? 'Perleisti' : 'Skolinti';
+          this.selectUserOpen = { id: [], type, owner_id: []};
+
+          for( let i = 0; i < this.rowsSelected.length; i++ ){
+            let gear = this.filteredList[this.rowsSelected[i]];
+            if((gear.own && !gear.lent && type === 'Perleisti') ||
+                (type === 'Skolinti' && (!gear.own && gear.lent || gear.own && !gear.lent && type))
+            ) {
+              this.selectUserOpen.id.push(gear.id);
+              this.selectUserOpen.owner_id.push(gear.user_id);
+            }
+          }
+          if(!this.selectUserOpen.id.length) { // Jei nieko negalima perduoti ar skolinti
+            this.selectUserOpen = 'err' + type;
+          } else if(this.selectUserOpen.id.length === 1){ // Jei galima perduoti ar skolinti tik vieną
+            this.selectUserOpen.id = this.selectUserOpen.id[0];
+            this.selectUserOpen.owner_id = this.selectUserOpen.owner_id[0];
+          }
         }
       },
-    },
 
+
+    },
   }
 </script>
 

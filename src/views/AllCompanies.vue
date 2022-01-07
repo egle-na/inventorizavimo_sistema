@@ -11,7 +11,7 @@
     <Search @setSearch="setSearch" />
 
     <!-- Table -->
-    <table-component v-on:scroll.native="mobileActions = false">
+    <table-component @scroll.native="closeMobileAction">
 
       <tr class="head-row non-mobile">
         <th>Pavadinimas</th>
@@ -116,9 +116,9 @@
     <add-user @createUser="addUser" :companyList="list" :errorMsg="errorMsg" :company_id="addUserOpen" />
   </modulus-full>
 
-  <!-- Delete card-->
+  <!-- Delete company -->
   <modulus-full v-if="deleteCompanyOpen" @close="closeCard" >
-      <p>Ar tikrai norite ištrinti <strong>{{newCompanyName}}</strong>?</p>
+    <p>Ar tikrai norite ištrinti <strong>{{newCompanyName}}</strong>?</p>
     <div class="btn-container">
       <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
       <button class="btn" @click="deleteCompany(editCompanyId)">Taip</button>
@@ -131,31 +131,31 @@
 <script>
   import DataMixin from "@/components/mixins/DataMixin";
   import AdminDesk from "@/components/AdminDesk";
-  import Search from "@/components/Search";
-  import TableComponent from "@/components/TableComponent";
-  import TableActions from "@/components/TableActions";
-  import ModulusFull from "@/components/ModulusFull";
+  import ActionCard from "@/components/ActionCard";
+  import AddUser from "@/components/AddUser";
+  import BtnAdd from "@/views/BtnAdd";
+  import BtnAddInventory from "@/components/BtnAddInventory";
   import BtnDelete from "@/components/BtnDelete";
   import BtnEdit from "@/components/BtnEdit";
-  import BtnAddInventory from "@/components/BtnAddInventory";
-  import ActionCard from "@/components/ActionCard";
-  import BtnAdd from "@/views/BtnAdd";
-  import AddUser from "@/components/AddUser";
+  import ModulusFull from "@/components/ModulusFull";
+  import Search from "@/components/Search";
+  import TableActions from "@/components/TableActions";
+  import TableComponent from "@/components/TableComponent";
   export default {
     name: "AllCompanies",
     mixins: [ DataMixin ],
     components: {
       AddUser,
-      BtnAdd,
+      AdminDesk,
       ActionCard,
+      BtnAdd,
       BtnAddInventory,
       BtnEdit,
       BtnDelete,
       ModulusFull,
+      Search,
       TableActions,
       TableComponent,
-      Search,
-      AdminDesk
     },
     data() {
       return {
@@ -204,7 +204,16 @@
 
       openMobileActions(id, event){
         this.mobileActions = id;
-        this.mobileActionsPos = event.pageY + 10;
+        this.mobileActionsPos = event.pageY + 15 ;
+        if((window.innerHeight - event.clientY) < 190){
+          this.mobileActionsPos = event.pageY - 180 ;
+        }
+      },
+
+      closeMobileAction(){
+        if(this.mobileActions){
+          this.mobileActions = false;
+        }
       },
 
       createCompany() {
@@ -354,6 +363,8 @@
     .mobile-actions-card{
       position: absolute;
     }
+
+
   }
 
 
