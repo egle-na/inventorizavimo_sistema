@@ -1,41 +1,43 @@
 <template>
  <div>
-   <Header />
 
+   <Header />
    <main>
+
      <!-- Title container -->
      <div class="title-container">
+
        <h1>{{ list.name }} <span>{{ statusText }}</span></h1>
 
+       <!-- Gear Actions -->
        <div class="actions" v-if="statusText !== 'Paskolintas'">
-         <button @click="actionCardOpen = !actionCardOpen">
-           <img src="../assets/icons/action-dots.svg" alt="">
-         </button>
-         <!-- Action Card -->
+         <btn-option-dots @btnClicked="actionCardOpen = !actionCardOpen" />
+
+         <!-- Actions Card -->
          <action-card v-show="actionCardOpen" @close="actionCardOpen = false">
-           <button class="action-btn"
+           <button v-if="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
                    @click="openSelect('Skolinti')"
-                   v-if="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
            >Skolinti</button>
-           <button class="action-btn"
-                   v-show="statusText === 'Savininkas' || this.$store.getters.user.isAdmin === true && !list.lent"
+
+           <button v-show="statusText === 'Savininkas' || this.$store.getters.user.isAdmin === true && !list.lent"
                    @click="openSelect('Perleisti')"
            >Perleisti</button>
-           <button class="action-btn"
-                   v-show="statusText === 'Pasiskolinta'"
-                   @click="returnCardOpen = true"
-           >Grąžinti</button>
-           <button class="action-btn" @click="generatePDF(list.id, list.name)">Generuoti PDF</button>
-           <button class="action-btn" @click="writeOffCardOpen = true">Nurašyti</button>
+
+           <button v-show="statusText === 'Pasiskolinta'" @click="returnCardOpen = true">Grąžinti</button>
+           <button @click="writeOffCardOpen = true">Nurašyti</button>
+           <button @click="generatePDF(list.id, list.name)">Generuoti PDF</button>
          </action-card>
        </div>
-       <button v-else class="btn" @click="generatePDF(list.id, list.name)">
-         Generuoti PDF
-       </button>
+
+       <!-- Generuoti PDF when no other actions are available -->
+       <div v-else>
+         <button class="btn non-mobile" @click="generatePDF(list.id, list.name)">Generuoti PDF</button>
+         <btn-download-p-d-f class="mobile" @btnClicked="generatePDF(list.id, list.name)" />
+       </div>
 
      </div><!-- /Title container -->
 
-     <!-- Main -->
+     <!-- Main Content -->
      <div class="main-content">
 
        <!-- Info container -->
@@ -113,7 +115,6 @@
                 :type="actionType"
                 :gear_owner="list.user_id"
                 :errorMsg="errorMsg" />
-<!--                :list="$store.getters.allUsers"-->
 
    <!-- Nurašyti action -->
    <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false; errorMsg = ''">
@@ -145,11 +146,15 @@
   import DataMixin from "@/components/mixins/DataMixin";
   import UsersMixin from "@/components/mixins/UsersMixin";
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
+  import BtnOptionDots from "@/components/BtnOptionDots";
+  import BtnDownloadPDF from "@/components/BtnDownloadPDF";
 
   export default {
     name: "InventoryInfo",
     mixins: [ DataMixin, UsersMixin, GearActionsMixin ],
     components: {
+      BtnDownloadPDF,
+      BtnOptionDots,
       ModulusFull,
       SelectUser,
       TableComponent,
@@ -171,38 +176,45 @@
         // status
         history: {},
         historyList: {},
+        checked: false,
       }
     },
     created() {
       if(this.$store.getters.user.isAdmin === true){
         this.url = 'https://inventor-system.herokuapp.com/api/gear/all/' + this.$route.params.inventory_id;
-        // this.users_url = 'https://inventor-system.herokuapp.com/api/users/all'
       }
-      this.getData(this.url, '', () => {
-        this.$router.push({name: 'user-inventory'});
-      });
-
-      // this.getNames();
+      this.getData(this.url, '', () => { this.$router.push({name: 'user-inventory'}) });
       this.getHistory();
     },
     computed: {
       ownerName() {
         if(this.$store.getters.allUsers.length){
-          // return `${this.additionalList.filter(user => user.id === this.list.user_id)[0].first_name} ${this.additionalList.filter(user => user.id === this.list.user_id)[0].last_name}`;
           return this.findName(this.list.user_id);
         } else return ''
       },
+
       statusText(){
-        // if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
+        //             if admin             &&                      not owner                    &&   gear is lent
+        if(this.$store.getters.user.isAdmin && this.list.user_in !== this.$store.getters.user.id && this.list.lent){
+          if(!this.checked && this.list.id) { // checking if it is in my gear list
+            this.getData('https://inventor-system.herokuapp.com/api/gear/' + this.list.id,
+                () => { this.checked = 'mine' },
+                () => { this.checked = true })
+          } else if(this.checked === 'mine'){
+            return "Pasiskolinta"; // there must be an easier way, im not sure if it is even right
+          }
+        }
+
         if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
-          if(this.list.lent){ // jei paskolinta
+          if(this.list.lent){ // jei savininkas ir paskolinta
             return 'Paskolintas';
-          } else return 'Savininkas'; // nepaskolinta
+          } else return 'Savininkas'; // jei savininkas bet nepaskolinta
         } else if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
           return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
         } else return "Pasiskolinta";
       },
     },
+
     methods: {
       getHistory() {
         this.$http.get('https://inventor-system.herokuapp.com/api/gear-history/' + this.$route.params.inventory_id, this.config)
@@ -262,15 +274,6 @@
     justify-content: flex-start;
   }
 
-  .history {
-    width: 55%;
-    position: relative;
-    margin-top: 1.5rem;
-    border: solid 3px var(--clr-grey);
-    border-radius: 7px;
-    /*max-height: 100%;*/
-  }
-
   .specs div {
     display: flex;
     justify-content: space-between;
@@ -297,8 +300,18 @@
     margin: auto 0 0;
     justify-content: flex-end;
   }
+
   .specs .btn {
     margin-left: 1em
+  }
+
+  .history {
+    width: 55%;
+    position: relative;
+    margin-top: 1.5rem;
+    border: solid 3px var(--clr-grey);
+    border-radius: 7px;
+    /*max-height: 100%;*/
   }
 
   .history-title {
@@ -324,7 +337,7 @@
     border-bottom: solid 2px var(--clr-light-grey);
   }
 
-  .table-container {
+  .table-container { /* nieko nedaro */
     border: none;
   }
 
@@ -337,17 +350,21 @@
     padding-left:.4em; /* gal abi puses? */
   }
 
-  @media (max-width: 580px) {
+
+  @media (max-width: 800px) {
     .main-content {
       flex-direction: column;
     }
+
     .specs,
     .history {
       width: 100%;
     }
+
     .specs {
       margin-bottom: 2em;
     }
+
   }
 
 

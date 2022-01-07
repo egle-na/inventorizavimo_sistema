@@ -1,7 +1,6 @@
 <template>
 <div class="fixed-container">
   <Header />
-
   <main>
     <!-- Title container -->
     <div class="title-container">
@@ -10,12 +9,9 @@
         <p class="title-name">{{ findName(parseInt(this.$route.params.user_id)) }}</p>
         <h1>Inventorius</h1>
       </div>
-      <button class="add-btn" @click="addGearOpen = true; mobileActions = false; rowsSelected = []">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 12H8M24 12H8M12 8V0V24" stroke="#C5C5C5" stroke-width="2"/>
-        </svg>
-      </button>
+      <btn-add @btnClicked="addGearOpen = true; mobileActions = false; rowsSelected = []" />
 
+      <!-- Filter -->
       <div class="filter-container non-mobile">
         <button class="filter-btn"
                 v-if="!this.$route.params.user_id"
@@ -31,45 +27,44 @@
         <button class="filter-btn"
                 :class="{'filter-selected': filter === 'all'}"
                 @click="setFilter('all')">Visi</button>
-      </div> <!-- /filter container-->
+      </div>
 
       <!-- Mobile Filter -->
       <div class="mobile mobile-filter-card">
-        <button @click="mobileFilterOpen = !mobileFilterOpen">
-          <img src="../assets/icons/action-dots.svg" alt="">
-        </button>
+        <btn-option-dots @btnClicked="mobileFilterOpen = !mobileFilterOpen" />
         <action-card class="mobile-filter" v-show="mobileFilterOpen" @close="mobileFilterOpen = false">
           <button class="first" v-if="!this.$route.params.user_id" @click="setFilter('owned')">Mano įranga</button>
           <button v-else @click="setFilter('owned')">Asmeninė</button>
           <button @click="setFilter('borrowed')">Pasiskolinta</button>
           <button @click="setFilter('all')">Visi</button>
         </action-card>
-      </div> <!-- /mobile filter -->
+      </div>
     </div> <!-- /title container -->
 
     <!-- Deal with selected -->
     <div class="selection-actions">
-      <div class="mobile flex">
+      <div class="mobile flex"> <!-- mobile checkbox -->
         <input type="checkbox"
                title="Pasirinkti Viską"
                :class="{'checkbox-hidden': !anySelected}"
                :checked="anySelected"
-               @click="$event.target.checked ? selectAll() :  rowsSelected = []">
+               @click="$event.target.checked ? selectAll() : rowsSelected = []">
         <span class="mobile" v-if="anySelected">: {{ rowsSelected.length }}</span>
       </div>
 
+      <!-- other actions -->
       <div :class="{'hidden': !anySelected}" class="flex">
         <span class="non-mobile">Pasirinkta: {{ rowsSelected.length }}</span>
         <table-actions class="actions">
-          <btn-return title="Grąžinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
 
+          <btn-return title="Grąžinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
+          <span class="action-divider" v-if="!$route.params.user_id" />
           <btn-lend title="Skolinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleLend')" />
           <span class="action-divider" v-if="!$route.params.user_id" />
-
           <btn-transfer title="Perduoti" @btnClicked="openCard('multipleTransfer')" />
           <span class="action-divider" />
-
           <btn-delete @btnClicked="openCard('multipleDelete')" />
+
         </table-actions>
       </div>
     </div>
@@ -89,15 +84,16 @@
         <th class="tablet-hide">Gavimo data</th>
         <th>Statusas</th>
         <th>Veiksmai</th>
-      </tr><!-- /header row -->
+      </tr>
 
+      <!-- main rows -->
       <tr v-for="(gear, index) in filteredList" :key="gear.id"
           :class="{'row-selected-simple': rowsSelected.includes(index), 'mobile-focus': mobileActions === gear.id}">
         <td @click="selectRow(index, $event)" class="no-padding checkbox-cell">
           <input type="checkbox" :checked="rowsSelected.includes(index)" :class="{'checkbox-hidden': !anySelected}">
         </td>
         <td @click="selectRow(index, $event)" class="no-padding">
-<!--          <router-link :to="'/inventory/'+ gear.id" :event="!anySelected ? 'click' : ''">{{ gear.name }}</router-link> &lt;!&ndash; event change to v-slot &ndash;&gt;-->
+<!--          :event="!anySelected ? 'click' : ''"             -->
           <router-link :to="'/inventory/'+ gear.id">{{ gear.name }}</router-link> <!-- event change to v-slot -->
         </td>
         <td @click="selectRow(index, $event)" class="tablet-hide non-mobile">{{ gear.updated_at.split('T')[0] }}</td>
@@ -106,8 +102,6 @@
         <!-- Non Mobile Table Actions -->
         <td class="actions-cell non-mobile">
           <table-actions>
-            <btn-downloadPDF v-if="gear.own && gear.lent" />
-
             <btn-return v-if="!gear.own && gear.lent && !$route.params.user_id" @btnClicked="openCard('return', gear.id)" />
             <span class="action-divider" v-if="!gear.own && gear.lent && !$route.params.user_id" />
 
@@ -119,24 +113,22 @@
             <span class="action-divider"  v-if="gear.own && !gear.lent" />
 
             <btn-delete v-show="gear.own && !gear.lent" @btnClicked="openCard('delete', gear.id)" />
+            <btn-downloadPDF v-if="gear.own && gear.lent" />
           </table-actions>
         </td>
 
         <!-- Mobile Table Actions -->
         <td class="mobile mobile-actions">
-          <button @click="mobileActions = gear.id">
-            <img src="../assets/icons/action-dots.svg" alt="">
-          </button>
+          <btn-option-dots @btnClicked="mobileActions = gear.id" />
           <action-card class="mobile-filter" v-if="mobileActions === gear.id" @close="mobileActions = false">
-            <button v-if="!gear.own && gear.lent && !$route.params.user_id" @click="openCard('return', gear.id)" >Grąžinti</button>
 
+            <button v-if="!gear.own && gear.lent && !$route.params.user_id" @click="openCard('return', gear.id)" >Grąžinti</button>
             <button v-if="((gear.own && !gear.lent) || (!gear.own && gear.lent)) && !$route.params.user_id"
                     @click="openCard('Skolinti', gear.id)" >Skolinti</button>
-
             <button v-if="gear.own && !gear.lent" @click="openCard('Perleisti', gear.id)" >Perleisti</button>
-
             <button v-show="gear.own && !gear.lent" @click="openCard('delete', gear.id)" >Nurašyti</button>
             <button @click="generatePDF(gear.id, gear.name)">Generuoti PDF</button>
+
           </action-card>
         </td>
       </tr>
@@ -199,45 +191,46 @@
                :type="selectUserOpen.type"
                :gear_owner="selectUserOpen.owner_id"
                :errorMsg="errorMsg" />
-<!--               :list="$store.getters.allUsers"-->
-
-
 </div>
 </template>
 
 <script>
+  import DataMixin from "@/components/mixins/DataMixin";
+  import GearActionsMixin from "@/components/mixins/GearActionsMixin";
+  import UsersMixin from "@/components/mixins/UsersMixin";
+  import ActionCard from "@/components/ActionCard";
+  import AddItem from "@/components/AddItem";
+  import BtnAdd from "@/components/BtnAdd";
+  import BtnDelete from "@/components/BtnDelete";
+  import BtnDownloadPDF from "@/components/BtnDownloadPDF";
+  import BtnLend from "@/components/BtnLend";
+  import BtnOptionDots from "@/components/BtnOptionDots";
+  import BtnReturn from "@/components/BtnReturn";
+  import BtnTransfer from "@/components/BtnTransfer";
   import Header from "@/components/Header";
+  import ModulusFull from "@/components/ModulusFull";
+  import SelectUser from "@/components/SelectUser";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
-  import DataMixin from "@/components/mixins/DataMixin";
-  import ModulusFull from "@/components/ModulusFull";
-  import AddItem from "@/components/AddItem";
-  import BtnDelete from "@/components/BtnDelete";
-  import GearActionsMixin from "@/components/mixins/GearActionsMixin";
-  import SelectUser from "@/components/SelectUser";
-  import UsersMixin from "@/components/mixins/UsersMixin";
-  import BtnDownloadPDF from "@/views/BtnDownloadPDF";
-  import BtnReturn from "@/components/BtnReturn";
-  import BtnLend from "@/components/BtnLend";
-  import BtnTransfer from "@/components/BtnTransfer";
-  import ActionCard from "@/components/ActionCard";
 
   export default {
     name: "UserItems",
     mixins: [ DataMixin, GearActionsMixin, UsersMixin ],
     components: {
       ActionCard,
-      BtnTransfer,
-      BtnLend,
-      BtnReturn,
-      BtnDownloadPDF,
-      SelectUser,
-      BtnDelete,
       AddItem,
+      BtnAdd,
+      BtnDelete,
+      BtnDownloadPDF,
+      BtnLend,
+      BtnOptionDots,
+      BtnReturn,
+      BtnTransfer,
+      Header,
       ModulusFull,
-      TableComponent,
+      SelectUser,
       TableActions,
-      Header
+      TableComponent,
     },
     data() {
       return {
@@ -524,6 +517,10 @@
   .filter-selected {
     color: var(--clr-accent);
     border-color: var(--clr-accent);
+  }
+
+  .mobile-filter-card button:first-child {
+    margin: 0 1em;
   }
 
   /*.no-padding input {*/

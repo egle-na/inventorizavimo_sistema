@@ -11,16 +11,18 @@
 
     <!-- Table -->
     <table-component>
+
+      <!-- table labels -->
       <tr class="head-row">
-<!--        <th class="cell-min"></th>-->
         <th>Pavadinimas</th>
         <th class="tablet-hide">Kodas</th>
         <th>Kiekis</th>
         <th></th>
       </tr>
+
+      <!-- main data -->
       <tbody v-for="item in list" :key="item.id">
         <tr class="main-trow" :class="{'row-selected': rowExpanded === item}">
-<!--          <td class="cell-min"></td>-->
           <td>{{ item.name }}</td>
           <td class="tablet-hide">{{ item.code }}</td>
           <td>{{ item.count }}</td>
@@ -31,10 +33,11 @@
           </td>
         </tr>
 
+        <!-- expanded rows -->
         <tr class="expanded-table" v-show="rowExpanded === item">
           <td colspan="5">
             <table>
-              <tr>
+              <tr><!-- expanded rows column labels -->
                 <th class="cell-min non-mobile"></th>
                 <th class="non-mobile">Serijos Numeris</th>
                 <th class="mobile" colspan="2" >Serijos Nr.</th>
@@ -42,6 +45,8 @@
                 <th class="tablet-hide">Statusas</th>
                 <th></th>
               </tr>
+
+              <!-- expanded rows main data -->
               <tr v-for="(gear, index) in item.gear" :key="gear.id" class="expanded-trow">
                 <td class="cell-min">{{ index + 1 }}</td>
                 <td class="no-padding">
@@ -56,8 +61,8 @@
                   </table-actions>
                 </td>
               </tr>
-            </table>
 
+            </table>
           </td>
         </tr>
       </tbody>
@@ -81,33 +86,32 @@
 </template>
 
 <script>
+  import DataMixin from "@/components/mixins/DataMixin";
+  import GearActionsMixin from "@/components/mixins/GearActionsMixin";
+  import AddItem from "@/components/AddItem";
   import AdminDesk from "@/components/AdminDesk";
-  import TableComponent from "@/components/TableComponent";
+  import BtnAdd from "@/components/BtnAdd";
+  import BtnDelete from "@/components/BtnDelete";
+  import ModulusFull from "@/components/ModulusFull";
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
-  import DataMixin from "@/components/mixins/DataMixin";
-  import ModulusFull from "@/components/ModulusFull";
-  import AddItem from "@/components/AddItem";
-  import BtnDelete from "@/components/BtnDelete";
-  import GearActionsMixin from "@/components/mixins/GearActionsMixin";
-  import BtnAdd from "@/views/BtnAdd";
+  import TableComponent from "@/components/TableComponent";
   export default {
     name: "AllItems",
     mixins: [ DataMixin, GearActionsMixin ],
     components: {
+      AddItem,
+      AdminDesk,
       BtnAdd,
       BtnDelete,
-      AddItem,
       ModulusFull,
-      TableActions,
       Search,
+      TableActions,
       TableComponent,
-      AdminDesk,
     },
     data() {
       return {
         url: 'https://inventor-system.herokuapp.com/api/gear/all',
-        companyFilter: '',
         rowExpanded: '',
         addGearOpen: false,
         deleteCardOpen: false,
@@ -152,23 +156,6 @@
     margin: 0;
   }
 
-  .company-filter {
-    margin-left: auto;
-    margin-right: 0;
-    border-left: none;
-    border-bottom: solid 2px var(--clr-accent);
-    max-width: 50%;
-    color: var(--clr-grey)
-  }
-
-  .company-filter {
-    color: var(--clr-black);
-  }
-
-  option:not([hidden]){
-    color: var(--clr-black)
-  }
-
   /* Table */
 
   tr:hover {
@@ -185,57 +172,5 @@
   .main-trow .cell-min {
     padding: .7rem;
   }
-
-  /* Add gear card */
-
-  /*h2 {*/
-  /*  margin-top: 0;*/
-  /*}*/
-
-  /*textarea {*/
-  /*  height: 44px;*/
-  /*  transition: height 400ms;*/
-  /*  resize: vertical;*/
-  /*}*/
-
-  /*textarea:focus {*/
-  /*  height: 90px;*/
-  /*}*/
-
-  /*.relative-container {*/
-  /*  position: relative;*/
-  /*}*/
-
-  /*#euro-sign {*/
-  /*  position: absolute;*/
-  /*  !*top: 50%;*!*/
-  /*  bottom: 60%;*/
-  /*  right: .5em;*/
-  /*  color: grey;*/
-  /*}*/
-
-  /*.btn-container {*/
-  /*  display: flex;*/
-  /*  justify-content: space-between;*/
-  /*}*/
-
-  /*.btn-container label:not(:first-child) {*/
-  /*  margin-top: .9em ;*/
-  /*}*/
-
-  /*.btn-container div{*/
-  /*  color: grey;*/
-  /*  display: flex;*/
-  /*  flex-direction: column;*/
-  /*}*/
-
-  /*.btn-container input{*/
-  /*  width: fit-content;*/
-  /*  margin: 0 1em 0 0;*/
-  /*}*/
-
-  /*.btn-container .btn {*/
-  /*  align-self: flex-end;*/
-  /*}*/
 
 </style>

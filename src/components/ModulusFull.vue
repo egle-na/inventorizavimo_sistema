@@ -118,6 +118,7 @@
 
   div:not(.btn-container) .btn {
     float: right;
+    margin-left: auto;
   }
 
   .error-msg {

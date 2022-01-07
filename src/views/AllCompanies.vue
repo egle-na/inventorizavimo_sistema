@@ -13,6 +13,7 @@
     <!-- Table -->
     <table-component @scroll.native="closeMobileAction">
 
+      <!-- table labels -->
       <tr class="head-row non-mobile">
         <th>Pavadinimas</th>
         <th class="non-mobile">Darbuotojai</th>
@@ -20,6 +21,7 @@
         <th></th>
       </tr>
 
+      <!-- main data -->
       <tr v-for="item in list" :key="item.id" :class="{'mobile-focus': mobileActions === item.id}">
         <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.name }}</router-link></td>
         <td class="no-padding"><router-link :to="{name: 'all-users', params: {company_id: item.id}}">{{ item.user_count }}</router-link></td>
@@ -83,35 +85,6 @@
   </modulus-full>
 
   <!-- Add user card-->
-<!--  <modulus-full v-if="addUserOpen && false" @close="closeCard">-->
-<!--    <h3>Pridėti Darbuotoją</h3>-->
-
-<!--    <form-item @onSubmit="addUser">-->
-<!--      <div>-->
-<!--        <input type="text"-->
-<!--               placeholder="Vardas" required-->
-<!--               v-model="newUser.first_name">-->
-<!--        <input type="text"-->
-<!--               placeholder="Pavardė" required-->
-<!--               v-model="newUser.last_name">-->
-<!--      </div>-->
-<!--      <input type="email"-->
-<!--             placeholder="Elektroninis paštas"-->
-<!--             class="input-long" required-->
-<!--             v-model="newUser.email">-->
-
-<!--      <select class="input-long" required v-model="newUser.company_id">-->
-<!--        <option selected hidden class="placeholder" value="">Įmonė</option>-->
-<!--        <option v-for="item in list" :key="item.id" :value="item.id">{{item.name}}</option> &lt;!&ndash; įmonių sąrašas &ndash;&gt;-->
-<!--      </select>-->
-
-<!--      <div class="button-container">-->
-<!--        <p v-if="errorMsg" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas</p>-->
-<!--        <button class="btn" type="submit">Pridėti</button>-->
-<!--      </div>-->
-<!--    </form-item>-->
-<!--  </modulus-full>-->
-
   <modulus-full v-if="addUserOpen" @close="closeCard">
     <add-user @createUser="addUser" :companyList="list" :errorMsg="errorMsg" :company_id="addUserOpen" />
   </modulus-full>
@@ -133,7 +106,7 @@
   import AdminDesk from "@/components/AdminDesk";
   import ActionCard from "@/components/ActionCard";
   import AddUser from "@/components/AddUser";
-  import BtnAdd from "@/views/BtnAdd";
+  import BtnAdd from "@/components/BtnAdd";
   import BtnAddInventory from "@/components/BtnAddInventory";
   import BtnDelete from "@/components/BtnDelete";
   import BtnEdit from "@/components/BtnEdit";
@@ -356,15 +329,9 @@
       border: none;
     }
 
-    /*.mobile-filter{*/
-    /*  position: absolute;*/
-    /*}*/
-
     .mobile-actions-card{
       position: absolute;
     }
-
-
   }
 
 

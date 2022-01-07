@@ -28,11 +28,20 @@
 
   path {
     stroke: var(--clr-darker-grey);
+    fill: var(--clr-darker-grey);
     transition: stroke 200ms;
   }
 
   button:hover path {
     stroke: var(--clr-accent);
+  }
+
+  @media (max-width: 580px){
+    svg{
+      width: 120%;
+      height: 120%;
+      margin-bottom: -8px;
+    }
   }
 
 

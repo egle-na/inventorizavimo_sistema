@@ -3,6 +3,7 @@
     <header-guest />
     <div class="backdrop">
       <p v-show="passwordResetSent">Slaptažodis išsiųstas elektroniniu pašto adresu: <strong>{{ email }}</strong>.</p>
+      <router-link v-show="passwordResetSent" to="/">Prisijungti</router-link>
 
       <div class="container" v-show="!passwordResetSent">
         <h1>Priminti slaptažodį</h1>
@@ -12,7 +13,6 @@
           <p class="error-msg" :class="{'display': noEmailFound}">Vartotojas šiuo elektroninio pašto adresu nerastas.</p>
 
           <button type="submit" class="btn">Priminti</button>
-
         </form>
       </div>
     </div>
@@ -23,7 +23,7 @@
   import HeaderGuest from "@/components/HeaderGuest";
   export default {
     name: "RemindPassword",
-    components: {HeaderGuest},
+    components: { HeaderGuest },
     data() {
       return {
         noEmailFound: false,
@@ -50,14 +50,17 @@
     right: 0;
 
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    /*background: var(--clr-white);*/
+    text-align: center;
+    max-width: 90%;
+    margin: 0 auto;
   }
 
   .container {
     max-width: 95%;
+    text-align: left;
   }
 
   .form-container {
@@ -71,6 +74,7 @@
   }
 
   h1 {
+    font-size: 3.5em;
     margin-bottom: .7em;
     border-bottom-width: 3px ;
     padding: 0;
@@ -89,15 +93,18 @@
     visibility: initial;
   }
 
-  @media (max-width: 580px){
-    .error-msg {
-      /*margin-bottom: .3em;*/
-      order: 1;
-    }
-    .form-container button {
-      margin-top: .6em ;
-    }
+  a{
+    color: var(--clr-dark-grey);
+  }
 
+  a:hover{
+    color: var(--clr-accent)
+  }
+
+  @media (max-width: 580px){
+    h1{
+      font-size: 2.5em;
+    }
   }
 
 </style>

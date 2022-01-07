@@ -1,23 +1,19 @@
 <template>
-<!--<div>-->
-<!--  <Header />-->
 <div>
+
   <header-guest />
 
   <div class="backdrop">
     <form class="form-container" @submit.prevent="tryLogin">
-
       <p v-show="isUnrecognized" class="error-msg">Prisijungimo duomenys neteisngi.</p>
 
+      <!-- Email input -->
       <input type="email" placeholder="Elektroninis Paštas" required class="first-input" v-model="email"/>
+
+      <!-- Password input -->
       <div class="password-container">
-        <input :type="pswInputType"
-               placeholder="Slaptažodis"
-               required
-               v-model="password"
-               minlength="6"/>
+        <input :type="pswInputType" placeholder="Slaptažodis" required v-model="password" minlength="6"/>
         <button id="show-psw-btn" @click="togglePasswordVisibility" type="button">
-<!--          <img src="../assets/icons/Eye-closed-icon.svg" alt="">-->
           <svg width="32" height="23" viewBox="0 0 32 23" fill="none" xmlns="http://www.w3.org/2000/svg" class="view">
             <path v-show="pswVisible === true" fill-rule="evenodd" clip-rule="evenodd" d="M27.5038 9.95738C19.6757 5.13166 9.70818 5.51187 2.27044 10.9199L1.09427 9.3023C9.18805 3.41726 20.0348 3.00352 28.5534 8.25488L31.0348 9.78461L29.9853 11.4871L27.5038 9.95738Z" fill="#646464"/>
             <path v-show="pswVisible === true" d="M20.7882 8.1666C20.7882 11.3883 18.497 13.9999 15.6706 13.9999C12.8442 13.9999 10.553 11.3883 10.553 8.1666C10.553 4.94494 13.1736 5.49989 16 5.49989C18.8264 5.49989 20.7882 4.94494 20.7882 8.1666Z" fill="#646464"/>
@@ -28,11 +24,8 @@
 
       <router-link to="/forgot-password">Priminti slaptažodį</router-link>
       <button type="submit" class="btn">Prisijungti</button>
-
     </form>
   </div>
-
-<!--</div>-->
 </div>
 </template>
 
@@ -50,6 +43,7 @@
         email: '',
       }
     },
+
     methods: {
       togglePasswordVisibility() {
         this.pswVisible = !this.pswVisible;
@@ -60,16 +54,12 @@
           email: this.email,
           password: this.password
         }).then(response => {
-          // this.$store.getters.auth.loggedIn = true;
-          // console.log(response.data.user);
-
           this.$store.commit('setUser', response.data.user);
           localStorage.setItem("access_token", response.data.access_token);
 
           this.$router.push({path: '/user-inventory'});
         }).catch(err => {
-          console.log(err);
-          console.log(err.response.data);
+          console.error(err);
           this.isUnrecognized = true;
         })
       }
@@ -79,7 +69,7 @@
       pswInputType() {
         return this.pswVisible ? "text" : "password";
       }
-    }
+    },
   }
 </script>
 
@@ -95,8 +85,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
-    /*background: var(--clr-white);*/
   }
 
   .form-container {
@@ -116,7 +104,6 @@
   .password-container {
     position: relative;
     display: flex;
-    /*align-items: center;*/
   }
 
   .password-container input {
@@ -128,13 +115,11 @@
     right: 2px;
     bottom: .2em;
     width: 40px;
-
   }
 
   a {
     align-self: flex-end;
     font-size: 0.75rem; /* gal geriau 1rem */
-    /*text-align: right;*/
     margin: 1.5em 0;
     color: var(--clr-darker-grey);
     text-decoration: none;

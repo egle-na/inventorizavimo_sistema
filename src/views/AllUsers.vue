@@ -22,6 +22,7 @@
     <!-- Table -->
     <table-component @scroll.native="closeMobileAction">
 
+      <!-- table labels -->
       <tr class="head-row">
         <th>Vardas Pavardė</th>
         <th class="tablet-hide">Elektroninis paštas</th>
@@ -29,6 +30,7 @@
         <th></th>
       </tr>
 
+      <!-- main data -->
       <tr v-for="item in list" :key="item.id" :class="{'mobile-focus': mobileActions === item.id}">
         <td class="no-padding"><router-link :to="{path: 'user-inventory/' + item.id}">{{ item.first_name }} {{ item.last_name }}</router-link></td>
         <td class="tablet-hide">{{ item.email }}</td>
@@ -65,35 +67,6 @@
   </action-card>
 
   <!-- Add user card-->
-<!--  <modulus-full v-if="addUserCardOpen" @close="closeCard">-->
-<!--    <h3>Pridėti Darbuotoją</h3>-->
-
-<!--    <form-item @onSubmit="createUser">-->
-<!--      <div>-->
-<!--        <input type="text"-->
-<!--               placeholder="Vardas" required-->
-<!--               v-model="newUser.first_name">-->
-<!--        <input type="text"-->
-<!--               placeholder="Pavardė" required-->
-<!--               v-model="newUser.last_name">-->
-<!--      </div>-->
-<!--      <input type="email"-->
-<!--             placeholder="Elektroninis paštas"-->
-<!--             class="input-long" required-->
-<!--             v-model="newUser.email">-->
-
-<!--      <select class="input-long" required v-model="newUser.company_id">-->
-<!--        <option selected hidden class="placeholder" value="">Įmonė</option>-->
-<!--        <option v-for="item in additionalList" :key="item.id" :value="item.id">{{item.name}}</option> &lt;!&ndash; įmonių sąrašas &ndash;&gt;-->
-<!--      </select>-->
-
-<!--      <div class="button-container">-->
-<!--        <p v-if="addUserError" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.</p>-->
-<!--        <button class="btn" type="submit">Pridėti</button>-->
-<!--      </div>-->
-<!--    </form-item>-->
-<!--  </modulus-full>-->
-
   <modulus-full v-if="addUserCardOpen" @close="closeCard">
     <add-user @createUser="createUser" :companyList="additionalList" :errorMsg="errorMsg" />
   </modulus-full>
@@ -114,7 +87,7 @@
         <input type="checkbox" v-model="selectedUser.changeRole">Pašalinti administratoriaus teises</label>
 
       <div class="button-container">
-        <p v-if="addUserError" class="error-msg">Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.</p>
+        <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
         <button class="btn" type="submit">Redaguoti</button>
       </div>
     </form-item>
@@ -133,6 +106,7 @@
       <button class="btn" @click="deleteUser(deleteUserOpen)">Taip</button>
     </div>
   </modulus-full>
+
 </div>
 </template>
 
@@ -143,19 +117,34 @@
   import AddItem from "@/components/AddItem";
   import AddUser from "@/components/AddUser";
   import AdminDesk from "@/components/AdminDesk";
-  import BtnAdd from "@/views/BtnAdd";
+  import BtnAdd from "@/components/BtnAdd";
   import BtnAddInventory from "@/components/BtnAddInventory";
   import BtnDelete from "@/components/BtnDelete";
   import BtnEdit from "@/components/BtnEdit";
   import FormItem from "@/components/FormItem";
   import ModulusFull from "@/components/ModulusFull";
   import Search from "@/components/Search";
-  import TableComponent from "@/components/TableComponent";
   import TableActions from "@/components/TableActions";
+  import TableComponent from "@/components/TableComponent";
 
   export default {
     name: "AllUsers",
     mixins: [ DataMixin, UsersMixin ],
+    components: {
+      ActionCard,
+      AddItem,
+      AddUser,
+      AdminDesk,
+      BtnAdd,
+      BtnAddInventory,
+      BtnDelete,
+      BtnEdit,
+      FormItem,
+      ModulusFull,
+      Search,
+      TableActions,
+      TableComponent,
+    },
     data(){
       return {
         url: "https://inventor-system.herokuapp.com/api/users/all",
@@ -181,21 +170,6 @@
         }
       }
     },
-    components: {
-      ActionCard,
-      AddUser,
-      AddItem,
-      AdminDesk,
-      BtnAdd,
-      BtnAddInventory,
-      BtnDelete,
-      BtnEdit,
-      FormItem,
-      ModulusFull,
-      TableActions,
-      TableComponent,
-      Search,
-    },
     created() {
       if( this.$route.params.company_id ){
         this.params.company = this.$route.params.company_id;
@@ -203,6 +177,7 @@
       this.getDataQuery(this.url, this.params);
       this.getAdditionalData("https://inventor-system.herokuapp.com/api/companies")
     },
+
     methods: {
       createUser() {
         this.postData(
@@ -217,15 +192,17 @@
         this.getData(this.url);
         this.getUsersList(); // store updated users list
         this.addUserCardOpen = false;
+        this.errorMsg='';
       },
 
       userAddError(error) {
         if(error.response.status === 400 && error.response.data.message === "The email has already been taken"){
-          this.addUserError = true;
+          this.errorMsg = "Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.";
         }
       },
 
       editUser({id, first_name, last_name, email, changeRole}) {
+        this.errorMsg = "";
         let params = {};
         let oldUser = this.list.filter(item => item.id === id)[0];
 
@@ -239,11 +216,10 @@
           params.email = email;
         }
         if( changeRole) {
-          params.role = oldUser.role === 1 ? 0 :
-              oldUser.role === 0 && 1;
+          params.role = oldUser.role === 1 ? 0 : oldUser.role === 0 && 1;
         }
 
-        if(Object.keys(params).length !== 0) {
+        if(Object.keys(params).length !== 0) { // if some changes are made
           this.$http.put(
               "https://inventor-system.herokuapp.com/api/users/" + id,
               params,
@@ -253,10 +229,18 @@
             this.getUsersList(); // store updated users list
             this.editUserCardOpen = false;
           }).catch(err => {
+            if(err.response.data.error) {
+              if(err.response.data.error.email){
+                this.errorMsg = "Vartotojas šiuo elektroninio pašto adresu jau užregistruotas."
+              }
+            }
             if(err.response.status === 401){
               this.$router.push('/')
             }
           })
+
+        } else { // if no changes
+          this.errorMsg = "Darbuotojo duomenys nepasikeitę."
         }
       },
 
@@ -295,7 +279,7 @@
 
       openMobileActions(id, event){
         this.mobileActions = id;
-        this.mobileActionsPos = event.pageY + 15 ;
+        this.mobileActionsPos = event.pageY + 15 ; // position the card
         if((window.innerHeight - event.clientY) < 190){
           this.mobileActionsPos = event.pageY - 180 ;
         }
@@ -308,6 +292,7 @@
       },
 
       closeCard() {
+        this.errorMsg = '';
         this.addUserCardOpen = false;
         this.editUserCardOpen = false;
         this.addGearOpen = false;
@@ -356,11 +341,11 @@
     border-left: none;
     border-bottom: solid 2px var(--clr-accent);
     max-width: 50%;
-    color: var(--clr-grey)
+    /*color: var(--clr-grey)*/
   }
 
-  .company-filter:not(.placeholder) {
-    color: var(--clr-black);
+  .company-filter .placeholder {
+    color: var(--clr-dark-grey);
   }
 
   /* Table Design */
@@ -383,6 +368,8 @@
   th:not(:first-child){ /* column dividers for sticky header */
     box-shadow:none;
   }
+
+  /* Edit user card */
 
   h2{
     margin-top: .4em;
