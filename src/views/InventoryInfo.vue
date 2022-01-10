@@ -32,7 +32,7 @@
        <!-- Generuoti PDF when no other actions are available -->
        <div v-else>
          <button class="btn non-mobile" @click="generatePDF(list.id, list.name)">Generuoti PDF</button>
-         <btn-download-p-d-f class="mobile" @btnClicked="generatePDF(list.id, list.name)" />
+         <btn-component :btnType="'PDF'" class="mobile" @btnClicked="generatePDF(list.id, list.name)" title="Generuoti PDF" />
        </div>
 
      </div><!-- /Title container -->
@@ -147,13 +147,13 @@
   import UsersMixin from "@/components/mixins/UsersMixin";
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
   import BtnOptionDots from "@/components/BtnOptionDots";
-  import BtnDownloadPDF from "@/components/BtnDownloadPDF";
+  import BtnComponent from "@/components/BtnComponent";
 
   export default {
     name: "InventoryInfo",
     mixins: [ DataMixin, UsersMixin, GearActionsMixin ],
     components: {
-      BtnDownloadPDF,
+      BtnComponent,
       BtnOptionDots,
       ModulusFull,
       SelectUser,
@@ -177,13 +177,17 @@
         history: {},
         historyList: {},
         checked: false,
+        statusText: '',
       }
     },
     created() {
       if(this.$store.getters.user.isAdmin === true){
         this.url = 'https://inventor-system.herokuapp.com/api/gear/all/' + this.$route.params.inventory_id;
       }
-      this.getData(this.url, '', () => { this.$router.push({name: 'user-inventory'}) });
+      this.getData(this.url,
+          () => { this.getStatusText(); },
+          () => { this.$router.push({name: 'user-inventory'})
+      });
       this.getHistory();
     },
     computed: {
@@ -193,29 +197,68 @@
         } else return ''
       },
 
-      statusText(){
-        //             if admin             &&                      not owner                    &&   gear is lent
-        if(this.$store.getters.user.isAdmin && this.list.user_in !== this.$store.getters.user.id && this.list.lent){
-          if(!this.checked && this.list.id) { // checking if it is in my gear list
-            this.getData('https://inventor-system.herokuapp.com/api/gear/' + this.list.id,
-                () => { this.checked = 'mine' },
-                () => { this.checked = true })
-          } else if(this.checked === 'mine'){
-            return "Pasiskolinta"; // there must be an easier way, im not sure if it is even right
-          }
-        }
-
-        if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
-          if(this.list.lent){ // jei savininkas ir paskolinta
-            return 'Paskolintas';
-          } else return 'Savininkas'; // jei savininkas bet nepaskolinta
-        } else if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
-          return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
-        } else return "Pasiskolinta";
-      },
+      // statusTextt(){
+      //   if(!this.checked && this.list.id) {
+      //     console.log("checking...")
+      //     //             if admin             &&                      not owner                    &&   gear is lent
+      //     if (this.$store.getters.user.isAdmin && this.list.user_in !== this.$store.getters.user.id && this.list.lent) {
+      //         // checking if it is in my gear list
+      //         this.getData('https://inventor-system.herokuapp.com/api/gear/' + this.list.id,
+      //             () => {
+      //               this.checked = 'mine'
+      //             },
+      //             () => {
+      //               this.checked = 'admin'
+      //             })
+      //     } else {
+      //       this.checked = 'admin';
+      //     }
+      //   }
+      //
+      //   if(this.checked === 'admin'){
+      //     return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
+      //   }
+      //
+      //   return this.list.own ? this.list.lent ? "Paskolintas" : "Savininkas" : "Pasiskolinta";
+      //
+      //   // if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
+      //   //   if(this.list.lent){ // jei savininkas ir paskolinta
+      //   //     return 'Paskolintas';
+      //   //   } else return 'Savininkas'; // jei savininkas bet nepaskolinta
+      //   // } else if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
+      //   //   return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
+      //   // } else return "Pasiskolinta";
+      // },
     },
 
     methods: {
+
+      getStatusText() {
+        if(this.$store.getters.user.isAdmin) { // Admin
+
+          if(this.list.user_id === this.$store.getters.user.id){ // Admin is owner
+            this.statusText = this.list.lent ? "Paskolintas" : "Savininkas"
+
+          } else { // Admin not owner
+            this.statusText = this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
+
+            if(this.list.lent) { // Admin not owner but gear is lent
+              this.getData('https://inventor-system.herokuapp.com/api/gear/' + this.list.id,
+                  () => {
+                    this.statusText = "Pasiskolinta";
+                  },
+                  () => {
+                    // this.statusText = this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
+                  })
+            }
+          }
+
+        } else { // not Admin
+          this.statusText = this.list.own ? this.list.lent ? "Paskolintas" : "Savininkas" : "Pasiskolinta";
+        }
+
+      },
+
       getHistory() {
         this.$http.get('https://inventor-system.herokuapp.com/api/gear-history/' + this.$route.params.inventory_id, this.config)
           .then(response => this.historyList = response.data)

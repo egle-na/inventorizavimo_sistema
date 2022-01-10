@@ -9,7 +9,7 @@
         <p class="title-name">{{ findName(parseInt(this.$route.params.user_id)) }}</p>
         <h1>Inventorius</h1>
       </div>
-      <btn-add @btnClicked="addGearOpen = true; mobileActions = false; rowsSelected = []" />
+      <btn-component :btnType="'add'" @btnClicked="addGearOpen = true; mobileActions = false; rowsSelected = []" />
 
       <!-- Filter -->
       <div class="filter-container non-mobile">
@@ -57,13 +57,13 @@
         <span class="non-mobile">Pasirinkta: {{ rowsSelected.length }}</span>
         <table-actions class="actions">
 
-          <btn-return title="Grąžinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
+          <btn-component :btnType="'return'" title="Grąžinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
           <span class="action-divider" v-if="!$route.params.user_id" />
-          <btn-lend title="Skolinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleLend')" />
+          <btn-component :btnType="'lend'" title="Skolinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleLend')" />
           <span class="action-divider" v-if="!$route.params.user_id" />
-          <btn-transfer title="Perduoti" @btnClicked="openCard('multipleTransfer')" />
+          <btn-component :btnType="'transfer'" title="Perduoti" @btnClicked="openCard('multipleTransfer')" />
           <span class="action-divider" />
-          <btn-delete @btnClicked="openCard('multipleDelete')" />
+          <btn-component :btnType="'delete'" @btnClicked="openCard('multipleDelete')" title="Ištrinti" />
 
         </table-actions>
       </div>
@@ -112,8 +112,8 @@
             <btn-transfer v-if="gear.own && !gear.lent" @btnClicked="openCard('Perleisti', gear.id)" />
             <span class="action-divider"  v-if="gear.own && !gear.lent" />
 
-            <btn-delete v-show="gear.own && !gear.lent" @btnClicked="openCard('delete', gear.id)" />
-            <btn-downloadPDF v-if="gear.own && gear.lent" />
+            <btn-component :btnType="'delete'" v-show="gear.own && !gear.lent" @btnClicked="openCard('delete', gear.id)" title="Ištinti" />
+            <btn-component :btnType="'PDF'" v-if="gear.own && gear.lent" title="Generuoti PDF"/>
           </table-actions>
         </td>
 
@@ -200,9 +200,6 @@
   import UsersMixin from "@/components/mixins/UsersMixin";
   import ActionCard from "@/components/ActionCard";
   import AddItem from "@/components/AddItem";
-  import BtnAdd from "@/components/BtnAdd";
-  import BtnDelete from "@/components/BtnDelete";
-  import BtnDownloadPDF from "@/components/BtnDownloadPDF";
   import BtnLend from "@/components/BtnLend";
   import BtnOptionDots from "@/components/BtnOptionDots";
   import BtnReturn from "@/components/BtnReturn";
@@ -212,16 +209,15 @@
   import SelectUser from "@/components/SelectUser";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
+  import BtnComponent from "@/components/BtnComponent";
 
   export default {
     name: "UserItems",
     mixins: [ DataMixin, GearActionsMixin, UsersMixin ],
     components: {
+      BtnComponent,
       ActionCard,
       AddItem,
-      BtnAdd,
-      BtnDelete,
-      BtnDownloadPDF,
       BtnLend,
       BtnOptionDots,
       BtnReturn,
@@ -237,10 +233,8 @@
         url: 'https://inventor-system.herokuapp.com/api/gear',
         addGearOpen: false,
         returnCardOpen: false,
-        // lendCardOpen: false,
         selectUserOpen: false,
         deleteCardOpen: false,
-        // actionType: '',
         mobileFilterOpen: false,
         mobileActions: false,
         filter: 'all',
@@ -251,18 +245,25 @@
       }
     },
     created() {
-      if(this.$route.params.user_id){
-        this.user_id = this.$route.params.user_id;
-        this.url = this.url +'/user/' + this.user_id;
-        // this.getAdditionalData('https://inventor-system.herokuapp.com/api/users/' + this.user_id)
+      this.loadData();
+    },
+    watch: {
+      // get new data when going from specific user (route with params) to my gear (no params)
+      $route() {
+        this.url = 'https://inventor-system.herokuapp.com/api/gear';
+        this.config = {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`
+          }
+        }
+        this.loadData();
       }
-      this.getData(this.url);
-      // this.getNames(); // store
     },
     computed: {
       anySelected() {
         return this.rowsSelected.length > 0;
       },
+
       filteredList() {
         let unpackedList = [];
         for(let i = 0; i < this.list.length; i++){
@@ -270,7 +271,6 @@
             unpackedList.push(this.list[i].gear[j]);
           }
         }
-
         switch (this.filter){
           case "all":
             return unpackedList;
@@ -284,11 +284,19 @@
       }
     },
     methods: {
+      loadData() {
+        if(this.$route.params.user_id){
+          this.user_id = this.$route.params.user_id;
+          this.url = this.url +'/user/' + this.user_id;
+        }
+        this.getData(this.url);
+      },
       gearName(id) {
         if(this.filteredList.length) {
           return this.filteredList.find(gear => gear.id === id).name;
         }
       },
+
       statusText(lent, own){
         return !own ? "Pasiskolinta" : lent ? "Paskolintas" : "Savininkas";
       },
@@ -304,7 +312,8 @@
       selectRow(id, event){
         if(event.shiftKey){ // if shift key pressed
 
-          if(!this.rowsSelected.includes(id)){ // check multiple
+          // Check multiple
+          if(!this.rowsSelected.includes(id)){
             if(id > this.lastSelected){ // check multiple from down to up
               for(let i = id; i >= this.lastSelected; i--) {
                 this.addIfNotSelected(i);
@@ -314,11 +323,10 @@
                 this.addIfNotSelected(i);
               }
             }
-
-          } else { // uncheck multiple
+          // Uncheck multiple
+          } else {
             let deselect = [];
             if(id > this.lastSelected){ // uncheck multiple from down to up
-                console.log("uncheck multiple from down to up");
               for(let i = id; i >= this.lastSelected; i--) {
                 console.log(id, this.lastSelected)
                 deselect.push(i);
@@ -334,7 +342,7 @@
           this.lastSelected = id;
         } else { // if shift key not pressed
             this.toggleSelect(id);
-          if(!this.rowsSelected.length) { // something is selected
+          if(!this.rowsSelected.length) {
             this.lastSelected = "";
           }
         }
@@ -358,7 +366,6 @@
         for(let i = 0; i < this.filteredList.length; i++){
           this.rowsSelected.push(i);
         }
-        console.log('all')
         this.lastSelected = '';
       },
 
@@ -368,7 +375,6 @@
       },
 
       addGearSuccess() {
-        console.log('success');
         this.addGearOpen = false;
         this.getData(this.url);
       },
@@ -386,18 +392,18 @@
 
         } else if(name === 'multipleReturn'){ // RETURN multiple
 
-            this.returnCardOpen = [];
-            for( let i = 0; i < this.rowsSelected.length; i++ ){
-              let gear = this.filteredList[this.rowsSelected[i]];
-              if(!gear.own && gear.lent) {
-                this.returnCardOpen.push(gear);
-              }
+          this.returnCardOpen = [];
+          for( let i = 0; i < this.rowsSelected.length; i++ ){
+            let gear = this.filteredList[this.rowsSelected[i]];
+            if(!gear.own && gear.lent) {
+              this.returnCardOpen.push(gear);
             }
-            if(!this.returnCardOpen.length) { // Jei nieko negalima grąžinti
-              this.returnCardOpen = 'err';
-            } else if(this.returnCardOpen.length === 1){ // Jei galima grąžinti tik vieną
-              this.returnCardOpen = this.returnCardOpen[0].id;
-            }
+          }
+          if(!this.returnCardOpen.length) { // Jei nieko negalima grąžinti
+            this.returnCardOpen = 'err';
+          } else if(this.returnCardOpen.length === 1){ // Jei galima grąžinti tik vieną
+            this.returnCardOpen = this.returnCardOpen[0].id;
+          }
 
         } else if(name === 'multipleDelete'){ // DELETE multiple
 
@@ -436,7 +442,6 @@
         }
       },
 
-
     },
   }
 </script>
@@ -459,33 +464,14 @@
     font-size: 2rem;
     padding: 0;
     margin: 0;
-    /*color: var(--clr-dark-grey);*/
     color: var(--clr-grey);
     font-family: var(--ff-bebas-neue);
-    /*font-size: var(--fs-button);*/
     letter-spacing: 0.065em;
-  }
-
-  .add-btn {
-    color: var(--clr-grey);
-    padding: 0;
-    margin: 0 .5em;
-    line-height: 1;
-    transform: translateY(50%);
-  }
-  .add-btn path{
-    stroke: var(--clr-darker-grey);
-    transition: stroke 200ms;
-  }
-
-  .add-btn:hover path{
-    stroke: var(--clr-accent);
   }
 
   .filter-container {
     margin-left: auto;
     flex-shrink: .5;
-    /*display: flex;*/
   }
 
   .filter-btn {
@@ -496,7 +482,6 @@
     padding: .1em .7em;
     margin-left: 1.5em;
     margin-top: .4em;
-
     transition: border-color 250ms;
   }
 
@@ -522,14 +507,6 @@
   .mobile-filter-card button:first-child {
     margin: 0 1em;
   }
-
-  /*.no-padding input {*/
-    /*margin-left: .9em;*/
-    /*width: 120%;*/
-
-    /*margin: 0 auto;*/
-    /*align-self: center;*/
-  /*}*/
 
   .checkbox-cell {
     width: 50px;
@@ -564,13 +541,12 @@
   }
 
   .selection-actions .actions {
-    /*display: block;*/
     margin-left: 1.5em;
   }
+
   .flex {
     display: flex;
     align-items: center;
-    /*justify-self: flex-end;*/
   }
 
   .mobile.flex {
@@ -591,12 +567,6 @@
       padding: 0 1em;
     }
   }
-
-  /*@media (max-width: 730px){*/
-  /*  .tablet-hide {*/
-  /*    display: none;*/
-  /*  }*/
-  /*}*/
 
   /* Filter */
   @media (max-width: 580px){
@@ -625,8 +595,4 @@
       border-right: 1px solid var(--clr-grey);
     }
   }
-
-
-
-
 </style>

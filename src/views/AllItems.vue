@@ -4,7 +4,7 @@
     <!-- Title container -->
     <div class="title-container">
       <h1>Įranga</h1>
-      <btn-add @btnClicked="addGearOpen = true" title="Pridėti inventorių" />
+      <btn-component :btnType="'add'" @btnClicked="addGearOpen = true" title="Pridėti inventorių" />
     </div>
 
     <Search @setSearch="setSearch"/>
@@ -57,7 +57,7 @@
                 <td v-else class="tablet-hide">Trumpalaikis</td>
                 <td class="actions-cell">
                   <table-actions>
-                    <btn-delete @btnClicked="deleteCardOpen = gear.id; gearName = gear.name" />
+                    <btn-component :btnType="'delete'" @btnClicked="deleteCardOpen = gear.id; gearName = gear.name" title="Ištrinti" />
                   </table-actions>
                 </td>
               </tr>
@@ -90,20 +90,18 @@
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
   import AddItem from "@/components/AddItem";
   import AdminDesk from "@/components/AdminDesk";
-  import BtnAdd from "@/components/BtnAdd";
-  import BtnDelete from "@/components/BtnDelete";
   import ModulusFull from "@/components/ModulusFull";
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
+  import BtnComponent from "@/components/BtnComponent";
   export default {
     name: "AllItems",
     mixins: [ DataMixin, GearActionsMixin ],
     components: {
+      BtnComponent,
       AddItem,
       AdminDesk,
-      BtnAdd,
-      BtnDelete,
       ModulusFull,
       Search,
       TableActions,

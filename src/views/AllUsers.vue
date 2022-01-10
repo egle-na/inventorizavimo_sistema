@@ -7,7 +7,7 @@
       <!-- title -->
       <div class="no-shrink">
         <h1>Darbuotojai</h1>
-        <btn-add title="Pridėti darbuotoją" @btnClicked="addUserCardOpen=true; mobileActions = false"/>
+        <btn-component :btnType="'add'" title="Pridėti darbuotoją" @btnClicked="addUserCardOpen=true; mobileActions = false"/>
       </div>
 
       <!-- filter -->
@@ -40,11 +40,11 @@
         <td class="actions-cell non-mobile">
           <table-actions>
 
-            <btn-edit @btnClicked="openEditUser(item.id)" />
+            <btn-component :btnType="'edit'" @btnClicked="openEditUser(item.id)" title="Redaguoti" />
             <span class="action-divider" />
-            <btn-add-inventory title="Priskirti įrangos" @btnClicked="addGearToUser(item.id)" />
+            <btn-component :btnType="'add-action'" title="Priskirti įrangos" @btnClicked="addGearToUser(item.id)" />
             <span class="action-divider" />
-            <btn-delete @btnClicked="deleteUserOpen = item.id" />
+            <btn-component :btnType="'delete'" @btnClicked="deleteUserOpen = item.id" title="Ištrinti" />
 
           </table-actions>
         </td>
@@ -117,28 +117,22 @@
   import AddItem from "@/components/AddItem";
   import AddUser from "@/components/AddUser";
   import AdminDesk from "@/components/AdminDesk";
-  import BtnAdd from "@/components/BtnAdd";
-  import BtnAddInventory from "@/components/BtnAddInventory";
-  import BtnDelete from "@/components/BtnDelete";
-  import BtnEdit from "@/components/BtnEdit";
   import FormItem from "@/components/FormItem";
   import ModulusFull from "@/components/ModulusFull";
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
+  import BtnComponent from "@/components/BtnComponent";
 
   export default {
     name: "AllUsers",
     mixins: [ DataMixin, UsersMixin ],
     components: {
+      BtnComponent,
       ActionCard,
       AddItem,
       AddUser,
       AdminDesk,
-      BtnAdd,
-      BtnAddInventory,
-      BtnDelete,
-      BtnEdit,
       FormItem,
       ModulusFull,
       Search,

@@ -23,7 +23,7 @@
           </select>
 
           <div class="button-container">
-            <p v-if="errorMsg" class="error-msg">Vartotojas šiuo elektroniniu paštu jau užregistruotas</p>
+            <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
             <button class="btn" type="submit">Pridėti</button>
           </div>
         </form-item>

@@ -147,6 +147,28 @@ export default {
     outline: none;
   }
 
+  /* View button style */
+
+  /*!* Button hover *!*/
+
+  /*button img {*/
+  /*  opacity: 1;*/
+  /*}*/
+
+  /*button img.icon-blue {*/
+  /*  position: absolute;*/
+  /*  opacity: 0;*/
+  /*}*/
+
+  /*button:hover img.icon-blue{*/
+  /*  opacity: 1;*/
+  /*}*/
+
+  /*button:hover img:not(.icon-blue){*/
+  /*  opacity: 0;*/
+  /*}*/
+
+
   .mobile {
     display: none;
   }

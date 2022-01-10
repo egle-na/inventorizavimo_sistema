@@ -5,7 +5,7 @@
     <!-- Title container-->
     <div class="title-container">
       <h1>Įmonės</h1>
-      <btn-add  title="Pridėti įmonę" @btnClicked="openAddCompanyCard" />
+      <btn-component :btnType="'add'" title="Pridėti įmonę" @btnClicked="openAddCompanyCard" />
     </div>
 
     <Search @setSearch="setSearch" />
@@ -30,11 +30,11 @@
         <td class="actions-cell non-mobile">
           <table-actions>  <!-- td ikelti vidun -->
 
-            <btn-edit @btnClicked="openEditCompanyCard(item.id, item.name)" />
+            <btn-component :btnType="'edit'" @btnClicked="openEditCompanyCard(item.id, item.name)" title="Redaguoti" />
             <span class="action-divider" />
-            <btn-add-inventory @btnClicked="openAddUserCard(item.id)" title="Pridėti darbuotoją" />
+            <btn-component :btnType="'add-action'" @btnClicked="openAddUserCard(item.id)" title="Pridėti darbuotoją" />
             <span class="action-divider" />
-            <btn-delete @btnClicked="openDeleteCompanyCard(item.id, item.name)" />
+            <btn-component :btnType="'delete'" @btnClicked="openDeleteCompanyCard(item.id, item.name)" title="Ištrinti" />
 
           </table-actions>
         </td>
@@ -106,25 +106,19 @@
   import AdminDesk from "@/components/AdminDesk";
   import ActionCard from "@/components/ActionCard";
   import AddUser from "@/components/AddUser";
-  import BtnAdd from "@/components/BtnAdd";
-  import BtnAddInventory from "@/components/BtnAddInventory";
-  import BtnDelete from "@/components/BtnDelete";
-  import BtnEdit from "@/components/BtnEdit";
   import ModulusFull from "@/components/ModulusFull";
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
+  import BtnComponent from "@/components/BtnComponent";
   export default {
     name: "AllCompanies",
     mixins: [ DataMixin ],
     components: {
+      BtnComponent,
       AddUser,
       AdminDesk,
       ActionCard,
-      BtnAdd,
-      BtnAddInventory,
-      BtnEdit,
-      BtnDelete,
       ModulusFull,
       Search,
       TableActions,
