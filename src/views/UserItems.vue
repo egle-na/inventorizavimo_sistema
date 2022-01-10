@@ -112,8 +112,8 @@
             <btn-transfer v-if="gear.own && !gear.lent" @btnClicked="openCard('Perleisti', gear.id)" />
             <span class="action-divider"  v-if="gear.own && !gear.lent" />
 
-            <btn-component :btnType="'delete'" v-show="gear.own && !gear.lent" @btnClicked="openCard('delete', gear.id)" title="Ištinti" />
-            <btn-component :btnType="'PDF'" v-if="gear.own && gear.lent" title="Generuoti PDF"/>
+            <btn-component :btnType="'delete'" v-if="gear.own" :disabled="gear.lent" @btnClicked="openCard('delete', gear.id)" title="Ištinti" />
+<!--            <btn-component :btnType="'PDF'" v-if="gear.own && gear.lent" title="Generuoti PDF"/>-->
           </table-actions>
         </td>
 
@@ -150,8 +150,9 @@
       <p>Ar esate pasiruošę grąžinti
         <strong v-if="!returnCardOpen.length">{{ gearName(returnCardOpen) }}</strong>
         <strong v-else>Šiuos {{ returnCardOpen.length }} daiktus</strong>?</p>
-      <div class="btn-container">
-        <p class="error-msg">{{ errorMsg }}</p>
+      <p class="error-msg">{{ errorMsg }}</p>
+      <div class="btn-container" v-show="!errorMsg">
+        <button class="btn faded" @click="returnCardOpen = false; errorMsg = ''">Ne</button>
         <button class="btn" @click="returnItem(returnCardOpen)">Taip</button>
       </div>
     </div>
@@ -396,7 +397,7 @@
           for( let i = 0; i < this.rowsSelected.length; i++ ){
             let gear = this.filteredList[this.rowsSelected[i]];
             if(!gear.own && gear.lent) {
-              this.returnCardOpen.push(gear);
+              this.returnCardOpen.push(gear.id);
             }
           }
           if(!this.returnCardOpen.length) { // Jei nieko negalima grąžinti
@@ -411,7 +412,7 @@
           for( let i = 0; i < this.rowsSelected.length; i++ ){
             let gear = this.filteredList[this.rowsSelected[i]];
             if(gear.own && !gear.lent) {
-              this.deleteCardOpen.push(gear);
+              this.deleteCardOpen.push(gear.id);
             }
           }
           if(!this.deleteCardOpen.length) { // Jei nieko negalima nurašyti
@@ -555,6 +556,10 @@
 
   .actions {
     width: 230px;
+  }
+
+  div.btn-container .btn{
+    margin-left: 1em;
   }
 
   @media (max-width: 960px){

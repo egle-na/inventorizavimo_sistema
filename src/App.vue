@@ -1,13 +1,16 @@
 <template>
   <div id="app">
     <router-view />
+    <success-msg-component />
   </div>
 </template>
 
 <script>
 
+import SuccessMsgComponent from "@/components/SuccessMsgComponent";
 export default {
   name: 'App',
+  components: {SuccessMsgComponent},
 }
 </script>
 
@@ -46,6 +49,7 @@ export default {
     margin: 0;
     font-family: var(--ff-karla);
     color: var(--clr-black);
+    height: 100vh;
   }
 
   h1, h2, h3 {
@@ -116,6 +120,15 @@ export default {
     background-color: var(--clr-white);
     border-color: var(--clr-light-grey);
     color: var(--clr-grey);
+  }
+
+  .faded {
+    border-color: var(--clr-grey);
+  }
+
+  /*.faded:focus,*/
+  .faded:hover {
+    border-color: var(--clr-accent);
   }
 
   input,

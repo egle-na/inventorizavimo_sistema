@@ -143,4 +143,29 @@
     fill: var(--clr-accent)
   }
 
+
+  /* ISTRINTI -----------------  Button hover */
+
+  button img {
+    opacity: 1;
+    transition: opacity 200ms;
+  }
+
+  button img.icon-blue {
+    position: absolute;
+    opacity: 0;
+  }
+
+  button:hover img.icon-blue{
+    opacity: 1;
+  }
+
+  button:hover img:not(.icon-blue){
+    opacity: 0;
+  }
+
+  button:not(.add-btn) img:not(.hand) {
+    height: 1.35em;
+  }
+
 </style>

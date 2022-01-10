@@ -100,7 +100,7 @@
 
   <!-- Delete user -->
   <modulus-full v-if="deleteUserOpen" @close="deleteUserOpen = false; errorMsg = ''">
-    <p>Ar tikrai norite nurašyti <strong>{{ findName(deleteUserOpen) }}</strong>?</p>
+    <p>Ar tikrai norite ištrinti <strong>{{ findName(deleteUserOpen) }}</strong>?</p>
     <div class="btn-container">
       <p class="error-msg">{{errorMsg}}</p>
       <button class="btn" @click="deleteUser(deleteUserOpen)">Taip</button>

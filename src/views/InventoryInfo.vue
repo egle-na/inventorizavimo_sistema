@@ -196,39 +196,6 @@
           return this.findName(this.list.user_id);
         } else return ''
       },
-
-      // statusTextt(){
-      //   if(!this.checked && this.list.id) {
-      //     console.log("checking...")
-      //     //             if admin             &&                      not owner                    &&   gear is lent
-      //     if (this.$store.getters.user.isAdmin && this.list.user_in !== this.$store.getters.user.id && this.list.lent) {
-      //         // checking if it is in my gear list
-      //         this.getData('https://inventor-system.herokuapp.com/api/gear/' + this.list.id,
-      //             () => {
-      //               this.checked = 'mine'
-      //             },
-      //             () => {
-      //               this.checked = 'admin'
-      //             })
-      //     } else {
-      //       this.checked = 'admin';
-      //     }
-      //   }
-      //
-      //   if(this.checked === 'admin'){
-      //     return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
-      //   }
-      //
-      //   return this.list.own ? this.list.lent ? "Paskolintas" : "Savininkas" : "Pasiskolinta";
-      //
-      //   // if(this.list.user_id === this.$store.getters.user.id ){ // jei savininkas
-      //   //   if(this.list.lent){ // jei savininkas ir paskolinta
-      //   //     return 'Paskolintas';
-      //   //   } else return 'Savininkas'; // jei savininkas bet nepaskolinta
-      //   // } else if(this.$store.getters.user.isAdmin && this.list.user_id !== this.$store.getters.user.id){ // if admin
-      //   //   return this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
-      //   // } else return "Pasiskolinta";
-      // },
     },
 
     methods: {

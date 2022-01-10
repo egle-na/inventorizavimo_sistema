@@ -60,6 +60,10 @@
 
 <style scoped>
 
+  button{
+    position: relative;
+  }
+
   .add-btn {
     /*color: var(--clr-grey);*/
     padding: 0;
@@ -120,6 +124,27 @@
   button.pdf img:not(.hand) {
     height: 35px;
   }
+
+  button[disabled],
+  button[disabled]:hover {
+    opacity: 1;
+    transform: scale(1);
+    cursor: initial;
+  }
+
+  button[disabled] img,
+  button[disabled]:hover img {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  button[disabled] .icon-blue,
+  button[disabled]:hover .icon-blue {
+    opacity: 0;
+    /*transform: scale(1);*/
+  }
+
+
 
   @media (max-width: 580px){
     button.pdf img:not(.hand) {

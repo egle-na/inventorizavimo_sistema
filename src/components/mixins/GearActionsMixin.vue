@@ -3,28 +3,30 @@
     name: "GearActionsMixin",
     methods: {
       returnItem(id) {
-        console.log('return');
-        let url = 'https://inventor-system.herokuapp.com/api/requests/return/';
-        if(id.length){
-          url = ""
-          // return multiple
-        } else {
-          url += id;
+        if (!id.length){
+          id = [id];
         }
-        // id = this.$route.params.inventory_id
-        this.postData(url,
-            {},
-            () => {
+
+        this.postData('https://inventor-system.herokuapp.com/api/requests/return',
+            {gear_id: [...id]},
+            (response) => {
               this.returnCardOpen = false;
               this.getData(this.url);
+              if(response.data.message === "Return request created"){
+                // Užklausa sėkmingai išsiųsta
+              }
             },
             (error) => {
-              this.errorMsg = error.response.data.message; // išversti
+              if(error.response.data.message === "Return request is already sent"){
+                this.errorMsg = "Grąžinimo užklausa jau pateikta"
+              } else {
+                this.errorMsg = error.response.data.message; // išversti
+                this.errorMsg = error.response.data.message; // išversti
+              }
             }
         )
       },
 
-      // writeOffItem() {
       deleteGear(id) {
         if(id.length){
           // delete multiple
@@ -53,27 +55,23 @@
       },
 
       gearAction(user_id, id, actionType){
-        console.log(user_id, id);
         let url = '';
-        // if(user_id === this.$store.getters.user.id){
-        //   this.errorMsg = `Inventoriaus sau ${this.actionType.toLowerCase()} negalima.`
-        // }
-
-        if(id.length){
-          // return multiple
+        console.log(id);
+        if (!id.length){
+          id = [id];
         }
 
         if(actionType === 'Skolinti'){
-          url = 'https://inventor-system.herokuapp.com/api/requests/lend/'
+          url = 'https://inventor-system.herokuapp.com/api/requests/lend'
         } else if(actionType === 'Perleisti'){
           if(user_id === this.$store.getters.user.id && this.$store.getters.user.isAdmin){
-            url = 'https://inventor-system.herokuapp.com/api/requests/give-yourself/';
-          } else url = 'https://inventor-system.herokuapp.com/api/requests/giveaway/';
+            url = 'https://inventor-system.herokuapp.com/api/requests/give-yourself';
+          } else url = 'https://inventor-system.herokuapp.com/api/requests/giveaway';
         }
 
         this.postData(
-            url + id,
-            { user_id },
+            url,
+            { user_id, gear_id: id },
             () => {
               this.actionType = '';
               this.selectUserOpen = false;

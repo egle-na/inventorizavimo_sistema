@@ -4,7 +4,8 @@
 
     <form-item @onSubmit="addNewGear">
       <input type="text" placeholder="Pavadinimas" required class="input-long" v-model="newGear.name" >
-      <textarea placeholder="Aprašymas" class="input-long" v-model="newGear.description" required /><!-- nepriskirta -->
+      <textarea maxlength="255" placeholder="Aprašymas" class="input-long" v-model="newGear.description" required />
+      <p class="char-size">Liko simbolių: {{descriptionCharNum}}</p>
       <div>
         <input type="text" placeholder="Kodas" required v-model="newGear.code">
         <input type="text" placeholder="Serijos Numeris" v-model="newGear.serial_number" required
@@ -70,6 +71,9 @@
     computed: {
       isLongTerm() {
         return this.longTerm === "LongTerm";
+      },
+      descriptionCharNum() {
+        return 255 - this.newGear.description.length;
       }
     },
     methods: {
@@ -157,6 +161,17 @@
 
   .btn-container .btn {
     align-self: flex-end;
+  }
+
+  textarea {
+    margin-bottom: 0;
+  }
+
+  .char-size {
+    text-align: right;
+    font-size: .75em;
+    color: var(--clr-grey);
+    margin: 0 0 1rem;
   }
 
 
