@@ -16,11 +16,28 @@
 <style scoped>
 
   button:hover svg {
-    transform: scale(1.05)
+    transform: scale(1.05);
+  }
+
+  button:hover[disabled] svg {
+    transform: scale(1);
   }
 
   button:hover .hand {
-    fill: var(--clr-accent)
+    fill: var(--clr-accent);
+  }
+
+  button[disabled] svg path{
+    fill: var(--clr-grey);
+  }
+
+  button[disabled] .hand,
+  button:hover[disabled] .hand {
+    fill:  #888;
+  }
+
+  button[disabled] {
+    cursor: initial;
   }
 
 </style>

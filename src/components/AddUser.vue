@@ -3,7 +3,7 @@
       <div>
         <h2>Pridėti Darbuotoją</h2>
 
-        <form-item @onSubmit="$emit('createUser', newUser)">
+        <form-item @onSubmit="createUser">
           <div>
             <input type="text"
                    placeholder="Vardas" required
@@ -23,7 +23,7 @@
           </select>
 
           <div class="button-container">
-            <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+            <p class="error-msg">{{ errorMsg }}</p>
             <button class="btn" type="submit">Pridėti</button>
           </div>
         </form-item>
@@ -56,6 +56,12 @@
       if(this.company_id){
         this.newUser.company_id = this.company_id;
       }
+    },
+    methods:{
+      createUser() {
+        console.log(this.newUser);
+        this.$emit('createUser', this.newUser);
+      },
     }
   }
 </script>
@@ -65,19 +71,5 @@
   h2{
     margin-top: .4em;
   }
-
-  .button-container {
-    display: flex;
-  }
-
-  .error-msg {
-    color: #FF6464;
-    margin: 0 1em 0 0;
-  }
-
-  /*button {*/
-  /*  margin-left: auto;*/
-  /*}*/
-
 
 </style>

@@ -105,15 +105,15 @@
             <btn-return v-if="!gear.own && gear.lent && !$route.params.user_id" @btnClicked="openCard('return', gear.id)" />
             <span class="action-divider" v-if="!gear.own && gear.lent && !$route.params.user_id" />
 
-            <btn-lend v-if="((gear.own && !gear.lent) || (!gear.own && gear.lent)) && !$route.params.user_id"
-                    @btnClicked="openCard('Skolinti', gear.id)" />
-            <span class="action-divider" v-if="(gear.own && !gear.lent) && !$route.params.user_id" />
+            <btn-lend v-if="!$route.params.user_id"
+                      :disabled="(gear.own && gear.lent) || (!gear.own && !gear.lent)"
+                      @btnClicked="openCard('Skolinti', gear.id)" />
+            <span class="action-divider" v-if="gear.own && !$route.params.user_id" />
 
-            <btn-transfer v-if="gear.own && !gear.lent" @btnClicked="openCard('Perleisti', gear.id)" />
-            <span class="action-divider"  v-if="gear.own && !gear.lent" />
+            <btn-transfer v-if="gear.own || $route.params.user_id" :disabled="gear.lent" @btnClicked="openCard('Perleisti', gear.id)" />
+            <span class="action-divider"  v-if="gear.own || $route.params.user_id" />
 
-            <btn-component :btnType="'delete'" v-if="gear.own" :disabled="gear.lent" @btnClicked="openCard('delete', gear.id)" title="Ištinti" />
-<!--            <btn-component :btnType="'PDF'" v-if="gear.own && gear.lent" title="Generuoti PDF"/>-->
+            <btn-component :btnType="'delete'" v-if="gear.own || $route.params.user_id" :disabled="gear.lent" @btnClicked="openCard('delete', gear.id)" title="Ištinti" />
           </table-actions>
         </td>
 
@@ -141,48 +141,44 @@
   </modulus-full>
 
   <!-- Grąžinti action -->
-  <modulus-full v-if="returnCardOpen" @close="returnCardOpen = false; errorMsg = ''">
-    <div v-if="returnCardOpen === 'err'">
-      <p>Šių daiktų grąžinti negalima.</p>
-      <button class="btn" @click="returnCardOpen = false">Uždaryti</button>
-    </div>
-    <div v-else>
-      <p>Ar esate pasiruošę grąžinti
-        <strong v-if="!returnCardOpen.length">{{ gearName(returnCardOpen) }}</strong>
-        <strong v-else>Šiuos {{ returnCardOpen.length }} daiktus</strong>?</p>
-      <p class="error-msg">{{ errorMsg }}</p>
-      <div class="btn-container" v-show="!errorMsg">
-        <button class="btn faded" @click="returnCardOpen = false; errorMsg = ''">Ne</button>
-        <button class="btn" @click="returnItem(returnCardOpen)">Taip</button>
-      </div>
-    </div>
+  <modulus-full v-if="returnCardOpen === 'err'" @close="returnCardOpen = false">
+    <p>Šių daiktų grąžinti negalima.</p>
+    <button class="btn btn-right" @click="returnCardOpen = false">Uždaryti</button>
   </modulus-full>
+
+  <delete-card v-else-if="returnCardOpen"
+               :errorMsg="errorMsg"
+               @close="returnCardOpen = false; errorMsg = ''"
+               @delete="returnItem(returnCardOpen)">
+    <p>Ar esate pasiruošę grąžinti
+      <strong v-if="!returnCardOpen.length">{{ gearName(returnCardOpen) }}</strong>
+      <strong v-else>Šiuos {{ returnCardOpen.length }} daiktus</strong>?</p>
+  </delete-card>
 
   <!-- Nurašyti action -->
-  <modulus-full v-if="deleteCardOpen" @close="deleteCardOpen = false; errorMsg = ''">
-    <div v-if="deleteCardOpen === 'err'">
-      <p>Šių daiktų nurašyti negalima.</p>
-      <button class="btn" @click="deleteCardOpen = false">Uždaryti</button>
-    </div>
-    <div v-else>
-      <p>Ar tikrai norite nurašyti
-        <strong v-if="!deleteCardOpen.length">{{ gearName(deleteCardOpen) }}</strong>
-        <span v-else>šiuos {{ deleteCardOpen.length }} daiktus</span>?</p>
-      <div class="btn-container">
-        <p class="error-msg">{{errorMsg}}</p>
-        <button class="btn" @click="deleteGear(deleteCardOpen)">Taip</button>
-      </div>
-    </div>
+  <modulus-full v-if="deleteCardOpen === 'err'" @close="deleteCardOpen = false">
+    <p>Šių daiktų nurašyti negalima.</p>
+    <button class="btn btn-right" @click="deleteCardOpen = false">Uždaryti</button>
   </modulus-full>
 
-  <!-- Skolinti/Perleisti action err -->
+  <delete-card v-else-if="deleteCardOpen"
+               :errorMsg="errorMsg"
+               @close="deleteCardOpen = false; errorMsg = ''"
+               @delete="deleteGear(deleteCardOpen)">
+    <p>Ar tikrai norite nurašyti
+      <strong v-if="!deleteCardOpen.length">{{ gearName(deleteCardOpen) }}</strong>
+      <span v-else>šiuos {{ deleteCardOpen.length }} daiktus</span>?</p>
+  </delete-card>
+
+  <!-- Action Unavailable -->
   <modulus-full v-if="selectUserOpen === 'errSkolinti'" @close="selectUserOpen = false">
     <p>Šių daiktų skolinti negalima.</p>
-    <button class="btn" @click="selectUserOpen = false">Uždaryti</button>
+    <button class="btn btn-right" @click="selectUserOpen = false">Uždaryti</button>
   </modulus-full>
+
   <modulus-full v-else-if="selectUserOpen === 'errPerleisti'" @close="selectUserOpen = false">
     <p>Šių daiktų perleisti negalima.</p>
-    <button class="btn" @click="selectUserOpen = false">Uždaryti</button>
+    <button class="btn btn-right" @click="selectUserOpen = false">Uždaryti</button>
   </modulus-full>
 
   <!-- Skolinti/Perleisti action -->
@@ -212,11 +208,13 @@
   import TableComponent from "@/components/TableComponent";
   import BtnComponent from "@/components/BtnComponent";
   import {EventBus} from "@/main";
+  import DeleteCard from "@/components/DeleteCard";
 
   export default {
     name: "UserItems",
     mixins: [ DataMixin, GearActionsMixin, UsersMixin ],
     components: {
+      DeleteCard,
       BtnComponent,
       ActionCard,
       AddItem,
@@ -406,7 +404,8 @@
           if(!this.returnCardOpen.length) { // Jei nieko negalima grąžinti
             this.returnCardOpen = 'err';
           } else if(this.returnCardOpen.length === 1){ // Jei galima grąžinti tik vieną
-            this.returnCardOpen = this.returnCardOpen[0].id;
+            console.log('elp',this.returnCardOpen)
+            this.returnCardOpen = this.returnCardOpen[0];
           }
 
         } else if(name === 'multipleDelete'){ // DELETE multiple
@@ -421,7 +420,7 @@
           if(!this.deleteCardOpen.length) { // Jei nieko negalima nurašyti
             this.deleteCardOpen = 'err';
           } else if(this.deleteCardOpen.length === 1){ // Jei galima nurašyti tik vieną
-            this.deleteCardOpen = this.deleteCardOpen[0].id;
+            this.deleteCardOpen = this.deleteCardOpen[0];
           }
 
         } else if(name === 'multipleTransfer' || name === 'multipleLend'){ // LEND or TRANSFER multiple
@@ -512,6 +511,11 @@
     margin: 0 1em;
   }
 
+  .btn-right {
+    margin-left: auto;
+    float: right;
+  }
+
   .checkbox-cell {
     width: 50px;
     text-align: center;
@@ -559,10 +563,6 @@
 
   .actions {
     width: 230px;
-  }
-
-  div.btn-container .btn{
-    margin-left: 1em;
   }
 
   @media (max-width: 960px){

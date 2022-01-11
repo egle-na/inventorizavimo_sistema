@@ -3,11 +3,6 @@
 
   export default {
     name: "UsersMixin",
-    data(){
-      return {
-        // userList: [],
-      }
-    },
     methods: {
 
       getUsersList() {
@@ -33,10 +28,10 @@
         return ''
       },
 
-      addUser(){
+      addUser(userData){
         this.postData(
             this.$store.getters.API_baseURL + '/users',
-            this.newUser,
+            userData,
             this.userAdded,
             this.userAddError
         );
@@ -46,7 +41,7 @@
         this.getData(this.url);
         this.getUsersList(); // store updated users list
         this.addUserOpen = false;
-        this.errorMsg = '';
+        this.errorMsg = "";
         EventBus.$emit('displayMessage', 'Vartotojas sėkmingai pridėtas!');
       },
 

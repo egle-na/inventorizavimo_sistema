@@ -1,7 +1,7 @@
 <template>
-  <div class="select-user-container">
-    <div class="select-user-backdrop" @click="$emit('close')"></div>
-    <div class="select-user-card">
+  <div class="container">
+    <div class="backdrop" @click="$emit('close')"></div>
+    <div class="card">
       <button class="close-btn" @click="$emit('close')">&times;</button>
 
       <slot />
@@ -15,7 +15,8 @@
   }
 </script>
 <style scoped>
-  .select-user-backdrop {
+
+  .backdrop {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -24,7 +25,7 @@
     background: #ffffffaa;
   }
 
-  .select-user-container {
+  .container {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -36,8 +37,7 @@
     align-items: center;
   }
 
-
-  .select-user-card {
+  .card {
     position: relative;
     width: 500px;
     max-width: 97%;
@@ -71,53 +71,22 @@
     color: var(--clr-dark-grey);
   }
 
-  .button-container {
-    display: flex;
-  }
-
-  .error-msg {
-    color: #FF6464;
-    margin: 0 1em 0 0;
-  }
-
   button {
     margin-left: auto;
   }
 
-  .search-container {
-    position: relative;
-    margin-bottom: 1em;
-  }
-
-  input {
-    width: 100%;
-    border-left: none;
-  }
-
-  .list {
-    position: absolute;
-    width: 100%;
-    max-height: 40vh;
-    overflow-y: auto;
-
-    margin: 0;
-    padding: 0;
-    background: var(--clr-almost-white);
-    list-style: none;
-  }
-
-  .list li {
-    padding: .6em 1.5em;
-  }
-
   .btn-container {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
   }
 
-  div:not(.btn-container) .btn {
-    float: right;
+  .btn-container div{
+    display: flex;
+    align-items: center;
+  }
+
+  .btn-container .btn {
     margin-left: auto;
   }
 
@@ -125,9 +94,15 @@
     margin: 0 auto 0 0;
     color: #FF6464;
   }
+
   @media(max-width: 580px){
-    .select-user-card {
+
+    .card {
       padding: 2em 1.5em;
+    }
+
+    .backdrop {
+      background: #ffffffea;
     }
   }
 

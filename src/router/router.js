@@ -5,12 +5,12 @@ import store from "@/store/store";
 import LogIn from "@/views/LogIn";
 // import AddUser from "@/components/AddUser";
 // import AddItem from "@/components/AddItem";
-import UserItems from "@/views/UserItems";
-import AllUsers from "@/views/AllUsers";
-import AllItems from "@/views/AllItems";
+import UserItems from "@/views/UserGear";
+import AllUsers from "@/views/Users";
+import AllItems from "@/views/Gear";
 import NotificationHistory from "@/views/NotificationHistory";
-import InventoryInfo from "@/views/InventoryInfo";
-import AllCompanies from "@/views/AllCompanies";
+import InventoryInfo from "@/views/GearInfo";
+import AllCompanies from "@/views/Companies";
 import RemindPassword from "@/views/RemindPassword";
 
 import guest from "@/router/middleware/guest";

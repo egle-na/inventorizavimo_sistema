@@ -56,16 +56,20 @@
     margin-bottom: 0;
   }
 
-  button {
-    float: right;
+  .button-container {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .button-container .btn{
     margin-left: auto;
   }
 
-
-  /*.error-msg{*/
-  /*  !*margin-top: 0;*!*/
-  /*  color: #FF6464;*/
-  /*}*/
+  .error-msg{
+    margin: 0;
+    color: #FF6464;
+  }
 
   @media (max-width: 580px){
     input:not([type='checkbox'], .input-long) {

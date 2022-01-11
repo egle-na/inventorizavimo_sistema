@@ -87,7 +87,7 @@
         <input type="checkbox" v-model="selectedUser.changeRole">Pašalinti administratoriaus teises</label>
 
       <div class="button-container">
-        <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+        <p class="error-msg">{{ errorMsg }}</p>
         <button class="btn" type="submit">Redaguoti</button>
       </div>
     </form-item>
@@ -99,13 +99,12 @@
   </modulus-full>
 
   <!-- Delete user -->
-  <modulus-full v-if="deleteUserOpen" @close="deleteUserOpen = false; errorMsg = ''">
+  <delete-card v-if="deleteUserOpen"
+               :errorMsg="errorMsg"
+               @close="deleteUserOpen = false; errorMsg = ''"
+               @delete="deleteUser(deleteUserOpen)">
     <p>Ar tikrai norite ištrinti <strong>{{ findName(deleteUserOpen) }}</strong>?</p>
-    <div class="btn-container">
-      <p class="error-msg">{{errorMsg}}</p>
-      <button class="btn" @click="deleteUser(deleteUserOpen)">Taip</button>
-    </div>
-  </modulus-full>
+  </delete-card>
 
 </div>
 </template>
@@ -124,11 +123,13 @@
   import TableComponent from "@/components/TableComponent";
   import BtnComponent from "@/components/BtnComponent";
   import {EventBus} from "@/main";
+  import DeleteCard from "@/components/DeleteCard";
 
   export default {
     name: "AllUsers",
     mixins: [ DataMixin, UsersMixin ],
     components: {
+      DeleteCard,
       BtnComponent,
       ActionCard,
       AddItem,
@@ -240,6 +241,7 @@
               this.getDataQuery(this.url, this.params);
               this.getUsersList();
               this.mobileActions = false;
+              this.deleteUserOpen = false;
             }).catch(() => {
               this.errorMsg = 'Negalima ištinti vartotojo dar turinčio priskirto inventoriaus.'
             })
@@ -351,11 +353,6 @@
 
   .button-container {
     display: flex;
-  }
-
-  .error-msg {
-    color: #FF6464;
-    margin: 0 1em 0 0;
   }
 
   @media (max-width: 730px) {

@@ -12,20 +12,24 @@
         this.postData(this.$store.getters.API_baseURL + '/requests/return',
             {gear_id: [...id]},
             (response) => {
-              this.returnCardOpen = false;
               this.getData(this.url);
-              if(response.data.message === "Return request created"){
+              this.returnCardOpen = false;
+              this.errorMsg = "";
+              if(response.data.message.includes("Return request created")){
                 // Užklausa sėkmingai išsiųsta
                 EventBus.$emit('displayMessage', 'Užklausa sėkmingai išsiųsta!');
               }
             },
             (error) => {
-              if(error.response.data.message === "Return request is already sent"){
-                this.errorMsg = "Grąžinimo užklausa jau pateikta"
-              } else {
-                this.errorMsg = error.response.data.message; // išversti
-                // this.errorMsg = error.response.data.message; // išversti
-              }
+              this.errorMsg = "";
+              error.response.data.message.forEach( message => {
+                if(message.includes("Return request is already sent")){
+                  this.errorMsg = "Grąžinimo užklausa jau pateikta";
+                } else {
+                  this.errorMsg = message; // išversti
+                  // this.errorMsg = error.response.data.message; // išversti
+                }
+              })
             }
         )
       },
@@ -52,8 +56,19 @@
             .catch(error => {
               if(error.response.data.message === "Gear has a request" ){
                 this.errorMsg = 'Inventorius turi neatsakytą užklausą.';
-              } else if(error.response.data.message === "You cannot destroy lent gear" ){
+
+              } else if(error.response.data.message === "You cannot destroy lent gear"
+                  || error.response.data.message === "You cannot delete lent gear"){
                 this.errorMsg = 'Paskolinto inventoriaus išmesti negalima.';
+
+              } else if(error.response.data.message === "Token has expired"){
+                EventBus.$emit('displayMessage', 'Sesijos laikas baigėsi!');
+                localStorage.clear();
+                this.$router.push({name: 'login'});
+
+              } else if(error.response.status === 500){
+                this.errorMsg = 'Įvyko klaida';
+
               } else this.errorMsg = error.response.data.message;
             })
       },
@@ -85,22 +100,19 @@
               EventBus.$emit('displayMessage', 'Užklausa sėkmingai išsiųsta!');
             },
             (err) => {
-              switch (err.response.data.message) {
-                case "Gear already has a request":
-                  this.errorMsg = "Inventorius turi neatsakytą užklausą";
-                  break;
-                  // case "":
-                case "You cannot give away lent gear":
+              err.response.data.message.forEach(message => {
+                if (message.includes("Gear already has a request.")) {
+                  this.errorMsg = "Inventorius turi neatsakytą užklausą"; // push. make error Array
+                } else if (message.includes("You cannot give away lent gear")) {
                   this.errorMsg = "Negalite perleisti paskolinto inventoriaus";
-                  break;
-                case "Sorry, gear not found.":
-                  if (actionType === 'Perleisti' && this.$store.getters.user.isAdmin){
+                } else if (message.includes("Sorry, gear not found.")) {
+                  if (actionType === 'Perleisti' && this.$store.getters.user.isAdmin) {
                     this.errorMsg = "Svetimo inventoriaus perleisti kitiems negalite.";
-                  } else this.errorMsg = "Negalite "+ actionType +" šio inventoriaus";
-                  break
-                default:
-                  this.errorMsg = err.response.data.message;
-              }
+                  } else this.errorMsg = "Negalite " + actionType + " šio inventoriaus";
+                } else {
+                  this.errorMsg = message;
+                }
+              })
               // this.errorMsg = err.response.data.message;
               // console.log(err.response);
             }

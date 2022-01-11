@@ -74,13 +74,12 @@
   </modulus-full>
 
   <!-- Nurašyti action -->
-  <modulus-full v-if="deleteCardOpen" @close="deleteCardOpen = false; errorMsg = ''; gearName = ''">
+  <delete-card v-if="deleteCardOpen"
+               @close="deleteCardOpen = false; errorMsg = ''; gearName = ''"
+               :errorMsg="errorMsg"
+               @delete="deleteGear(deleteCardOpen)" >
     <p>Ar tikrai norite nurašyti <strong>{{ gearName }}</strong>?</p>
-    <div class="btn-container">
-      <p class="error-msg">{{errorMsg}}</p>
-      <button class="btn" @click="deleteGear(deleteCardOpen)">Taip</button>
-    </div>
-  </modulus-full>
+  </delete-card>
 
 </div>
 </template>
@@ -96,10 +95,12 @@
   import TableComponent from "@/components/TableComponent";
   import BtnComponent from "@/components/BtnComponent";
   import {EventBus} from "@/main";
+  import DeleteCard from "@/components/DeleteCard";
   export default {
     name: "AllItems",
     mixins: [ DataMixin, GearActionsMixin ],
     components: {
+      DeleteCard,
       BtnComponent,
       AddItem,
       AdminDesk,

@@ -25,17 +25,6 @@
       </div>
     </div>
 
-
-<!--   ----------------------------------------------------------------------------------------------    -->
-<!--    <select class="user-select" v-model="selectedUser" required>-->
-<!--      <option selected hidden>Pasirinkite darbuotoją:</option>-->
-<!--      <option v-for="user in userList" :key=" user.id"-->
-<!--              :value="user.id">{{ findName(user.id) }}</option>-->
-<!--    </select>-->
-<!--   ----------------------------------------------------------------------------------------------    -->
-
-<!--    <input type="text" v-model="selectedUser">-->
-
     <div class="btn-container">
       <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
       <button class="btn">{{ type }}</button>
@@ -144,6 +133,7 @@
     padding: 0;
     border: none;
     font-size: 2rem;
+    margin-bottom: 0;
   }
 
   p {

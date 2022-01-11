@@ -1,10 +1,4 @@
 <template>
-<!--  &lt;!&ndash; Add &ndash;&gt;-->
-<!--  <button class="add-btn" @click="$emit('btnClicked')" v-if="btnType === 'add'">-->
-<!--    <img src="../assets/icons/Plus-blue.svg" alt="" class="icon-blue">-->
-<!--    <img src="../assets/icons/Plus.svg" alt="">-->
-<!--  </button>-->
-
   <button :class="{'add-btn': btnType === 'add', 'pdf': btnType === 'PDF'}"
           @click="$emit('btnClicked')">
     <!-- Add -->
@@ -40,15 +34,6 @@
     <img v-if="btnType === 'transfer'" src="../assets/icons/hand-transfer.svg" alt="" class="hand">
 
   </button>
-
-<!--  &lt;!&ndash; Add Action &ndash;&gt;-->
-<!--  <button class="add-action-btn" @click="$emit('btnClicked')"  v-if="btnType === 'add-action'">-->
-<!--    <img src="../assets/icons/add-blue.svg" alt="" class="icon-blue">-->
-<!--    <img src="../assets/icons/add.svg" alt="">-->
-<!--  </button>-->
-
-
-
 </template>
 
 <script>
@@ -71,15 +56,6 @@
     line-height: 1;
     transform: translateY(50%);
   }
-
-  /*.add-btn path {*/
-  /*  stroke: var(--clr-darker-grey);*/
-  /*  transition: stroke 200ms;*/
-  /*}*/
-
-  /*.add-btn:hover path {*/
-  /*  stroke: var(--clr-accent);*/
-  /*}*/
 
   /* Button hover */
 
@@ -106,8 +82,6 @@
   }
 
   .add-action-btn {
-    /*text-align: center;*/
-    /*line-height: 0;*/
     height: fit-content;
     padding: 0 .3em;
     align-self: center;
@@ -141,10 +115,7 @@
   button[disabled] .icon-blue,
   button[disabled]:hover .icon-blue {
     opacity: 0;
-    /*transform: scale(1);*/
   }
-
-
 
   @media (max-width: 580px){
     button.pdf img:not(.hand) {

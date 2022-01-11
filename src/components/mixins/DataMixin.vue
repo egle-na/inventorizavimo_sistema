@@ -26,7 +26,7 @@
             console.log(response.data);
             this.list = response.data;
             // this.getNotifications();
-            if(successFn) successFn();
+            if(successFn) successFn(response);
 
             // this.refreshUsersToken();
           }).catch(error => {
@@ -78,7 +78,7 @@
         this.$http.post( url, data, this.config)
           .then(response => {
             console.log(response.data);
-            if(successFn) successFn();
+            if(successFn) successFn(response);
             // this.$router.push(routeTo)
           }).catch(error => {
             console.error(error);
@@ -90,7 +90,7 @@
         this.$http.delete( url, this.config)
           .then(response => {
             console.log(response.data);
-            if(successFn) successFn();
+            if(successFn) successFn(response);
             // this.$router.push(routeTo)
           }).catch(error => {
             console.error(error);

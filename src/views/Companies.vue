@@ -63,7 +63,7 @@
 
         <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
         <div class="btn-container">
-          <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
+          <p class="error-msg">{{ errorMsg }}</p>
           <button class="btn">Pridėti</button>
         </div>
 
@@ -77,7 +77,7 @@
 
         <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
         <div class="btn-container">
-          <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
+          <p class="error-msg">{{ errorMsg }}</p>
           <button class="btn">Redaguoti</button>
         </div>
 
@@ -90,13 +90,12 @@
   </modulus-full>
 
   <!-- Delete company -->
-  <modulus-full v-if="deleteCompanyOpen" @close="closeCard" >
+  <delete-card v-if="deleteCompanyOpen"
+               :errorMsg="errorMsg"
+               @close="closeCard"
+               @delete="deleteCompany(editCompanyId)">
     <p>Ar tikrai norite ištrinti <strong>{{newCompanyName}}</strong>?</p>
-    <div class="btn-container">
-      <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
-      <button class="btn" @click="deleteCompany(editCompanyId)">Taip</button>
-    </div>
-  </modulus-full>
+  </delete-card>
 
 </div>
 </template>
@@ -112,10 +111,13 @@
   import TableComponent from "@/components/TableComponent";
   import BtnComponent from "@/components/BtnComponent";
   import {EventBus} from "@/main";
+  import UsersMixin from "@/components/mixins/UsersMixin";
+  import DeleteCard from "@/components/DeleteCard";
   export default {
     name: "AllCompanies",
-    mixins: [ DataMixin ],
+    mixins: [ DataMixin, UsersMixin ],
     components: {
+      DeleteCard,
       BtnComponent,
       AddUser,
       AdminDesk,
@@ -200,7 +202,7 @@
           console.log(error);
           if(error.response.status === 400){
             if(error.response.data.error.name[0] === "The name has already been taken."){
-              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta"
+              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta."
             }
           }
         })
@@ -224,7 +226,7 @@
           console.log(error);
           if(error.response.status === 400){
             if(error.response.data.error.name[0] === "The name has already been taken."){
-              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta"
+              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta."
             }
           }
         })

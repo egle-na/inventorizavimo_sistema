@@ -19,7 +19,7 @@
                    @click="openSelect('Skolinti')"
            >Skolinti</button>
 
-           <button v-show="statusText === 'Savininkas' || this.$store.getters.user.isAdmin === true && !list.lent"
+           <button v-show="!list.lent"
                    @click="openSelect('Perleisti')"
            >Perleisti</button>
 
@@ -29,13 +29,12 @@
          </action-card>
        </div>
 
-       <!-- Generuoti PDF when no other actions are available -->
-       <div v-else>
+       <div v-else><!-- Generuoti PDF btn when no other actions are available -->
          <button class="btn non-mobile" @click="generatePDF(list.id, list.name)">Generuoti PDF</button>
          <btn-component :btnType="'PDF'" class="mobile" @btnClicked="generatePDF(list.id, list.name)" title="Generuoti PDF" />
        </div>
 
-     </div><!-- /Title container -->
+     </div><!-- /title container -->
 
      <!-- Main Content -->
      <div class="main-content">
@@ -48,10 +47,6 @@
            <h3>Savininkas</h3>
            <p >{{ ownerName }}</p>
          </div>
-<!--         <div v-if="statusText === 'Paskolintas'">--> <!-- nėra kaip paprastai sužinoti kam paskolinta -->
-<!--           <h3>Paskolinta</h3>-->
-<!--           <p >{{ findName(list.) }}</p> -->
-<!--         </div>-->
          <div>
            <h3>Kodas</h3>
            <p>{{ list.code }}</p>
@@ -65,6 +60,7 @@
            <p>{{ list.unit_price }} €</p>
          </div>
 
+         <!-- Action Buttons -->
          <div class="btn-container">
            <button class="btn"
                    v-show="statusText === 'Pasiskolinta'"
@@ -73,7 +69,7 @@
                    v-show="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
                    @click="openSelect('Skolinti')">Skolinti</button>
            <button class="btn"
-                   v-show="statusText === 'Savininkas' || this.$store.getters.user.isAdmin === true"
+                   v-show="!list.lent"
                    @click="openSelect('Perleisti')">Perleisti</button>
          </div>
        </div><!-- /info container -->
@@ -117,22 +113,20 @@
                 :errorMsg="errorMsg" />
 
    <!-- Nurašyti action -->
-   <modulus-full v-show="writeOffCardOpen" @close="writeOffCardOpen = false; errorMsg = ''">
+   <delete-card v-show="writeOffCardOpen"
+                :errorMsg="errorMsg"
+                @close="writeOffCardOpen = false; errorMsg = ''"
+                @delete="deleteGear(list.id)">
      <p>Ar tikrai norite nurašyti <strong>{{ list.name }}</strong>?</p>
-     <div class="btn-container">
-       <p class="error-msg">{{ errorMsg }}</p>
-       <button class="btn" @click="deleteGear(list.id)">Taip</button>
-     </div>
-   </modulus-full>
+   </delete-card>
 
    <!-- Grąžinti action -->
-   <modulus-full v-show="returnCardOpen" @close="returnCardOpen = false; errorMsg = ''">
+   <delete-card v-show="returnCardOpen"
+                :errorMsg="errorMsg"
+                @close="returnCardOpen = false; errorMsg = ''"
+                @delete="returnItem(list.id)">
      <p>Ar esate pasiruošę grąžinti <strong>{{ list.name }}</strong>?</p>
-     <div class="btn-container">
-       <p class="error-msg">{{ errorMsg }}</p>
-       <button class="btn" @click="returnItem(list.id)">Taip</button>
-     </div>
-   </modulus-full>
+   </delete-card>
 
  </div>
 </template>
@@ -142,20 +136,20 @@
   import ActionCard from "@/components/ActionCard";
   import TableComponent from "@/components/TableComponent";
   import SelectUser from "@/components/SelectUser";
-  import ModulusFull from "@/components/ModulusFull";
   import DataMixin from "@/components/mixins/DataMixin";
   import UsersMixin from "@/components/mixins/UsersMixin";
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
   import BtnOptionDots from "@/components/BtnOptionDots";
   import BtnComponent from "@/components/BtnComponent";
+  import DeleteCard from "@/components/DeleteCard";
 
   export default {
     name: "InventoryInfo",
     mixins: [ DataMixin, UsersMixin, GearActionsMixin ],
     components: {
+      DeleteCard,
       BtnComponent,
       BtnOptionDots,
-      ModulusFull,
       SelectUser,
       TableComponent,
       ActionCard,

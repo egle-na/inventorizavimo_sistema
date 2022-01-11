@@ -33,7 +33,7 @@
 
         <button class="btn">Pridėti</button>
       </div>
-      <p v-if="errorInput.message" class="error-msg">{{ errorInput.message }}</p>
+      <p v-for="(message, index) in errorInput" :key="index" class="error-msg">{{ message }}</p>
     </form-item>
   </div>
 </template>
@@ -55,7 +55,7 @@
       return {
         list:[],
         longTerm: "LongTerm",
-        errorInput: {},
+        errorInput: [],
         newGear: {
           description:'',
           name: '',
@@ -86,19 +86,18 @@
       },
       addGearSuccess() {
         this.$emit('success');
-        this.errorInput = {};
+        this.errorInput = [];
       },
       addGearError(error) {
-        this.errorInput = {};
+        this.errorInput = [];
         if (error.response.data.error){
           if(error.response.data.error.serial_number) {
-          this.errorInput.serial_number = "Inventorius su tokiu serijos numeriu jau pridėtas";
+            this.errorInput.push("Inventorius su tokiu serijos numeriu jau pridėtas");
           }
         }
         if (error.response.data.message === "Gear does not match with other ones with the same code") {
-          this.errorInput.message = "Duomenys nesutampa su kitu šio kodo inventoriumi"
+          this.errorInput.push("Duomenys nesutampa su kitu šio kodo inventoriumi");
         }
-        // console.log(error.response.data.message)
       }
     }
   }
@@ -122,6 +121,10 @@
 
   .relative-container {
     position: relative;
+  }
+
+  .error-msg {
+    margin-top: 1em;
   }
 
   #euro-sign {
