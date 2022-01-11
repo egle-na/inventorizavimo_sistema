@@ -163,8 +163,8 @@
     },
     data() {
       return {
-        url: 'https://inventor-system.herokuapp.com/api/gear/' + this.$route.params.inventory_id,
-        users_url: 'https://inventor-system.herokuapp.com/api/users',
+        url: this.$store.getters.API_baseURL + '/gear/' + this.$route.params.inventory_id,
+        users_url: this.$store.getters.API_baseURL + '/users',
         actionCardOpen: false,
         selectUserOpen: false,
         writeOffCardOpen: false,
@@ -182,7 +182,7 @@
     },
     created() {
       if(this.$store.getters.user.isAdmin === true){
-        this.url = 'https://inventor-system.herokuapp.com/api/gear/all/' + this.$route.params.inventory_id;
+        this.url = this.$store.getters.API_baseURL + '/gear/all/' + this.$route.params.inventory_id;
       }
       this.getData(this.url,
           () => { this.getStatusText(); },
@@ -210,7 +210,7 @@
             this.statusText = this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
 
             if(this.list.lent) { // Admin not owner but gear is lent
-              this.getData('https://inventor-system.herokuapp.com/api/gear/' + this.list.id,
+              this.getData(this.$store.getters.API_baseURL + '/gear/' + this.list.id,
                   () => {
                     this.statusText = "Pasiskolinta";
                   },
@@ -227,7 +227,7 @@
       },
 
       getHistory() {
-        this.$http.get('https://inventor-system.herokuapp.com/api/gear-history/' + this.$route.params.inventory_id, this.config)
+        this.$http.get(this.$store.getters.API_baseURL + '/gear-history/' + this.$route.params.inventory_id, this.config)
           .then(response => this.historyList = response.data)
           .catch(err => console.error(err))
       },

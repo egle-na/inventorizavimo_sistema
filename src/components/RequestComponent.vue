@@ -51,19 +51,19 @@
     // },
     methods: {
       acceptRequest(id, status){
-        let url = ''
+        let endpoint = ''
         switch (status){
           case 0: // skolina
-            url = 'https://inventor-system.herokuapp.com/api/requests/accept-lend/';
+            endpoint = '/requests/accept-lend/';
             break;
           case 2: // grąžina
-            url = 'https://inventor-system.herokuapp.com/api/requests/accept-return/';
+            endpoint = '/requests/accept-return/';
             break;
           case 3: // perleidžia
-            url = 'https://inventor-system.herokuapp.com/api/requests/accept-giveaway/';
+            endpoint = '/requests/accept-giveaway/';
             break;
         }
-        this.$http.post(url + id, {}, this.config)
+        this.$http.post(this.$store.getters.API_baseURL + endpoint + id, {}, this.config)
             .then(() => {
               // this.$router.go(0); // man nepatinka šitas
               // console.log('elp');
@@ -79,11 +79,11 @@
 
       declineRequest(id, status) {
         if (status === 2) {
-          this.$http.post('https://inventor-system.herokuapp.com/api/requests/decline-return/' + id,{}, this.config)
+          this.$http.post(this.$store.getters.API_baseURL + '/requests/decline-return/' + id,{}, this.config)
               .then(this.getNotifications) // is it too short?
               .catch(this.getNotifications)
         } else {
-          this.$http.delete('https://inventor-system.herokuapp.com/api/requests/' + id, this.config)
+          this.$http.delete(this.$store.getters.API_baseURL + '/requests/' + id, this.config)
               .then(this.getNotifications)
               .catch(this.getNotifications)
         }

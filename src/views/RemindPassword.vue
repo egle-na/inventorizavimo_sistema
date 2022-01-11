@@ -33,7 +33,7 @@
     },
     methods: {
       remindPassword() {
-        this.$http.post("https://inventor-system.herokuapp.com/api/reset-password",{email: this.email})
+        this.$http.post(this.$store.getters.API_baseURL + "/reset-password",{email: this.email})
           .then(() => this.passwordResetSent = true)
           .catch(() => this.noEmailFound = true)
       },

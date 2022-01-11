@@ -6,7 +6,7 @@ export default function admin ({ next, store }){
             name: 'user-inventory'
         })
     }else {
-        axios.post('https://inventor-system.herokuapp.com/api/auth/refresh',
+        axios.post(store.getters.API_baseURL +'/auth/refresh',
             {},
             { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }})
             .then(response => {

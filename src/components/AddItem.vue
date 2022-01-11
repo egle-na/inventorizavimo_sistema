@@ -79,7 +79,7 @@
     methods: {
       addNewGear() {
         this.postData(
-            'https://inventor-system.herokuapp.com/api/gear',
+            this.$store.getters.API_baseURL + '/gear',
             { ...this.newGear, long_term: this.isLongTerm},
             this.addGearSuccess,
             this.addGearError )

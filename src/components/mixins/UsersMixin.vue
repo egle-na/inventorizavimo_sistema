@@ -1,4 +1,6 @@
 <script>
+  import {EventBus} from "@/main";
+
   export default {
     name: "UsersMixin",
     data(){
@@ -7,26 +9,14 @@
       }
     },
     methods: {
-      // getNames() { // delete
-      //   console.log('get names')
-      //   let url = 'https://inventor-system.herokuapp.com/api/users';
-      //   if(this.$store.getters.user.isAdmin === true){
-      //     url = 'https://inventor-system.herokuapp.com/api/users/all'
-      //   }
-      //   this.$http.get(url, this.config)
-      //       .then(response => {
-      //         console.log(response.data)
-      //         this.userList = response.data;
-      //       }).catch(() => {
-      //   })
-      // },
+
       getUsersList() {
         // console.log('get names')
-        let url = 'https://inventor-system.herokuapp.com/api/users';
+        let endpoint = '/users';
         if(this.$store.getters.user.isAdmin === true){
-          url = 'https://inventor-system.herokuapp.com/api/users/all'
+          endpoint = '/users/all'
         }
-        this.$http.get(url, this.config)
+        this.$http.get(this.$store.getters.API_baseURL + endpoint, this.config)
             .then(response => {
               // console.log(response.data)
               this.$store.commit('setAllUsers', response.data );
@@ -41,6 +31,29 @@
           return user ? user.first_name + ' ' + user.last_name : "Nežinomas"
         }
         return ''
+      },
+
+      addUser(){
+        this.postData(
+            this.$store.getters.API_baseURL + '/users',
+            this.newUser,
+            this.userAdded,
+            this.userAddError
+        );
+      },
+
+      userAdded(){
+        this.getData(this.url);
+        this.getUsersList(); // store updated users list
+        this.addUserOpen = false;
+        this.errorMsg = '';
+        EventBus.$emit('displayMessage', 'Vartotojas sėkmingai pridėtas!');
+      },
+
+      userAddError(error) {
+        if(error.response.status === 400 && error.response.data.message === "The email has already been taken"){
+          this.errorMsg = 'Vartotojas šiuo elektroninio pašto adresu jau pridėtas.';
+        }
       },
 
     }

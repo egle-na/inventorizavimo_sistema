@@ -8,6 +8,8 @@
 </template>
 
 <script>
+  import {EventBus} from "@/main";
+
   export default {
     name: "SuccessMsgComponent",
     data() {
@@ -16,9 +18,10 @@
       }
     },
     created() {
+      EventBus.$on('displayMessage', this.showMessage)
       //EventBus.listen
-      this.showMessage('Veiksmas sėkmingai atliktas!');
-      this.showMessage('Veiksmas sėkmingai atliktas!');
+      // this.showMessage('Veiksmas sėkmingai atliktas!');
+      // this.showMessage('Veiksmas sėkmingai atliktas!');
     },
     methods: {
       showMessage(message){

@@ -76,7 +76,7 @@
     },
     methods: {
       logOut() {
-        this.$http.post("https://inventor-system.herokuapp.com/api/auth/logout", {}, this.config)
+        this.$http.post(this.$store.getters.API_baseURL + "/auth/logout", {}, this.config)
           .then(response => {
             console.log(response.data.message);
             localStorage.clear();

@@ -7,7 +7,7 @@
       <!-- title -->
       <div class="no-shrink">
         <h1>Darbuotojai</h1>
-        <btn-component :btnType="'add'" title="Pridėti darbuotoją" @btnClicked="addUserCardOpen=true; mobileActions = false"/>
+        <btn-component :btnType="'add'" title="Pridėti darbuotoją" @btnClicked="addUserOpen=true; mobileActions = false"/>
       </div>
 
       <!-- filter -->
@@ -67,8 +67,8 @@
   </action-card>
 
   <!-- Add user card-->
-  <modulus-full v-if="addUserCardOpen" @close="closeCard">
-    <add-user @createUser="createUser" :companyList="additionalList" :errorMsg="errorMsg" />
+  <modulus-full v-if="addUserOpen" @close="closeCard">
+    <add-user @createUser="addUser" :companyList="additionalList" :errorMsg="errorMsg" />
   </modulus-full>
 
   <!-- Edit user card-->
@@ -123,6 +123,7 @@
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
   import BtnComponent from "@/components/BtnComponent";
+  import {EventBus} from "@/main";
 
   export default {
     name: "AllUsers",
@@ -141,8 +142,8 @@
     },
     data(){
       return {
-        url: "https://inventor-system.herokuapp.com/api/users/all",
-        addUserCardOpen: false,
+        url: this.$store.getters.API_baseURL + "/users/all",
+        addUserOpen: false,
         editUserCardOpen: false,
         deleteUserOpen: false,
         addUserError: false,
@@ -169,32 +170,10 @@
         this.params.company = this.$route.params.company_id;
       }
       this.getDataQuery(this.url, this.params);
-      this.getAdditionalData("https://inventor-system.herokuapp.com/api/companies")
+      this.getAdditionalData(this.$store.getters.API_baseURL + "/companies")
     },
 
     methods: {
-      createUser() {
-        this.postData(
-            "https://inventor-system.herokuapp.com/api/users",
-            this.newUser,
-            this.userAdded,
-            this.userAddError
-        );
-      },
-
-      userAdded(){
-        this.getData(this.url);
-        this.getUsersList(); // store updated users list
-        this.addUserCardOpen = false;
-        this.errorMsg='';
-      },
-
-      userAddError(error) {
-        if(error.response.status === 400 && error.response.data.message === "The email has already been taken"){
-          this.errorMsg = "Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.";
-        }
-      },
-
       editUser({id, first_name, last_name, email, changeRole}) {
         this.errorMsg = "";
         let params = {};
@@ -215,13 +194,14 @@
 
         if(Object.keys(params).length !== 0) { // if some changes are made
           this.$http.put(
-              "https://inventor-system.herokuapp.com/api/users/" + id,
+              this.$store.getters.API_baseURL + "/users/" + id,
               params,
               this.config
           ).then(() => {
             this.getDataQuery(this.url, this.params);
             this.getUsersList(); // store updated users list
             this.editUserCardOpen = false;
+            EventBus.$emit('displayMessage', 'Vartotojo duomenys sėkmingai pakeisti!');
           }).catch(err => {
             if(err.response.data.error) {
               if(err.response.data.error.email){
@@ -255,7 +235,7 @@
       },
 
       deleteUser(id){
-        this.$http.delete("https://inventor-system.herokuapp.com/api/users/" + id, this.config)
+        this.$http.delete(this.$store.getters.API_baseURL + "/users/" + id, this.config)
             .then(() => {
               this.getDataQuery(this.url, this.params);
               this.getUsersList();
@@ -287,7 +267,7 @@
 
       closeCard() {
         this.errorMsg = '';
-        this.addUserCardOpen = false;
+        this.addUserOpen = false;
         this.editUserCardOpen = false;
         this.addGearOpen = false;
         this.selectedUser = {};

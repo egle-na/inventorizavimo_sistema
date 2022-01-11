@@ -49,7 +49,7 @@
       },
 
       tryLogin() {
-        this.$http.post('https://inventor-system.herokuapp.com/api/auth/login',{
+        this.$http.post(this.$store.getters.API_baseURL + '/auth/login',{
           email: this.email,
           password: this.password
         }).then(response => {

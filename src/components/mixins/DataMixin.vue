@@ -1,6 +1,8 @@
 <script>
   // import jwt_decode from "jwt-decode";
 
+  import {EventBus} from "@/main";
+
   export default {
     name: "DataMixin",
     data() {
@@ -38,8 +40,11 @@
         if(error.response.data.message === "Token has expired" ||
             error.response.data.message === "The token has been blacklisted" ||
             error.response.data.status === 401 ){
+          EventBus.$emit('displayMessage', 'Sesijos laikas baigėsi!');
           localStorage.clear();
           this.$router.push({name: 'login'});
+        } else {
+          EventBus.$emit('displayMessage', 'Įvyko klaida.');
         }
       },
 
@@ -58,7 +63,7 @@
       },
 
       refreshUsersToken(){
-        this.$http.post('https://inventor-system.herokuapp.com/api/auth/refresh', {}, this.config)
+        this.$http.post(this.$store.getters.API_baseURL + '/auth/refresh', {}, this.config)
           .then(response => {
             localStorage.setItem("access_token", response.data.access_token);
             this.config.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
@@ -112,7 +117,7 @@
 
       getNotifications(){
         // console.log('get notif')
-        this.$http.get('https://inventor-system.herokuapp.com/api/requests/pending', this.config)
+        this.$http.get(this.$store.getters.API_baseURL + '/requests/pending', this.config)
             .then(response => {
               // console.log("notitifations: ", response.data);
               // this.notificationsList = response.data.filter(request => request.status !== 1);

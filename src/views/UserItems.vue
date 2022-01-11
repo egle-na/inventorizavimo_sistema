@@ -211,6 +211,7 @@
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
   import BtnComponent from "@/components/BtnComponent";
+  import {EventBus} from "@/main";
 
   export default {
     name: "UserItems",
@@ -231,7 +232,7 @@
     },
     data() {
       return {
-        url: 'https://inventor-system.herokuapp.com/api/gear',
+        url: this.$store.getters.API_baseURL + '/gear',
         addGearOpen: false,
         returnCardOpen: false,
         selectUserOpen: false,
@@ -251,7 +252,7 @@
     watch: {
       // get new data when going from specific user (route with params) to my gear (no params)
       $route() {
-        this.url = 'https://inventor-system.herokuapp.com/api/gear';
+        this.url = this.$store.getters.API_baseURL + '/gear';
         this.config = {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`
@@ -292,6 +293,7 @@
         }
         this.getData(this.url);
       },
+
       gearName(id) {
         if(this.filteredList.length) {
           return this.filteredList.find(gear => gear.id === id).name;
@@ -378,6 +380,7 @@
       addGearSuccess() {
         this.addGearOpen = false;
         this.getData(this.url);
+        EventBus.$emit('displayMessage', 'Inventorius sėkmingai pridėtas!');
       },
 
       openCard(name, id) {

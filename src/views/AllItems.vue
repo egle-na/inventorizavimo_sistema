@@ -95,6 +95,7 @@
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
   import BtnComponent from "@/components/BtnComponent";
+  import {EventBus} from "@/main";
   export default {
     name: "AllItems",
     mixins: [ DataMixin, GearActionsMixin ],
@@ -109,7 +110,7 @@
     },
     data() {
       return {
-        url: 'https://inventor-system.herokuapp.com/api/gear/all',
+        url: this.$store.getters.API_baseURL + '/gear/all',
         rowExpanded: '',
         addGearOpen: false,
         deleteCardOpen: false,
@@ -132,6 +133,7 @@
       addGearSuccess() {
         this.addGearOpen = false;
         this.getData(this.url);
+        EventBus.$emit('displayMessage', 'Inventorius sėkmingai pridėtas!');
       },
 
       ownersName(id){

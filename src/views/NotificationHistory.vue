@@ -41,7 +41,7 @@
     },
     data() {
       return {
-        url: 'https://inventor-system.herokuapp.com/api/history',
+        url: this.$store.getters.API_baseURL + '/history',
       }
     },
     created(){

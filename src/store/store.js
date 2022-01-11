@@ -8,6 +8,7 @@ export default new Vuex.Store({
         user: {},
         allUsers: {},
         notifications: {},
+        API_baseURL: "https://inventor-system.herokuapp.com/api"
     },
     mutations:{
         setUser(state, newUser) {
@@ -26,15 +27,14 @@ export default new Vuex.Store({
         user(state) {
             return state.user;
         },
-        // isAdmin(state) {
-        //     // return state.user.role === 1;
-        //     return state.user.isAdmin;
-        // },
         allUsers(state) {
             return state.allUsers;
         },
         notifications(state) {
             return state.notifications;
+        },
+        API_baseURL(state) {
+            return state.API_baseURL;
         }
     },
 

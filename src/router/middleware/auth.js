@@ -1,4 +1,5 @@
 import axios from "axios";
+import store from "@/store/store";
 
 export default function auth ({ next}){
     if(!localStorage.getItem("access_token")){
@@ -6,7 +7,7 @@ export default function auth ({ next}){
             name: 'login'
         })
     } else {
-        axios.post('https://inventor-system.herokuapp.com/api/auth/refresh',
+        axios.post(store.getters.API_baseURL + '/auth/refresh',
             {},
             { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }})
             .then(response => {

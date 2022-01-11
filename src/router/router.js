@@ -153,18 +153,6 @@ const router = new VueRouter({
     ]
 })
 
-// function refreshUsersToken(){
-//     this.$http.post('https://inventor-system.herokuapp.com/api/auth/refresh', {}, this.config)
-//         .then(response => {
-//             localStorage.setItem("access_token", response.data.access_token);
-//             this.config.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
-//             // const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
-//             // this.user = {id, first_name, last_name, email, isAdmin: !!role }
-//         }).catch(error => {
-//         console.error(error);
-//     })
-// }
-
 router.beforeEach((to, from, next) => {
     if(localStorage.getItem("access_token")){
         const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
@@ -183,15 +171,6 @@ router.beforeEach((to, from, next) => {
         store
     }
 
-    // axios.post('https://inventor-system.herokuapp.com/api/auth/refresh',
-    //     {},
-    //     { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }})
-    //     .then(response => {
-    //         localStorage.setItem("access_token", response.data.access_token);
-    //
-    //     }).catch(() => {
-    //         localStorage.clear();
-    // }) // ar taip tinka?
     return middleware[0]({
         ...context
     })

@@ -111,6 +111,7 @@
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
   import BtnComponent from "@/components/BtnComponent";
+  import {EventBus} from "@/main";
   export default {
     name: "AllCompanies",
     mixins: [ DataMixin ],
@@ -126,7 +127,7 @@
     },
     data() {
       return {
-        url: 'https://inventor-system.herokuapp.com/api/companies',
+        url: this.$store.getters.API_baseURL + '/companies',
         addCompanyOpen: false,
         editCompanyOpen: false,
         addUserOpen: false,
@@ -194,6 +195,7 @@
           this.newCompanyName = '';
           this.errorMsg = "";
           this.getData(this.url) // need to clear search input
+          EventBus.$emit('displayMessage', 'Įmonė pridėta sėkmingai!');
         }).catch(error => {
           console.log(error);
           if(error.response.status === 400){
@@ -217,6 +219,7 @@
           this.newCompanyName = '';
           // clear search
           this.getData(this.url);
+          EventBus.$emit('displayMessage', 'Įmonės redagavimas sėkmingas!');
         }).catch(error => {
           console.log(error);
           if(error.response.status === 400){
@@ -235,32 +238,10 @@
           this.editCompanyId = '';
           this.mobileActions = false;
           this.errorMsg = '';
+          EventBus.$emit('displayMessage', 'Įmonė ištrinta!');
         }, () => {
           this.errorMsg = 'Negalima ištrinti įmonės, kurioje dar yra darbuotojų'
         })
-      },
-
-      addUser(){
-        this.postData(
-            'https://inventor-system.herokuapp.com/api/users',
-            this.newUser,
-            this.userAdded,
-            this.userAddError
-        );
-      },
-
-      userAdded(){
-        console.log("add user success");
-        this.getData(this.url);
-        this.addUserOpen = false;
-        this.errorMsg = '';
-        // vartotojas sekmingai pridetas
-      },
-
-      userAddError(error) {
-        if(error.response.status === 400 && error.response.data.message === "The email has already been taken"){
-          this.errorMsg = true;
-        }
       },
 
       closeCard(){

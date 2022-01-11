@@ -1,4 +1,6 @@
 <script>
+  import {EventBus} from "@/main";
+
   export default {
     name: "GearActionsMixin",
     methods: {
@@ -7,13 +9,14 @@
           id = [id];
         }
 
-        this.postData('https://inventor-system.herokuapp.com/api/requests/return',
+        this.postData(this.$store.getters.API_baseURL + '/requests/return',
             {gear_id: [...id]},
             (response) => {
               this.returnCardOpen = false;
               this.getData(this.url);
               if(response.data.message === "Return request created"){
                 // Užklausa sėkmingai išsiųsta
+                EventBus.$emit('displayMessage', 'Užklausa sėkmingai išsiųsta!');
               }
             },
             (error) => {
@@ -21,7 +24,7 @@
                 this.errorMsg = "Grąžinimo užklausa jau pateikta"
               } else {
                 this.errorMsg = error.response.data.message; // išversti
-                this.errorMsg = error.response.data.message; // išversti
+                // this.errorMsg = error.response.data.message; // išversti
               }
             }
         )
@@ -32,7 +35,7 @@
           // delete multiple
         }
         // id = this.$route.params.inventory_id;
-        this.$http.delete('https://inventor-system.herokuapp.com/api/gear/' + id, this.config)
+        this.$http.delete(this.$store.getters.API_baseURL + '/gear/' + id, this.config)
             .then(() => {
               console.log('nurašytas');
               // this.writeOffCardOpen = false;
@@ -44,6 +47,7 @@
               }
               this.errorMsg = '';
               // display msg, kad nurašytas
+              EventBus.$emit('displayMessage', 'Inventorius sėkmingai nurašytas!');
             })
             .catch(error => {
               if(error.response.data.message === "Gear has a request" ){
@@ -55,22 +59,22 @@
       },
 
       gearAction(user_id, id, actionType){
-        let url = '';
+        let endpoint = '';
         console.log(id);
         if (!id.length){
           id = [id];
         }
 
         if(actionType === 'Skolinti'){
-          url = 'https://inventor-system.herokuapp.com/api/requests/lend'
+          endpoint = '/requests/lend'
         } else if(actionType === 'Perleisti'){
           if(user_id === this.$store.getters.user.id && this.$store.getters.user.isAdmin){
-            url = 'https://inventor-system.herokuapp.com/api/requests/give-yourself';
-          } else url = 'https://inventor-system.herokuapp.com/api/requests/giveaway';
+            endpoint = '/requests/give-yourself';
+          } else endpoint = '/requests/giveaway';
         }
 
         this.postData(
-            url,
+            this.$store.getters.API_baseURL + endpoint,
             { user_id, gear_id: id },
             () => {
               this.actionType = '';
@@ -78,6 +82,7 @@
               this.errorMsg = '';
               this.getData(this.url);
               // show a message that request is pending, change status(get new data)?
+              EventBus.$emit('displayMessage', 'Užklausa sėkmingai išsiųsta!');
             },
             (err) => {
               switch (err.response.data.message) {
@@ -107,7 +112,7 @@
         // if(this.$store.getters.user.isAdmin) {
         //
         // }
-        this.$http.get('https://inventor-system.herokuapp.com/api/gear/pdf/' + id, {...this.config, responseType: 'arraybuffer'})
+        this.$http.get(this.$store.getters.API_baseURL + '/gear/pdf/' + id, {...this.config, responseType: 'arraybuffer'})
             .then(response => {
               const blob = new Blob([response.data], {type: 'application/pdf'});
               if(window.navigator.msSaveOrOpenBlob) {
@@ -123,6 +128,7 @@
                 // window.URL.revokeObjectURL(blob);
               }
               this.actionCardOpen = false;
+              EventBus.$emit('displayMessage', 'PDF sugeneruotas!');
             })
       },
     }

@@ -66,7 +66,7 @@
       createPassword() {
         this.isUnrecognized = "";
         this.$http.post(
-            "https://inventor-system.herokuapp.com/api/change-password",
+            this.$store.getters.API_baseURL + "/change-password",
             {email: this.email, token: "token", password: this.password }
         ).then(() => {
           this.passwordCreated = true;
