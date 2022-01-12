@@ -89,13 +89,19 @@
       <!-- main rows -->
       <tr v-for="(gear, index) in filteredList" :key="gear.id"
           :class="{'row-selected-simple': rowsSelected.includes(index), 'mobile-focus': mobileActions === gear.id}">
+
         <td @click="selectRow(index, $event)" class="no-padding checkbox-cell">
           <input type="checkbox" :checked="rowsSelected.includes(index)" :class="{'checkbox-hidden': !anySelected}">
         </td>
-        <td @click="selectRow(index, $event)" class="no-padding">
-<!--          :event="!anySelected ? 'click' : ''"             -->
-          <router-link :to="'/inventory/'+ gear.id">{{ gear.name }}</router-link> <!-- event change to v-slot -->
+
+        <td @click="selectIfAnySelected(index, $event)" class="no-padding">
+          <!-- link disabled when selection is active  -->
+          <router-link :to="'/inventory/'+ gear.id" custom v-slot="{href, navigate}">
+            <span v-if="anySelected" class="link">{{ gear.name }}</span>
+            <a v-else :href="href" @click="navigate" class="link">{{ gear.name }}</a>
+          </router-link>
         </td>
+
         <td @click="selectRow(index, $event)" class="tablet-hide non-mobile">{{ gear.updated_at.split('T')[0] }}</td>
         <td @click="selectRow(index, $event)" class="non-mobile">{{ statusText(gear.lent, gear.own) }}</td>
 
@@ -299,7 +305,6 @@
       },
 
       refresh() {
-        console.log('elp, User Gear');
         this.getData(this.url);
       },
 
@@ -379,6 +384,12 @@
           this.rowsSelected.push(i);
         }
         this.lastSelected = '';
+      },
+
+      selectIfAnySelected(index, event) {
+        if(this.anySelected){
+          this.selectRow(index, event);
+        }
       },
 
       listSelected(){
@@ -525,6 +536,17 @@
   .btn-right {
     margin-left: auto;
     float: right;
+  }
+
+  a.link,
+  span.link {
+    color: currentColor;
+    text-decoration: none;
+    padding: 1em;
+  }
+
+  a.link:hover{
+    color: var(--clr-accent);
   }
 
   .checkbox-cell {

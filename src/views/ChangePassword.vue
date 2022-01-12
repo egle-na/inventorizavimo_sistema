@@ -1,21 +1,28 @@
 <template>
 <div>
-  <header-guest />
+  <Header />
 
   <div class="backdrop">
-    <div v-show="passwordCreated"  class="form-container done-container" >
-      <p>Slaptažodis sėkmingai sukurtas!</p>
-      <router-link to="/login">Prisijungti</router-link>
+    <div v-show="passwordChanged"  class="form-container done-container" >
+      <p>Slaptažodis pakeistas!</p>
+      <router-link to="/">Mano Inventorius</router-link>
     </div>
 
-    <div v-show="!passwordCreated">
-      <h2>Susikurti slaptažodį</h2>
+    <div v-show="!passwordChanged" class="form-container">
+      <h2>Keisti slaptažodį</h2>
 
-      <form-item @onSubmit="createPassword" class="form-container">
+      <form-item @onSubmit="changePassword">
         <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
 
-        <!-- Email input -->
-        <input type="email" placeholder="Elektroninis Paštas" required class="input-long" v-model="email"/>
+        <!-- Old password input -->
+        <div class="password-container" >
+          <input :type="oldPswInputType"
+                 class="input-long"
+                 placeholder="Dabartinis slaptažodis"
+                 v-model="oldPassword"
+                 required minlength="6"/>
+          <btn-view-eye :pswVisible="oldPswVisible" @btnClicked="togglePasswordVisibility('old')"/>
+        </div>
 
         <!-- New password input -->
         <div class="password-container" >
@@ -24,8 +31,9 @@
                  placeholder="Naujas slaptažodis"
                  v-model="password"
                  required minlength="6"/>
-          <btn-view-eye :pswVisible="pswVisible" @btnClicked="togglePasswordVisibility" />
+          <btn-view-eye :pswVisible="pswVisible" @btnClicked="togglePasswordVisibility('new')"/>
         </div>
+        <p v-show="password.length >= 6 && password === oldPassword" class="error-msg">Naujas slaptažodis sutampa su dabartiniu slaptažodžiu!</p>
 
         <!-- New password confirm input -->
         <input type="password" class="input-long"
@@ -34,12 +42,12 @@
                required minlength="6"/>
 
         <!-- does it match msg -->
-        <div class="confirm-msg" v-if="password.length >= 6 && passwordConfirm.length >= 6">
-          <p v-if="validPsw">Slaptažodžiai sutampa!</p>
-          <p v-if="!validPsw" class="error-msg">Slaptažodžiai nesutampa!</p>
+        <div class="confirm-msg" v-if="password.length >= 6 && password !== oldPassword">
+          <p v-if="passwordConfirm.length >= 6 && validPsw">Slaptažodžiai sutampa!</p>
+          <p v-if="passwordConfirm.length >= 6 && !validPsw" class="error-msg">Slaptažodžiai nesutampa!</p>
         </div>
 
-        <button type="submit" class="btn">Sukurti</button>
+        <button type="submit" class="btn">Pakeisti</button>
       </form-item>
 
     </div>
@@ -48,33 +56,29 @@
 </template>
 
 <script>
+  import DataMixin from "@/components/mixins/DataMixin";
   import BtnViewEye from "@/views/BtnViewEye";
   import FormItem from "@/components/FormItem";
-  import HeaderGuest from "@/components/HeaderGuest";
+  import Header from "@/components/Header";
 
   export default {
     name: "LogIn",
+    mixins: [ DataMixin ],
     components: {
       BtnViewEye,
       FormItem,
-      HeaderGuest,
+      Header,
     },
     data() {
       return {
-        urlExample: 'http://localhost:8000/change-password?token=PhQSYA0FdkUBBlHQI7HZ5hBLHQfeei5y8i4bKmWwOdcIDlZySpPDr4mvTc2LzPKV7mgdz4wfwK1Ej0Fp&email=egle.naslenaite@gmail.com',
-        passwordCreated: false,
+        passwordChanged: false,
         errorMsg: "",
-        email: '',
-        token: '',
+        oldPswVisible: false,
+        oldPassword: '',
         pswVisible: false,
         password: '',
         passwordConfirm: '',
       }
-    },
-    created() {
-      this.email = this.$route.query.email;
-      this.token = this.$route.query.token;
-
     },
     computed: {
       validPsw(){
@@ -83,29 +87,32 @@
       pswInputType() {
         return this.pswVisible ? "text" : "password";
       },
+      oldPswInputType() {
+        return this.oldPswVisible ? "text" : "password";
+      },
     },
     methods: {
-      togglePasswordVisibility() {
-        this.pswVisible = !this.pswVisible;
+      togglePasswordVisibility(type) {
+        if (type === 'old') {
+          this.oldPswVisible = !this.oldPswVisible;
+        } else if (type === 'new') {
+          this.pswVisible = !this.pswVisible;
+        }
       },
 
-      createPassword() {
-        if (this.validPsw) {
+      changePassword() {
+        if (this.validPsw && this.password !== this.oldPassword) {
           this.errorMsg = "";
           this.$http.post(
               this.$store.getters.API_baseURL + "/change-password",
-              {email: this.email, token: this.token, password: this.password}
+              { old_password: this.oldPassword, password: this.password },
+              this.config
           ).then(() => {
-            this.passwordCreated = true;
+            this.passwordChanged = true;
 
-          }).catch(error => {
-            if (error.response.status === 422) {
-              this.errorMsg = "Elektroninio pašto adresas neteisingas arba nuoroda nebegaliojanti.";
-              // if( error.response.data.message === "Email does not exist."){
-              //   this.isUnrecognized = "Vartotojas su šiuo elekroninio pašto adresu nerastas.";
-              // } else {
-              //   this.isUnrecognized = "Ši nuoroda neteisinga arba nebegaliojanti.";
-              // }
+          }).catch(error =>{
+            if(error.response.status === 422){
+            this.errorMsg = "Slaptažodis neteisingas";
             }
           })
         } // end if
@@ -154,13 +161,17 @@
     display: flex;
   }
 
-  input[type = email] {
-    margin-bottom: 2em;
+  .password-container:first-of-type {
+    margin-bottom: 2.8em;
+  }
+
+  .password-container input {
+    width: 100%;
   }
 
   h2 {
     border-bottom: none;
-    padding: 0;
+    padding-bottom: 0;
     margin-bottom: .3em;
   }
 
@@ -187,13 +198,8 @@
   }
 
   .confirm-msg p {
-    position:  absolute;
     margin-bottom: 0;
   }
-
-  /*#show-psw-btn:hover path{*/
-  /*  fill: var(--clr-accent)*/
-  /*}*/
 
   .btn {
     margin-top: 1em;

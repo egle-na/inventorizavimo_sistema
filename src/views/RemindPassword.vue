@@ -6,7 +6,7 @@
       <router-link v-show="passwordResetSent" to="/">Prisijungti</router-link>
 
       <div class="container" v-show="!passwordResetSent">
-        <h1>Priminti slaptažodį</h1>
+        <h2>Priminti slaptažodį</h2>
         <form class="form-container" @submit.prevent="remindPassword">
 
           <input type="email" placeholder="Elektroninis Paštas" required v-model="email"/>
@@ -73,9 +73,8 @@
     max-width: 95%;
   }
 
-  h1 {
-    font-size: 3.5em;
-    margin-bottom: .7em;
+  h2 {
+    margin: 0 0 .7em 0;
     border-bottom-width: 3px ;
     padding: 0;
   }
@@ -93,18 +92,18 @@
     visibility: initial;
   }
 
-  a{
-    color: var(--clr-dark-grey);
+  a {
+    font-size: 1.5rem;
+    margin: 1em 0;
+    font-weight: var(--fw-bold-karla);
+    color: var(--clr-darker-grey);
+    text-decoration: none;
+    width: max-content;
   }
 
-  a:hover{
-    color: var(--clr-accent)
-  }
-
-  @media (max-width: 580px){
-    h1{
-      font-size: 2.5em;
-    }
+  a:hover {
+    color: var(--clr-accent);
+    text-decoration: underline;
   }
 
 </style>

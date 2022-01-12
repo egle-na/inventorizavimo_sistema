@@ -10,9 +10,9 @@
 
       <input type="text" placeholder="Vardas Pavardė"
              v-model="searchUser"
-             @focus="searchActive = true"
-             @keyup="searchActive = true"
-             @input="searchUser = $event.target.value"
+             @focus="setSearchActive"
+             @keyup="setSearchActive"
+             @input="searchUser = $event.target.value; selectedUser = ''"
              @keydown.enter="selectUser(filteredList[0].id)"
              @keydown.down="$event.target.nextElementSibling.firstChild.focus()">
 
@@ -76,6 +76,12 @@
       }
     },
     methods: {
+
+      setSearchActive() {
+        if(this.filteredList.length) {
+          this.searchActive = true;
+        }
+      },
 
       // userName(user){
       //   return user.first_name + ' ' + user.last_name
@@ -173,6 +179,8 @@
   .select {
     position: absolute;
     width: 100%;
+    max-height: 40vh;
+    overflow-y: auto;
     background: var(--clr-almost-white);
     border-radius: 0 0 5px 5px;
   }

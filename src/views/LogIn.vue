@@ -13,12 +13,8 @@
       <!-- Password input -->
       <div class="password-container">
         <input :type="pswInputType" placeholder="Slaptažodis" required v-model="password" minlength="6"/>
-        <button id="show-psw-btn" @click="togglePasswordVisibility" type="button">
-          <img v-show="pswVisible === false" src="../assets/icons/view-eye-closed-blue.svg" alt="" class="icon-blue">
-          <img v-show="pswVisible === false" src="../assets/icons/view-eye-closed.svg" alt="">
-          <img v-show="pswVisible === true" src="../assets/icons/view-blue.svg" alt="" class="icon-blue">
-          <img v-show="pswVisible === true" src="../assets/icons/view.svg" alt="">
-        </button>
+        <btn-view-eye :pswVisible="pswVisible" @btnClicked="togglePasswordVisibility">
+        </btn-view-eye>
       </div>
 
       <router-link to="/forgot-password">Priminti slaptažodį</router-link>
@@ -30,10 +26,11 @@
 
 <script>
   import HeaderGuest from "@/components/HeaderGuest";
+  import BtnViewEye from "@/views/BtnViewEye";
 
   export default {
     name: "LogIn",
-    components: {HeaderGuest},
+    components: {BtnViewEye, HeaderGuest},
     data() {
       return {
         isUnrecognized: false,
@@ -109,7 +106,7 @@
     width: 100%;
   }
 
-  #show-psw-btn {
+  .show-psw-btn {
     position: absolute;
     right: 2px;
     bottom: .2em;

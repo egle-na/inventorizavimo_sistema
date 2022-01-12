@@ -84,60 +84,72 @@
       },
 
       gearAction(user_id, id, actionType){
-        let endpoint = '';
-        console.log(id);
-        if (!id.length){
-          id = [id];
-        }
+        console.log(user_id)
+        if(!user_id) {
+          this.errorMsg = 'Pasirinkite darbuotoją';
+        } else {
+          let endpoint = '';
+          console.log(id);
+          if (!id.length){
+            id = [id];
+          }
 
-        if(actionType === 'Skolinti'){
-          endpoint = '/requests/lend'
-        } else if(actionType === 'Perleisti'){
-          if(user_id === this.$store.getters.user.id && this.$store.getters.user.isAdmin){
-            endpoint = '/requests/give-yourself';
-          } else endpoint = '/requests/giveaway';
-        }
+          if(actionType === 'Skolinti'){
+            endpoint = '/requests/lend'
+          } else if(actionType === 'Perleisti'){
+            if(user_id === this.$store.getters.user.id && this.$store.getters.user.isAdmin){
+              endpoint = '/requests/give-yourself';
+            } else endpoint = '/requests/giveaway';
+          }
 
-        this.postData(
-            this.$store.getters.API_baseURL + endpoint,
-            { user_id, gear_id: id },
-            () => {
-              this.actionType = '';
-              this.selectUserOpen = false;
-              this.errorMsg = '';
-              this.getData(this.url);
-              // show a message that request is pending, change status(get new data)?
-              EventBus.$emit('displayMessage', 'Užklausa sėkmingai išsiųsta!');
-            },
-            (err) => {
-              err.response.data.message.forEach(message => {
-                if (message.includes("Gear already has a request.")) {
-                  this.errorMsg = "Inventorius turi neatsakytą užklausą"; // push. make error Array
-                } else if (message.includes("You cannot give away lent gear")) {
-                  this.errorMsg = "Negalite perleisti paskolinto inventoriaus";
-                } else if (message.includes("Sorry, gear not found.")) {
-                  if (actionType === 'Perleisti' && this.$store.getters.user.isAdmin) {
-                    this.errorMsg = "Svetimo inventoriaus perleisti kitiems negalite.";
-                  } else this.errorMsg = "Negalite " + actionType + " šio inventoriaus";
-                } else {
-                  this.errorMsg = message;
-                }
-              })
-              if(err.response.data.message.length < id.length){ // if any successful
-                let successful = id.length - err.response.data.message.length;
-                if (successful === 1){
-                  EventBus.$emit('displayMessage', '1 užklausa sėkmingai išsiųsta!');
-                } else {
-                  EventBus.$emit('displayMessage', successful + ' užklausos sėkmingai išsiųstos!');
-                }
+          this.postData(
+              this.$store.getters.API_baseURL + endpoint,
+              { user_id, gear_id: id },
+              () => {
                 this.actionType = '';
                 this.selectUserOpen = false;
                 this.errorMsg = '';
+
+                if(endpoint === '/requests/give-yourself'){
+                  this.getData(this.url,() => { this.getStatusText(); } );
+                  EventBus.$emit('displayMessage', 'Inventorius priskirtas jums!');
+
+                } else {
+                  this.getData(this.url);
+                  EventBus.$emit('displayMessage', 'Užklausa sėkmingai išsiųsta!');
+                }
+              },
+              (err) => {
+                err.response.data.message.forEach(message => {
+                  if (message.includes("Gear already has a request.")) {
+                    this.errorMsg = "Inventorius turi neatsakytą užklausą"; // push. make error Array
+                  } else if (message.includes("You cannot give away lent gear")) {
+                    this.errorMsg = "Negalite perleisti paskolinto inventoriaus";
+                  } else if (message.includes("Sorry, gear not found.")) {
+                    if (actionType === 'Perleisti' && this.$store.getters.user.isAdmin) {
+                      this.errorMsg = "Svetimo inventoriaus perleisti kitiems negalite.";
+                    } else this.errorMsg = "Negalite " + actionType + " šio inventoriaus";
+                  } else {
+                    this.errorMsg = message;
+                  }
+                })
+                if(err.response.data.message.length < id.length){ // if any successful
+                  let successful = id.length - err.response.data.message.length;
+                  if (successful === 1){
+                    EventBus.$emit('displayMessage', '1 užklausa sėkmingai išsiųsta!');
+                  } else {
+                    EventBus.$emit('displayMessage', successful + ' užklausos sėkmingai išsiųstos!');
+                  }
+                  this.actionType = '';
+                  this.selectUserOpen = false;
+                  this.errorMsg = '';
+                }
+                // this.errorMsg = err.response.data.message;
+                // console.log(err.response);
               }
-              // this.errorMsg = err.response.data.message;
-              // console.log(err.response);
-            }
-        )
+          )
+        }
+
       },
 
       generatePDF(id, name) {

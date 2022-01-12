@@ -23,9 +23,9 @@
       <!-- main data -->
       <tbody v-for="item in list" :key="item.id">
         <tr class="main-trow" :class="{'row-selected': rowExpanded === item}">
-          <td>{{ item.name }}</td>
-          <td class="tablet-hide">{{ item.code }}</td>
-          <td>{{ item.count }}</td>
+          <td @click="expandRow(item)">{{ item.name }}</td>
+          <td @click="expandRow(item)" class="tablet-hide">{{ item.code }}</td>
+          <td @click="expandRow(item)">{{ item.count }}</td>
           <td class="cell-min">
             <button @click="expandRow(item)">
               <img src="../assets/icons/ArrowDown.svg" alt="">

@@ -3,8 +3,6 @@ import VueRouter from "vue-router";
 import store from "@/store/store";
 
 import LogIn from "@/views/LogIn";
-// import AddUser from "@/components/AddUser";
-// import AddItem from "@/components/AddItem";
 import UserItems from "@/views/UserGear";
 import AllUsers from "@/views/Users";
 import AllItems from "@/views/Gear";
@@ -18,6 +16,7 @@ import auth from "@/router/middleware/auth";
 import admin from "@/router/middleware/admin";
 import CreatePassword from "@/views/CreatePassword";
 import jwt_decode from "jwt-decode";
+import ChangePassword from "@/views/ChangePassword";
 // import axios from "axios";
 
 Vue.use(VueRouter);
@@ -54,11 +53,21 @@ const router = new VueRouter({
             path: '/create-password',
             name: 'create-password',
             component: CreatePassword,
-            // meta: {
-            //     middleware: [
-            //         guest
-            //     ]
-            // },
+            meta: {
+                middleware: [
+                    guest
+                ]
+            },
+        },
+        {
+            path: '/change-password',
+            name: 'change-password',
+            component: ChangePassword,
+            meta: {
+                middleware: [
+                    auth
+                ]
+            },
         },
         {
             path: '/user-inventory',

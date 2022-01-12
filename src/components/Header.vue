@@ -27,7 +27,7 @@
         <router-link :to="{name: 'user-inventory', params:{}}">Mano Inventorius</router-link>
         <router-link to="/notifications">Visi pranešimai</router-link>
         <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" class="mobile">Admin</router-link>
-        <button>Keisti slaptažodį</button>
+        <router-link to="/change-password">Keisti slaptažodį</router-link>
         <button @click="logOut">Atsijungti</button>
 
       </action-card>
