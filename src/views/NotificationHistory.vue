@@ -7,7 +7,7 @@
     <!-- Requests -->
     <div v-if="$store.getters.notifications.length">
       <h3>Neatsakytos užklausos</h3>
-      <request-component @accepted="refresh" />
+      <request-component :type="'page'" />
     </div>
 
     <!-- History -->
@@ -31,6 +31,7 @@
   import UsersMixin from "@/components/mixins/UsersMixin";
   import Header from "@/components/Header";
   import RequestComponent from "@/components/RequestComponent";
+  import {EventBus} from "@/main";
 
   export default {
     name: "NotificationHistory",
@@ -47,6 +48,12 @@
     created(){
       this.getData(this.url);
     },
+    mounted() {
+      EventBus.$on('requestChanged', this.refresh);
+    },
+    beforeDestroy() {
+      EventBus.$off('requestChanged');
+    },
     methods: {
       getGearName(notification) {
         if(notification.gear.length){
@@ -56,6 +63,8 @@
       },
 
       refresh() {
+        console.log('elp, notifPage');
+        EventBus.$emit('displayMessage', 'elp');
         this.getData(this.url);
       },
 

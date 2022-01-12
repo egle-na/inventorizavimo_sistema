@@ -30,6 +30,16 @@
                   // this.errorMsg = error.response.data.message; // išversti
                 }
               })
+              if(error.response.data.message.length < id.length){ // if any successful
+                let successful = id.length - error.response.data.message.length;
+                if (successful === 1){
+                  EventBus.$emit('displayMessage', '1 užklausa sėkmingai išsiųsta!');
+                } else {
+                  EventBus.$emit('displayMessage', successful + ' užklausos sėkmingai išsiųstos!');
+                }
+                this.returnCardOpen = false;
+                this.errorMsg = "";
+              }
             }
         )
       },
@@ -113,6 +123,17 @@
                   this.errorMsg = message;
                 }
               })
+              if(err.response.data.message.length < id.length){ // if any successful
+                let successful = id.length - err.response.data.message.length;
+                if (successful === 1){
+                  EventBus.$emit('displayMessage', '1 užklausa sėkmingai išsiųsta!');
+                } else {
+                  EventBus.$emit('displayMessage', successful + ' užklausos sėkmingai išsiųstos!');
+                }
+                this.actionType = '';
+                this.selectUserOpen = false;
+                this.errorMsg = '';
+              }
               // this.errorMsg = err.response.data.message;
               // console.log(err.response);
             }

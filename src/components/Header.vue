@@ -15,7 +15,7 @@
         <span v-show="$store.getters.notifications.length" id="unread-notification"></span>
       </button>
       <notification-card v-show="notificationOpen" @close="notificationOpen = false" >
-        <request-component />
+        <request-component :type="'small'" />
       </notification-card>
     </div>
 

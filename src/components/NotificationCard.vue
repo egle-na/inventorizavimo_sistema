@@ -6,25 +6,7 @@
       <slot></slot>
     </div>
 
-<!--    <div v-if="false">-->
-<!--      <p>Šiuo metu naujų pranešimų neturite.</p>-->
-<!--    </div>-->
-
-<!--    <div v-else >-->
-<!--      <p class="date">2021-12-14</p>-->
-<!--      <p>Jonas Jonauskas jums skolina <strong>Dell 17 Monitor | E1715S</strong>.</p>-->
-
-<!--      <div class="btn-container">-->
-<!--        <button class="btn faded">Atmesti</button>-->
-<!--        <button class="btn">Priimti</button>-->
-<!--      </div>-->
-
-<!--      <div class="unread" v-if="true">-->
-<!--        <p>... Dar 3 nauji pranešimai</p>-->
-<!--      </div>-->
-
-<!--    </div>-->
-      <router-link to="/notifications">Visi pranešimai</router-link>
+    <router-link to="/notifications">Visi pranešimai</router-link>
 
   </div>
 </template>
@@ -50,7 +32,7 @@
     position: absolute;
     right: 1em;
     /*top:;*/
-    width: 350px;
+    width: 400px;
     padding: 1em;
 
     background: var(--clr-white);
@@ -75,6 +57,7 @@
   .scroll-container{
     max-height: 440px;
     overflow-y: auto;
+    overflow-x: hidden;
   }
 
   ::-webkit-scrollbar-thumb {

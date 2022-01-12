@@ -106,7 +106,7 @@
             <span class="action-divider" v-if="!gear.own && gear.lent && !$route.params.user_id" />
 
             <btn-lend v-if="!$route.params.user_id"
-                      :disabled="(gear.own && gear.lent) || (!gear.own && !gear.lent)"
+                      :disabled="gear.current_holder && ((gear.own && gear.lent) || (!gear.own && !gear.lent))"
                       @btnClicked="openCard('Skolinti', gear.id)" />
             <span class="action-divider" v-if="gear.own && !$route.params.user_id" />
 
@@ -247,6 +247,12 @@
     created() {
       this.loadData();
     },
+    mounted() {
+      EventBus.$on('requestChanged', this.refresh);
+    },
+    beforeDestroy() {
+      EventBus.$off('requestChanged');
+    },
     watch: {
       // get new data when going from specific user (route with params) to my gear (no params)
       $route() {
@@ -289,6 +295,11 @@
           this.user_id = this.$route.params.user_id;
           this.url = this.url +'/user/' + this.user_id;
         }
+        this.getData(this.url);
+      },
+
+      refresh() {
+        console.log('elp, User Gear');
         this.getData(this.url);
       },
 

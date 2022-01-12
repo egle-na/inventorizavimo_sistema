@@ -1,16 +1,42 @@
 <template>
   <div>
-    <div v-for="request in $store.getters.notifications" :key="request.id" class="message">
-      <div>
-        <p class="date">{{ request.created_at.split('T')[0] }}</p>
-        <p>{{ constructMessage(request) }} <strong>{{ request.gear[0].name }}</strong>.</p>
-      </div>
+      <!-- page -->
+    <div v-if="type === 'page'">
+      <div v-for="request in $store.getters.notifications" :key="request.id" class="message">
+        <div>
+          <p class="date">{{ request.created_at.split('T')[0] }}</p>
+          <p>{{ constructMessage(request) }} <strong>{{ request.gear[0].name }}</strong>.</p>
+        </div>
 
-      <div class="btn-container">
-        <button class="btn faded" @click="declineRequest(request.id, request.status);$emit('responded')">Atmesti</button>
-        <button class="btn" @click="acceptRequest(request.id, request.status)">Priimti</button>
+        <div class="btn-container">
+          <button class="btn faded" @click="declineRequest(request.id, request.status)">Atmesti</button>
+          <button class="btn" @click="acceptRequest(request.id, request.status)">Priimti</button>
+        </div>
       </div>
     </div>
+
+      <!-- notification header -->
+    <div v-if="type === 'small'">
+      <div v-for="request in $store.getters.notifications" :key="request.id" class="message">
+        <p class="date">{{ request.created_at.split('T')[0] }}</p>
+
+        <div class="message-small">
+          <p>{{ constructMessage(request) }} <strong>{{ request.gear[0].name }}</strong>.</p>
+
+          <div class="btn-container">
+            <button title="Priimti" @click="acceptRequest(request.id, request.status)">
+              <img src="../assets/icons/Accept.svg" alt="">
+            </button>
+            <button title="Atmesti" @click="declineRequest(request.id, request.status);$emit('responded')">
+              <img src="../assets/icons/Decline.svg" alt="">
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
     <div v-if="!$store.getters.notifications.length">
       <p>Šiuo metu naujų pranešimų neturite.</p>
     </div>
@@ -19,36 +45,12 @@
 <script>
   import DataMixin from "@/components/mixins/DataMixin";
   import UsersMixin from "@/components/mixins/UsersMixin";
+  import {EventBus} from "@/main";
 
   export default {
     name: 'RequestComponent',
-    props: [ 'requestsList', 'namesList' ],
+    props: [ 'type' ],
     mixins: [ DataMixin, UsersMixin ],
-    data() {
-      return {
-        // usersList: []
-      }
-    },
-    created() {
-      // this.getNotifications();
-      // this.notificationsList = this.requestsList;
-      // this.usersList = this.namesList;
-      // if(!this.namesList && this.notificationsList.length) {
-      //   this.getNames();
-      // } else this.usersList = this.namesList
-    },
-    // computed:{
-    //   requests() {
-    //     return this.$store.state.notifications;
-    //   }
-    // },
-    // watch: {
-    //   notificationsList() {
-    //     if(!this.usersList){
-    //       this.getNames();
-    //     }
-    //   }
-    // },
     methods: {
       acceptRequest(id, status){
         let endpoint = ''
@@ -65,26 +67,28 @@
         }
         this.$http.post(this.$store.getters.API_baseURL + endpoint + id, {}, this.config)
             .then(() => {
-              // this.$router.go(0); // man nepatinka šitas
-              // console.log('elp');
-
-              // this.$emit('responded'); // doesnt work
-              // console.log('me is here')
+              EventBus.$emit('displayMessage', 'Užklausa priimta!');
+              EventBus.$emit('requestChanged');
               this.getNotifications();
-              this.$emit('accepted');
-              // this.getAdditionalData(this.addit_url);
-              // this.getData(this.url);
             })
       },
 
       declineRequest(id, status) {
         if (status === 2) {
           this.$http.post(this.$store.getters.API_baseURL + '/requests/decline-return/' + id,{}, this.config)
-              .then(this.getNotifications) // is it too short?
+              .then(() => {
+                EventBus.$emit('displayMessage', 'Užklausa atmesta!');
+                // EventBus.$emit('requestChanged');
+                this.getNotifications(); // is it too short?
+              })
               .catch(this.getNotifications)
         } else {
           this.$http.delete(this.$store.getters.API_baseURL + '/requests/' + id, this.config)
-              .then(this.getNotifications)
+              .then(() => {
+                EventBus.$emit('displayMessage', 'Užklausa atmesta!');
+                // EventBus.$emit('requestChanged');
+                this.getNotifications();
+              })
               .catch(this.getNotifications)
         }
       },
@@ -114,6 +118,15 @@
     flex-wrap: wrap;
   }
 
+  .message-small {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   .date {
     margin: 0;
     color: var(--clr-darker-grey)
@@ -128,6 +141,19 @@
 
   .btn-container .btn {
     margin-left: .5em;
+  }
+
+  .message-small .btn-container {
+    margin: 0;
+    align-self: center;
+  }
+
+  .message-small img{
+    width: 40px;
+  }
+
+  .message-small button:hover img{
+    transform: scale(1.05);
   }
 
   header .btn {

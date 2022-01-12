@@ -28,7 +28,7 @@
 
         <!-- Non Mobile Table Actions -->
         <td class="actions-cell non-mobile">
-          <table-actions>  <!-- td ikelti vidun -->
+          <table-actions>
 
             <btn-component :btnType="'edit'" @btnClicked="openEditCompanyCard(item.id, item.name)" title="Redaguoti" />
             <span class="action-divider" />
