@@ -138,6 +138,11 @@ const router = new VueRouter({
                 ]
             }
         },
+        {
+            path: '/:catchAll(.*)*',
+            name: 'not-found',
+            redirect: '/login'
+        }
     ]
 })
 

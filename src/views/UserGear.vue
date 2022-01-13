@@ -71,7 +71,7 @@
     </div>
 
     <!-- Table -->
-    <table-component>
+    <table-component @scroll.native.passive="closeMobileAction">
       <!-- header row -->
       <tr class="head-row non-mobile">
         <th class="no-padding checkbox-cell">
@@ -128,21 +128,21 @@
 
         <!-- Mobile Table Actions -->
         <td class="mobile mobile-actions">
-          <btn-option-dots @btnClicked="mobileActions = gear.id" />
-          <action-card class="mobile-filter" v-if="mobileActions === gear.id" @close="mobileActions = false">
-
-            <button v-if="!gear.own && gear.lent && !$route.params.user_id" @click="openCard('return', gear.id)" >Grąžinti</button>
-            <button v-if="((gear.own && !gear.lent) || (!gear.own && gear.lent)) && !$route.params.user_id"
-                    @click="openCard('Skolinti', gear.id)" >Skolinti</button>
-            <button v-if="gear.own && !gear.lent" @click="openCard('Perleisti', gear.id)" >Perleisti</button>
-            <button v-show="gear.own && !gear.lent" @click="openCard('delete', gear.id)" >Nurašyti</button>
-            <button @click="generatePDF(gear.id, gear.name)">Generuoti PDF</button>
-
-          </action-card>
+          <btn-option-dots @click.native="openMobileActions(gear, $event)" />
         </td>
       </tr>
     </table-component>
   </main>
+
+  <!-- Mobile table actions card -->
+  <action-card :style="mobileActionsPos" ref="mobileCard" class="mobile-actions-card" v-if="mobileActions" @close="mobileActions = false">
+    <button v-if="!mobileActions.own && mobileActions.lent && !$route.params.user_id" @click="openCard('return', mobileActions.id)" >Grąžinti</button>
+    <button v-if="((mobileActions.own && !mobileActions.lent) || (!mobileActions.own && mobileActions.lent)) && !$route.params.user_id"
+            @click="openCard('Skolinti', mobileActions.id)" >Skolinti</button>
+    <button v-if="mobileActions.own && !mobileActions.lent" @click="openCard('Perleisti', mobileActions.id)" >Perleisti</button>
+    <button v-show="mobileActions.own && !mobileActions.lent" @click="openCard('delete', mobileActions.id)" >Nurašyti</button>
+    <button @click="generatePDF(mobileActions.id, mobileActions.name)">Generuoti PDF</button>
+  </action-card>
 
   <!-- Add item card -->
   <modulus-full v-if="addGearOpen" @close="addGearOpen = false">
@@ -242,6 +242,7 @@
         deleteCardOpen: false,
         mobileFilterOpen: false,
         mobileActions: false,
+        mobileActionsPos: '',
         filter: 'all',
         rowsSelected: [],
         lastSelected: '',
@@ -394,6 +395,26 @@
         this.addGearOpen = false;
         this.getData(this.url);
         EventBus.$emit('displayMessage', 'Inventorius sėkmingai pridėtas!');
+      },
+
+      openMobileActions(item, event){
+        let rows = 1;
+        if (!item.own && item.lent && !this.$route.params.user_id) rows++;
+        if (((item.own && !item.lent) || (!item.own && item.lent)) && !this.$route.params.user_id) rows++ ;
+        if (item.own && !item.lent) rows++;
+        if (item.own && !item.lent) rows++;
+
+        this.mobileActionsPos = {top: (event.pageY + 15) + 'px'};
+        if((window.innerHeight - event.clientY) < 15 + rows * 58){
+          this.mobileActionsPos = {bottom: (window.innerHeight - event.clientY + 15) + 'px'};
+        }
+        this.mobileActions = item;
+      },
+
+      closeMobileAction(){
+        if(this.mobileActions){
+          this.mobileActions = false;
+        }
       },
 
       openCard(name, id) {
@@ -625,6 +646,11 @@
 
     td:first-child {
       border-right: 1px solid var(--clr-grey);
+    }
+
+    .mobile-actions-card{
+      position: absolute;
+      right: 10%;
     }
   }
 </style>

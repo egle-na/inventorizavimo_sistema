@@ -47,6 +47,22 @@
         } else this.errorMsg = 'Įvyko Klaida.';
       },
 
+      deleteUser(id){
+        this.$http.delete(this.$store.getters.API_baseURL + "/users/" + id, this.config)
+            .then(() => {
+              this.getDataQuery(this.url, this.params);
+              this.getUsersList();
+              this.mobileActions = false;
+              this.deleteUserOpen = false;
+            }).catch(error => {
+              if(error.response.data.message === "User cannot be deleted, because user has gear"){
+                this.errorMsg = 'Negalima ištinti vartotojo dar turinčio priskirto inventoriaus.';
+              } else {
+                this.errorMsg = 'Įvyko klaida.';
+              }
+        })
+      },
+
     }
   }
 </script>

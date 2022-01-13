@@ -23,7 +23,9 @@
               this.errorMsg = "";
               error.response.data.message.forEach( message => {
                 if(message.includes("Return request is already sent")){
-                  this.errorMsg = "Grąžinimo užklausa jau pateikta";
+                  this.errorMsg = "Grąžinimo užklausa jau pateikta.";
+                } else if(message.includes("Sorry, request not found")){
+                  this.errorMsg = "Inventoriaus grąžinti nepavyko.";
                 } else {
                   this.errorMsg = message;
                 }

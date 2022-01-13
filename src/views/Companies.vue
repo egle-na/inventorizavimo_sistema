@@ -282,6 +282,7 @@
 
   .add-input{
     margin-bottom: 1.5em;
+    width: 100%;
   }
 
   /* Table Design */

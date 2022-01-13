@@ -20,7 +20,7 @@
     <Search @setSearch="setSearch" />
 
     <!-- Table -->
-    <table-component @scroll.native="closeMobileAction">
+    <table-component @scroll.native.passive="closeMobileAction">
 
       <!-- table labels -->
       <tr class="head-row">
@@ -60,7 +60,7 @@
   </admin-desk>
 
   <!-- Mobile table actions card -->
-  <action-card :style="{top :mobileActionsPos+'px'}" class="mobile-actions-card" v-if="mobileActions" @close="mobileActions = false">
+  <action-card :style="{top: mobileActionsPos+'px'}" class="mobile-actions-card" v-if="mobileActions" @close="mobileActions = false">
     <button @click="openEditUser(mobileActions, 'item.name')">Redaguoti</button>
     <button @click="addGearToUser(mobileActions)">Priskirti inventorių</button>
     <button @click="deleteUserOpen = mobileActions">Ištrinti</button>
@@ -235,18 +235,6 @@
         this.editUserCardOpen = true;
       },
 
-      deleteUser(id){
-        this.$http.delete(this.$store.getters.API_baseURL + "/users/" + id, this.config)
-            .then(() => {
-              this.getDataQuery(this.url, this.params);
-              this.getUsersList();
-              this.mobileActions = false;
-              this.deleteUserOpen = false;
-            }).catch(() => {
-              this.errorMsg = 'Negalima ištinti vartotojo dar turinčio priskirto inventoriaus.';
-            })
-      },
-
       setSearch(val) {
         this.params.search = val;
         this.getDataQuery(this.url, this.params);
@@ -340,12 +328,12 @@
     color: var(--clr-dark-grey);
   }
 
-  th:not(:first-child){ /* column dividers for sticky header */
+  /* column dividers for sticky header */
+  th:not(:first-child){
     box-shadow:none;
   }
 
   /* Edit user card */
-
   h2{
     margin-top: .4em;
   }
