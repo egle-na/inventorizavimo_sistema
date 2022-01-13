@@ -3,59 +3,87 @@
     <h2>Pridėti Įrangą</h2>
 
     <form-item @onSubmit="addNewGear">
-      <input type="text" placeholder="Pavadinimas" required class="input-long" v-model="newGear.name" >
-      <textarea maxlength="255" placeholder="Aprašymas" class="input-long" v-model="newGear.description" required />
-      <p class="char-size">Liko simbolių: {{descriptionCharNum}}</p>
+      <!-- Kodas ir Kiekis -->
       <div>
-        <input type="text" placeholder="Kodas" required v-model="newGear.code">
-        <input type="text" placeholder="Serijos Numeris" v-model="newGear.serial_number" required
-               :class="{'input-error': errorInput.serial_number}" @focus="delete errorInput.serial_number">
-        <p v-if="errorInput.serial_number" class="error-msg">{{ errorInput.serial_number }}</p>
+        <input type="text"
+               placeholder="Kodas"
+               v-model="newGear.code"
+               @change="checkCode"
+               required title="Kodas">
+        <input type="number"
+               step="1" max="50"
+               placeholder="Kiekis"
+               v-model="newGear.amount"
+               required title="Kiekis">
       </div>
+
+      <!-- Pavadinimas -->
+      <input type="text"
+             placeholder="Pavadinimas"
+             class="input-long"
+             v-model="newGear.name"
+             required title="Pavadinimas">
+
+      <!-- Aprašymas -->
+      <textarea maxlength="255"
+                placeholder="Aprašymas"
+                class="input-long"
+                v-model="newGear.description"
+                required title="Aprašymas"/>
+      <p class="char-size">Liko simbolių: {{descriptionCharNum}}</p>
+
+      <!-- Serijos Nr. ir Kaina -->
       <div class="relative-container">
-        <input type="number" step="1" max="50" placeholder="Kiekis" required v-model="newGear.amount" ><!-- nepriskirta -->
-        <input type="number" step=".01" placeholder="Vieneto Kaina" id="unit-price" required v-model="newGear.unit_price">
+        <input type="text"
+               placeholder="Serijos Numeris"
+               v-model="newGear.serial_number"
+               required title="Serijos numeris"
+               :class="{'input-error': errorInput.serial_number}"
+               @focus="delete errorInput.serial_number">
+        <input type="number" step=".01"
+               placeholder="Vieneto Kaina"
+               id="unit-price"
+               v-model="newGear.unit_price"
+               required title="Vieneto kaina">
         <label for="unit-price" id="euro-sign">€</label>
       </div>
 
+      <!-- Ilgalaikė ar trumpalaikė įranga -->
       <div class="btn-container">
         <div>
           <label>
-            <input type="radio" name="long-term" value="LongTerm" v-model="longTerm">
+            <input type="radio" name="long-term" value="1" v-model="newGear.long_term">
             Ilgalaikė įranga
           </label>
-
           <label>
-            <input type="radio" name="long-term" value="ShortTerm" v-model="longTerm">
+            <input type="radio" name="long-term" value="0" v-model="newGear.long_term">
             Trumpalaikė įranga
           </label>
         </div>
 
+        <!-- Submit btn -->
         <button class="btn">Pridėti</button>
       </div>
+
+      <!-- Errors -->
       <p v-for="(message, index) in errorInput" :key="index" class="error-msg">{{ message }}</p>
+
     </form-item>
   </div>
 </template>
 
 <script>
-  import FormItem from "@/components/FormItem";
   import DataMixin from "@/components/mixins/DataMixin";
+  import FormItem from "@/components/FormItem";
 
   export default {
     name: "AddItem",
     mixins: [ DataMixin ],
     props: [ 'user' ],
-    components: {
-      FormItem,
-      // Header,
-      // SideMenu
-    },
+    components: { FormItem },
     data() {
       return {
-        list:[],
-        longTerm: "LongTerm",
-        errorInput: [],
+        errorInput: {},
         newGear: {
           description:'',
           name: '',
@@ -63,15 +91,12 @@
           serial_number: '',
           amount: '',
           unit_price: '',
-          // long_term: this.isLongTerm,
+          long_term: 1,
           user_id: this.user,
         },
       }
     },
     computed: {
-      isLongTerm() {
-        return this.longTerm === "LongTerm";
-      },
       descriptionCharNum() {
         return 255 - this.newGear.description.length;
       }
@@ -80,24 +105,35 @@
       addNewGear() {
         this.postData(
             this.$store.getters.API_baseURL + '/gear',
-            { ...this.newGear, long_term: this.isLongTerm},
+            this.newGear,
             this.addGearSuccess,
-            this.addGearError )
+            this.addGearError
+        )
       },
+
       addGearSuccess() {
         this.$emit('success');
-        this.errorInput = [];
+        this.errorInput = {};
       },
+
       addGearError(error) {
-        this.errorInput = [];
+        this.errorInput = {};
         if (error.response.data.error){
           if(error.response.data.error.serial_number) {
-            this.errorInput.push("Inventorius su tokiu serijos numeriu jau pridėtas");
+            this.errorInput.serial_number = "Inventorius šiuo serijos numeriu jau pridėtas.";
           }
         }
         if (error.response.data.message === "Gear does not match with other ones with the same code") {
-          this.errorInput.push("Duomenys nesutampa su kitu šio kodo inventoriumi");
+          this.errorInput.code = "Duomenys nesutampa su kitu šio kodo inventoriumi.";
         }
+      },
+
+      checkCode(){
+        this.$http.get(this.$store.getters.API_baseURL + "/code/" + this.newGear.code, this.config)
+            .then(response => {
+               let { name, unit_price, description, long_term } = response.data;
+               this.newGear = {...this.newGear, name, unit_price, description, long_term };
+            }).catch(() => {})
       }
     }
   }
@@ -119,6 +155,17 @@
     height: 90px;
   }
 
+  textarea {
+    margin-bottom: 0;
+  }
+
+  .char-size {
+    text-align: right;
+    font-size: .75em;
+    color: var(--clr-grey);
+    margin: 0 0 1rem;
+  }
+
   .relative-container {
     position: relative;
   }
@@ -129,8 +176,7 @@
 
   #euro-sign {
     position: absolute;
-    /*top: 50%;*/
-    bottom: 60%;
+    top: .7em;
     right: .5em;
     color: grey;
     width: fit-content;
@@ -138,17 +184,18 @@
 
   @media (max-width: 580px) {
     #euro-sign {
-      bottom: 2.9em;
+      top: calc(.7em + 4.7em);
     }
   }
 
   .btn-container {
     display: flex;
     justify-content: space-between;
+    align-items: flex-end;
   }
 
   .btn-container label:not(:first-child) {
-    margin-top: .9em ;
+    margin-top: .9em;
   }
 
   .btn-container div{
@@ -162,22 +209,7 @@
     margin: 0 1em 0 0;
   }
 
-  .btn-container .btn {
-    align-self: flex-end;
-  }
-
-  textarea {
-    margin-bottom: 0;
-  }
-
-  .char-size {
-    text-align: right;
-    font-size: .75em;
-    color: var(--clr-grey);
-    margin: 0 0 1rem;
-  }
-
-
+  /* remove input number spinner button */
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -188,4 +220,5 @@
   input[type=number] {
     -moz-appearance: textfield;
   }
+
 </style>

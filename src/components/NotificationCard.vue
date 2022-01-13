@@ -10,11 +10,13 @@
 
   </div>
 </template>
+
 <script>
   export default {
     name: 'NotificationCard'
   }
 </script>
+
 <style scoped>
 
   a {
@@ -31,7 +33,6 @@
   .notification-card {
     position: absolute;
     right: 1em;
-    /*top:;*/
     width: 400px;
     padding: 1em;
 
@@ -39,9 +40,7 @@
     border-radius: 5px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 
-
     font-family: var(--ff-karla);
-    /*letter-spacing: initial;*/
   }
 
   .close-btn {
@@ -60,6 +59,7 @@
     overflow-x: hidden;
   }
 
+  /* Scrollbar */
   ::-webkit-scrollbar-thumb {
     background-color:var(--clr-light-grey);
     border-radius: 5px;

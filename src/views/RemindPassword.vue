@@ -2,15 +2,18 @@
   <div>
     <header-guest />
     <div class="backdrop">
+
+      <!-- After success container -->
       <p v-show="passwordResetSent">Slaptažodis išsiųstas elektroniniu pašto adresu: <strong>{{ email }}</strong>.</p>
       <router-link v-show="passwordResetSent" to="/">Prisijungti</router-link>
 
+      <!-- Main container -->
       <div class="container" v-show="!passwordResetSent">
         <h2>Priminti slaptažodį</h2>
         <form class="form-container" @submit.prevent="remindPassword">
 
           <input type="email" placeholder="Elektroninis Paštas" required v-model="email"/>
-          <p class="error-msg" :class="{'display': noEmailFound}">Vartotojas šiuo elektroninio pašto adresu nerastas.</p>
+          <p class="error-msg">{{ errorMsg }}</p>
 
           <button type="submit" class="btn">Priminti</button>
         </form>
@@ -26,7 +29,7 @@
     components: { HeaderGuest },
     data() {
       return {
-        noEmailFound: false,
+        errorMsg: "",
         passwordResetSent: false,
         email: '',
       }
@@ -35,7 +38,13 @@
       remindPassword() {
         this.$http.post(this.$store.getters.API_baseURL + "/reset-password",{email: this.email})
           .then(() => this.passwordResetSent = true)
-          .catch(() => this.noEmailFound = true)
+          .catch((error) => {
+            if(error.response.data.message === "Email does not exist.") {
+              this.errorMsg = "Vartotojas šiuo elektroninio pašto adresu nerastas.";
+            } else {
+              this.errorMsg = "Įvyko klaida.";
+            }
+          })
       },
     }
   }
@@ -75,7 +84,7 @@
 
   h2 {
     margin: 0 0 .7em 0;
-    border-bottom-width: 3px ;
+    border-bottom-width: 3px;
     padding: 0;
   }
 
@@ -84,12 +93,7 @@
   }
 
   .error-msg {
-    color: #FF6464;
-    visibility: hidden;
-  }
-
-  .display {
-    visibility: initial;
+    color: var(--clr-red);
   }
 
   a {

@@ -1,9 +1,10 @@
 <template>
 <div class="msg-container">
+
   <div v-for="(message, index) in messages" :key="index" class="msg">
-<!--    <button class="close-btn" @click="messages.shift()">&times;</button>-->
     <p>{{ message }}</p>
   </div>
+
 </div>
 </template>
 
@@ -18,19 +19,16 @@
       }
     },
     created() {
-      EventBus.$on('displayMessage', this.showMessage)
-      //EventBus.listen
-      // this.showMessage('Veiksmas sėkmingai atliktas!');
-      // this.showMessage('Veiksmas sėkmingai atliktas!');
+      EventBus.$on('displayMessage', this.showMessage);
     },
     methods: {
       showMessage(message){
-        this.messages.push(message)
+        this.messages.push(message);
         setTimeout(() => {
-          this.messages.shift()
+          this.messages.shift();
         }, 8000);
-      }
-    }
+      },
+    },
   }
 </script>
 
@@ -51,18 +49,6 @@
     margin-top: 1em;
   }
 
-  .close-btn{
-    position: absolute;
-    top: .5em;
-    right: .5em;
-    line-height: 1;
-    color: var(--clr-grey);
-  }
-
-  .close-btn:hover{
-    color: var(--clr-accent);
-  }
-
   @media (max-width: 580px){
     .msg-container {
       left: 1em;
@@ -74,7 +60,6 @@
     .msg {
       padding: .4em 1.8em;
     }
-
   }
 
 </style>

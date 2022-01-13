@@ -2,11 +2,13 @@ import axios from "axios";
 import {EventBus} from "@/main";
 
 export default function admin ({ next, store }){
+    // if not allowed
     if(!store.getters.user.isAdmin) {
         return next({
             name: 'user-inventory'
         })
     }else {
+        // if allowed get token before entering
         axios.post(store.getters.API_baseURL +'/auth/refresh',
             {},
             { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }})
@@ -18,12 +20,12 @@ export default function admin ({ next, store }){
                 if(error.response.status === 401){
                     EventBus.$emit('displayMessage', "Sesijos Laikas baigėsi!")
                 } else {
-                EventBus.$emit('displayMessage', "Įvyko klaida.")
+                    EventBus.$emit('displayMessage', "Įvyko klaida.")
                 }
                 localStorage.clear();
                 return next({
                     name: 'login'
                 })
-        }) // ar taip tinka?
+        })
     }
 }

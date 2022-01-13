@@ -4,20 +4,19 @@ import store from "@/store/store";
 
 import LogIn from "@/views/LogIn";
 import UserItems from "@/views/UserGear";
-import AllUsers from "@/views/Users";
-import AllItems from "@/views/Gear";
+import Users from "@/views/Users";
+import Gear from "@/views/Gear";
 import NotificationHistory from "@/views/NotificationHistory";
-import InventoryInfo from "@/views/GearInfo";
-import AllCompanies from "@/views/Companies";
+import GearInfo from "@/views/GearInfo";
+import Companies from "@/views/Companies";
 import RemindPassword from "@/views/RemindPassword";
+import CreatePassword from "@/views/CreatePassword";
+import ChangePassword from "@/views/ChangePassword";
 
 import guest from "@/router/middleware/guest";
 import auth from "@/router/middleware/auth";
 import admin from "@/router/middleware/admin";
-import CreatePassword from "@/views/CreatePassword";
 import jwt_decode from "jwt-decode";
-import ChangePassword from "@/views/ChangePassword";
-// import axios from "axios";
 
 Vue.use(VueRouter);
 
@@ -89,20 +88,10 @@ const router = new VueRouter({
                 }
             ]
         },
-        // {
-        //     path: '/add-user',
-        //     name: 'add-user',
-        //     component: AddUser,
-        //     meta: {
-        //         middleware: [
-        //             admin
-        //         ]
-        //     }
-        // },
         {
             path: '/all-users',
             name: 'all-users',
-            component: AllUsers,
+            component: Users,
             meta: {
                 middleware: [
                     admin
@@ -112,27 +101,17 @@ const router = new VueRouter({
         {
             path: '/all-companies',
             name: 'all-companies',
-            component: AllCompanies,
+            component: Companies,
             meta: {
                 middleware: [
                     admin
                 ]
             }
         },
-        // {
-        //     path: '/add-inventory',
-        //     name: 'add-inventory',
-        //     component: AddItem,
-        //     meta: {
-        //         middleware: [
-        //             auth // admin?
-        //         ]
-        //     }
-        // },
         {
             path: '/all-inventory',
             name: 'all-inventory',
-            component: AllItems,
+            component: Gear,
             meta: {
                 middleware: [
                     admin
@@ -152,7 +131,7 @@ const router = new VueRouter({
         {
             path: '/inventory/:inventory_id',
             name: 'inventory-info',
-            component: InventoryInfo,
+            component: GearInfo,
             meta: {
                 middleware: [
                     auth
@@ -167,7 +146,6 @@ router.beforeEach((to, from, next) => {
         const {email, first_name, last_name, id, role} = jwt_decode(localStorage.getItem("access_token"));
         store.commit('setUser', {id, first_name, last_name, email, isAdmin: !!role });
     }
-    // refreshUsersToken();
     if (!to.meta.middleware) {
         return next();
     }

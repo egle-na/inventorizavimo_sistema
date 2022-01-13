@@ -1,18 +1,19 @@
 <template>
   <div class="table-container">
-    <table class="asd">
+    <table>
 
       <slot />
 
     </table>
   </div>
 </template>
-<script>
 
+<script>
   export default {
     name: 'TableComponent',
   }
 </script>
+
 <style scoped>
 
   .table-container {
@@ -48,19 +49,22 @@
     letter-spacing: 0.08em;
   }
 
+  /* column dividers for sticky header */
   th:not(:first-child),
-  .row-selected td:not(:first-child) { /* column dividers for sticky header */
+  .row-selected td:not(:first-child) {
     box-shadow: -1px 0 0 var(--clr-grey);
   }
 
-  tr.head-row { /* keep headers on top of the table  */
+  /* keep headers on top of the table */
+  tr.head-row {
     position: sticky;
     top: 1px;
     z-index: 1;
     box-shadow: 0 2px 4px #C5C5C5;
   }
 
-  th:first-child:before{ /* to fill the gap on the top of table  */
+  /* fill the gap on the top of table */
+  th:first-child:before{
     content: '';
     display: block;
     position: absolute;
@@ -69,10 +73,6 @@
     width: 100%;
     border-top: solid var(--clr-light-grey);
   }
-
-  /*tr:not(:first-child):hover {*/
-  /*  background-color: var(--clr-almost-white);*/
-  /*}  */
 
   tr:not(.head-row):hover {
     background-color: var(--clr-almost-white);
@@ -115,7 +115,7 @@
     padding: 0;
   }
 
-  .expanded-table{
+  .expanded-table {
     background: var(--clr-almost-white);
     border-bottom: 2px solid var(--clr-accent);
   }
@@ -123,7 +123,6 @@
   .row-selected {
     background: var(--clr-light-grey);
     position: relative;
-    /*filter: drop-shadow(0 3px 3px #C5C5C5);*/
     box-shadow: 0 5px 5px #C5C5C566;
   }
 
@@ -138,21 +137,18 @@
   .expanded-table th{
     color: var(--clr-dark-grey);
     padding: .3em 1rem;
-    /*background: var(--clr-light-grey);*/
     box-shadow: none; /* for chrome */
-  background: var(--clr-almost-white);
-  /* Table */
+    background: var(--clr-almost-white);
   }
 
-  @media (min-width: 550px) {
-    ::-webkit-scrollbar-thumb {
-      background-color:var(--clr-grey);
-      border-radius: 5px;
-    }
+  /* Scrollbar */
+  ::-webkit-scrollbar-thumb {
+    background-color:var(--clr-grey);
+    border-radius: 5px;
+  }
 
-    ::-webkit-scrollbar {
-      width: 10px;
-    }
+  ::-webkit-scrollbar {
+    width: 10px;
   }
 
   @media (max-width: 580px){
@@ -170,10 +166,10 @@
     table .mobile-focus{
       background: var(--clr-light-grey);
     }
+
     th.mobile {
       display: table-cell;
     }
   }
-
 
 </style>

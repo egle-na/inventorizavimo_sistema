@@ -1,6 +1,6 @@
 <template>
-  <button :class="{'add-btn': btnType === 'add', 'pdf': btnType === 'PDF'}"
-          @click="$emit('btnClicked')">
+  <button :class="{'add-btn': btnType === 'add'}" @click="$emit('btnClicked')">
+
     <!-- Add -->
     <img v-if="btnType === 'add'" src="../assets/icons/Plus-blue.svg" alt="" class="icon-blue">
     <img v-if="btnType === 'add'" src="../assets/icons/Plus.svg" alt="">
@@ -16,22 +16,6 @@
     <!-- delete -->
     <img v-if="btnType === 'delete'" src="../assets/icons/delete-blue.svg" alt="" class="icon-blue">
     <img v-if="btnType === 'delete'" src="../assets/icons/delete.svg" alt="">
-
-    <!-- Generuoti PDF -->
-    <img v-if="btnType === 'PDF'" src="../assets/icons/downloadPDF-blue.svg" alt="" class="icon-blue">
-    <img v-if="btnType === 'PDF'" src="../assets/icons/downloadPDF.svg" alt="">
-
-    <!-- Lend -->
-    <img v-if="btnType === 'lend'" src="../assets/icons/hand-lend.svg" alt="" class="hand icon-blue">
-    <img v-if="btnType === 'lend'" src="../assets/icons/hand-lend.svg" alt="" class="hand">
-
-    <!-- Return -->
-    <img v-if="btnType === 'return'" src="../assets/icons/hand-return.svg" alt="" class="hand icon-blue">
-    <img v-if="btnType === 'return'" src="../assets/icons/hand-return.svg" alt="" class="hand">
-
-    <!-- Transfer -->
-    <img v-if="btnType === 'transfer'" src="../assets/icons/hand-transfer.svg" alt="" class="hand icon-blue">
-    <img v-if="btnType === 'transfer'" src="../assets/icons/hand-transfer.svg" alt="" class="hand">
 
   </button>
 </template>
@@ -50,7 +34,6 @@
   }
 
   .add-btn {
-    /*color: var(--clr-grey);*/
     padding: 0;
     margin: 0 .5em;
     line-height: 1;
@@ -77,26 +60,12 @@
     opacity: 0;
   }
 
-  button:not(.add-btn) img:not(.hand) {
+  button:not(.add-btn) img {
     height: 1.35em;
-  }
-
-  .add-action-btn {
-    height: fit-content;
-    padding: 0 .3em;
-    align-self: center;
   }
 
   button:hover img {
     transform: scale(1.1);
-  }
-
-  .pdf {
-    margin-left: auto;
-  }
-
-  button.pdf img:not(.hand) {
-    height: 35px;
   }
 
   button[disabled],
@@ -115,17 +84,6 @@
   button[disabled] .icon-blue,
   button[disabled]:hover .icon-blue {
     opacity: 0;
-  }
-
-  @media (max-width: 580px){
-    button.pdf img:not(.hand) {
-      height: 70px;
-      margin-bottom: -8px;
-    }
-
-    button.pdf:hover img{
-      transform: scale(1);
-    }
   }
 
 </style>

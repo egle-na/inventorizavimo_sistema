@@ -1,42 +1,46 @@
 <template>
   <ModulusFull @close="closeCard">
     <form @submit.prevent="submitAction" @keydown.enter.prevent="submitAction">
-    <h3>{{ type }}</h3>
-    <p>Pasirinkite darbuotoją:</p>
-<!--   ----------------------------------------------------------------------------------------------    -->
 
-    <div v-if="searchActive" class="select-backdrop" @click="searchActive = false"></div>
-    <div class="select-container">
+      <h3>{{ type }}</h3>
+      <p>Pasirinkite darbuotoją:</p>
 
-      <input type="text" placeholder="Vardas Pavardė"
-             v-model="searchUser"
-             @focus="setSearchActive"
-             @keyup="setSearchActive"
-             @input="searchUser = $event.target.value; selectedUser = ''"
-             @keydown.enter="selectUser(filteredList[0].id)"
-             @keydown.down="$event.target.nextElementSibling.firstChild.focus()">
+      <!-- click outside to close the selection -->
+      <div v-if="searchActive" class="select-backdrop" @click="searchActive = false"></div>
+      <div class="select-container">
 
-      <div class="select" v-show="searchActive">
-        <button v-for="user in filteredList" :key="user.id"
-                @keydown.enter="selectUser(user.id)"
-                @keydown.down="focusNext($event, 'down')"
-                @keydown.up="focusNext($event,'up')"
-                @click="selectUser(user.id)">{{ findName(user.id) }}</button>
+        <!-- Input -->
+        <input type="text" placeholder="Vardas Pavardė"
+               v-model="searchUser"
+               @focus="setSearchActive"
+               @keyup="setSearchActive"
+               @input="searchUser = $event.target.value; selectedUser = ''"
+               @keydown.enter="selectUser(filteredList[0].id)"
+               @keydown.down="$event.target.nextElementSibling.firstChild.focus()">
+
+        <!-- Selection -->
+        <div class="select" v-show="searchActive">
+          <button v-for="user in filteredList" :key="user.id"
+                  @keydown.enter="selectUser(user.id)"
+                  @keydown.down="focusNext($event, 'down')"
+                  @keydown.up="focusNext($event,'up')"
+                  @click="selectUser(user.id)">{{ findName(user.id) }}</button>
+        </div>
       </div>
-    </div>
 
-    <div class="btn-container">
-      <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
-      <button class="btn">{{ type }}</button>
-    </div>
+      <!-- Errors and Submit btn -->
+      <div class="btn-container">
+        <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+        <button class="btn">{{ type }}</button>
+      </div>
     </form>
 
   </ModulusFull>
 </template>
 
 <script>
-  import ModulusFull from "@/components/ModulusFull";
   import UsersMixin from "@/components/mixins/UsersMixin";
+  import ModulusFull from "@/components/ModulusFull";
 
   export default {
     name: "SelectUser",
@@ -46,9 +50,7 @@
     data() {
       return {
         searchActive: false,
-        // searchName: '',
         selectedUser: '',
-
         searchUser: '',
       }
     },
@@ -56,24 +58,27 @@
       userList() {
         if(this.gear_owner.length){
           if(this.type === "Skolinti" ) {
-            return this.$store.getters.allUsers.filter( user => user.id !== this.$store.getters.user.id && !this.gear_owner.includes(user.id) )
+            return this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && !this.gear_owner.includes(user.id));
           } else {
-            return this.$store.getters.user.isAdmin ? this.$store.getters.allUsers.filter(user => !this.gear_owner.includes(user.id))
-                : this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && !this.gear_owner.includes(user.id))
+            return this.$store.getters.user.isAdmin
+                ? this.$store.getters.allUsers.filter(user => !this.gear_owner.includes(user.id))
+                : this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && !this.gear_owner.includes(user.id));
           }
         } else {
           if (this.type === "Skolinti") {
-            return this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner)
+            return this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner);
           } else {
-            return this.$store.getters.user.isAdmin ? this.$store.getters.allUsers.filter(user => user.id !== this.gear_owner)
-                : this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner)
+            return this.$store.getters.user.isAdmin
+                ? this.$store.getters.allUsers.filter(user => user.id !== this.gear_owner)
+                : this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner);
           }
         }
       },
+
       filteredList() {
         let search = this.searchUser.toLowerCase()
         return this.userList.filter(user => this.findName(user.id).toLowerCase().indexOf(search) > -1 );
-      }
+      },
     },
     methods: {
 
@@ -82,10 +87,6 @@
           this.searchActive = true;
         }
       },
-
-      // userName(user){
-      //   return user.first_name + ' ' + user.last_name
-      // },
 
       focusNext(event, dir){
         if (dir === 'down'){
@@ -115,10 +116,9 @@
 
       doSearch(event) {
         this.searchName = event.target.value;
-
       },
 
-      closeSearchList() { // idk, doesn't feel right
+      closeSearchList() {
         setTimeout (() => {
           this.searchActive = false;
         }, 100)
@@ -127,9 +127,8 @@
       closeCard() {
         this.searchName = '';
         this.$emit('close');
-      }
+      },
     },
-
   }
 </script>
 
@@ -151,24 +150,9 @@
     border-left: none;
   }
 
-
-  .list li {
-    padding: .6em 1.5em;
-  }
-
-  .list li:not(.no-hover):hover {
-    background: #0054A622;
-  }
-
-  .user-select {
-    width: 100%;
-    margin-bottom: 1em;
-    border-left: none;
-  }
-
   .error-msg {
     margin-right: auto;
-    color: #FF6464;
+    color: var(--clr-red);
   }
 
   .select-container {
@@ -215,7 +199,5 @@
       padding: 1em 1.5em;
     }
   }
-
-
 
 </style>

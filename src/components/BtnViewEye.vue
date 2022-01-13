@@ -39,10 +39,8 @@
     opacity: 0;
   }
 
-  button:not(.add-btn) img:not(.hand) {
+  button img {
     height: 1.35em;
   }
-
-
 
 </style>

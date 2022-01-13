@@ -18,7 +18,6 @@
       getData(url, successFn, failFn) {
         this.$http.get(url, this.config)
             .then(response => {
-              console.log(response.data);
               this.list = response.data;
               if(successFn) successFn(response);
 
@@ -29,13 +28,8 @@
       },
 
       getDataError(error){
-        if(error.response.data.message === "Token has expired" ||
-            error.response.data.message === "The token has been blacklisted" ||
-            error.response.data.status === 401 ){
-          EventBus.$emit('displayMessage', 'Sesijos laikas baigėsi!');
-          localStorage.clear();
-          this.$router.push({name: 'login'});
-        } else {
+        this.catchErrorTokenExpired(error);
+        if(error.response.status !== 500){
           EventBus.$emit('displayMessage', 'Įvyko klaida.');
         }
       },
@@ -47,21 +41,9 @@
       getDataQuery(url, params) {
         this.$http.get(url, {...this.config, params: params })
             .then(response => {
-              console.log(response.data);
               this.list = response.data;
             }).catch(error => {
               this.getDataError(error);
-            })
-      },
-
-      refreshUsersToken(){
-        this.$http.post(this.$store.getters.API_baseURL + '/auth/refresh', {}, this.config)
-            .then(response => {
-              localStorage.setItem("access_token", response.data.access_token);
-              this.config.headers.Authorization = `Bearer ${localStorage.getItem("access_token")}`;
-
-            }).catch(error => {
-              console.error(error);
             })
       },
 
@@ -69,10 +51,9 @@
         this.$http.post( url, data, this.config)
             .then(response => {
               if(successFn) successFn(response);
-
             }).catch(error => {
-              console.error(error);
               if(failFn) failFn(error);
+              this.catchErrorTokenExpired(error);
             })
       },
 
@@ -80,47 +61,41 @@
         this.$http.delete( url, this.config)
             .then(response => {
               if(successFn) successFn(response);
-
             }).catch(error => {
-              console.error(error);
               if(failFn) failFn(error);
-          })
+              this.catchErrorTokenExpired(error);
+            })
       },
 
       getAdditionalData(url) {
         this.$http.get(url, this.config)
             .then(response => {
               this.additionalList = response.data;
-
             }).catch(error => {
-              console.error(error);
-              if(error.response.status === 500){
-                if(error.response.data.message === "Token has expired" ||
-                    error.response.data.message === "The token has been blacklisted"){
-                  localStorage.clear();
-                  this.$router.push({name: 'login'});
-                }
-              }
+              this.catchErrorTokenExpired(error);
             })
       },
 
       getNotifications(){
-        // console.log('get notif')
         this.$http.get(this.$store.getters.API_baseURL + '/requests/pending', this.config)
             .then(response => {
               this.$store.commit('setNotifications', response.data);
-
             }).catch(error => {
-              console.error(error);
-              if(error.response.status === 500){
-                if(error.response.data.message === "Token has expired" ||
-                    error.response.data.message === "The token has been blacklisted"){
-                  localStorage.clear();
-                  this.$router.push({name: 'login'});
-                }
-              }
+              this.catchErrorTokenExpired(error);
             })
       },
+
+      catchErrorTokenExpired(error){
+        if(error.response.status === 500){
+          if(error.response.data.message === "Token has expired" ||
+              error.response.data.message === "The token has been blacklisted"){
+            localStorage.clear();
+            this.$router.push({name: 'login'});
+            EventBus.$emit('displayMessage', 'Sesijos laikas baigėsi!');
+          }
+        }
+      }
+
     }
   }
 </script>

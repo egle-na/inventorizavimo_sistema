@@ -2,12 +2,15 @@
 <div>
   <header-guest />
 
-  <div class="backdrop">
+  <div class="container">
+
+    <!-- After success container -->
     <div v-show="passwordCreated"  class="form-container done-container" >
       <p>Slaptažodis sėkmingai sukurtas!</p>
       <router-link to="/login">Prisijungti</router-link>
     </div>
 
+    <!-- Main container -->
     <div v-show="!passwordCreated">
       <h2>Susikurti slaptažodį</h2>
 
@@ -48,7 +51,7 @@
 </template>
 
 <script>
-  import BtnViewEye from "@/views/BtnViewEye";
+  import BtnViewEye from "@/components/BtnViewEye";
   import FormItem from "@/components/FormItem";
   import HeaderGuest from "@/components/HeaderGuest";
 
@@ -61,7 +64,6 @@
     },
     data() {
       return {
-        urlExample: 'http://localhost:8000/change-password?token=PhQSYA0FdkUBBlHQI7HZ5hBLHQfeei5y8i4bKmWwOdcIDlZySpPDr4mvTc2LzPKV7mgdz4wfwK1Ej0Fp&email=egle.naslenaite@gmail.com',
         passwordCreated: false,
         errorMsg: "",
         email: '',
@@ -74,7 +76,6 @@
     created() {
       this.email = this.$route.query.email;
       this.token = this.$route.query.token;
-
     },
     computed: {
       validPsw(){
@@ -101,11 +102,6 @@
           }).catch(error => {
             if (error.response.status === 422) {
               this.errorMsg = "Elektroninio pašto adresas neteisingas arba nuoroda nebegaliojanti.";
-              // if( error.response.data.message === "Email does not exist."){
-              //   this.isUnrecognized = "Vartotojas su šiuo elekroninio pašto adresu nerastas.";
-              // } else {
-              //   this.isUnrecognized = "Ši nuoroda neteisinga arba nebegaliojanti.";
-              // }
             }
           })
         } // end if
@@ -117,7 +113,7 @@
 
 <style scoped>
 
-  .backdrop {
+  .container {
     position: absolute;
     top:0;
     bottom: 0;
@@ -135,7 +131,6 @@
     flex-direction: column;
     width: 400px;
     max-width: 95%;
-
     margin: auto;
   }
 
@@ -190,10 +185,6 @@
     position:  absolute;
     margin-bottom: 0;
   }
-
-  /*#show-psw-btn:hover path{*/
-  /*  fill: var(--clr-accent)*/
-  /*}*/
 
   .btn {
     margin-top: 1em;

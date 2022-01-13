@@ -63,8 +63,6 @@
       },
 
       refresh() {
-        console.log('elp, notifPage');
-        EventBus.$emit('displayMessage', 'elp');
         this.getData(this.url);
       },
 
@@ -87,7 +85,7 @@
             case 2:
               return `Jūs perleidote ${this.findName(item.user_id)}`;
           }
-        } else return 'Nežinomas'
+        } else return 'Nežinomas';
       },
 
     }
@@ -121,7 +119,7 @@
 
   .date {
     margin: 0;
-    color: var(--clr-darker-grey)
+    color: var(--clr-darker-grey);
   }
 
 </style>

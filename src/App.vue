@@ -17,7 +17,6 @@ export default {
 <style>
 
   :root {
-
     --clr-white: #fff;
     --clr-accent: #0054A6;
     --clr-black: #333;
@@ -26,13 +25,13 @@ export default {
     --clr-grey: #c5c5c5;
     --clr-light-grey: #f3f3f3;
     --clr-almost-white: #fafafa;
+    --clr-red: #FF6464;
 
     --ff-bebas-neue: 'Bebas Neue', cursive;
     --ff-karla: 'Karla', sans-serif;
     --ff-roboto-con: 'Roboto Condensed', sans-serif;
 
     --ls-bebas: .065em;
-    /*--ls-roboto:*/
 
     --fw-bold-roboto: 700;
     --fw-bold-karla: 600;
@@ -40,7 +39,7 @@ export default {
     --fs-nav: 0.875rem;         /* 14px */
     --fs-table-header: 1.25rem; /* 20px */
     --fs-side-menu: 1.5rem;     /* 24px */
-    --fs-button: 1.8rem;      /* nebe 30px 1.875 */
+    --fs-button: 1.8rem;        /* nebe 30px 1.875 */
   }
 
   * { box-sizing: border-box; }
@@ -103,12 +102,10 @@ export default {
     font-size: var(--fs-button);
     letter-spacing: var(--ls-bebas);
 
-    /*padding: .15em .8em;*/
     padding: .15em .6em;
     transition: background-color 200ms, color 200ms, border-color 200ms;
   }
 
-  /*.btn:focus,*/
   .btn:hover {
     background: var(--clr-accent);
     color: var(--clr-white);
@@ -126,7 +123,6 @@ export default {
     border-color: var(--clr-grey);
   }
 
-  /*.faded:focus,*/
   .faded:hover {
     border-color: var(--clr-accent);
   }
@@ -134,7 +130,6 @@ export default {
   input,
   select,
   textarea {
-    /*position: relative;*/
     font: inherit;
     color: inherit;
     background: transparent;
@@ -154,33 +149,10 @@ export default {
   input:focus,
   select:focus,
   textarea:focus {
-    /*color: var(--clr-accent);*/
     border-width: 3px;
     border-color: var(--clr-accent);
     outline: none;
   }
-
-  /* View button style */
-
-  /*!* Button hover *!*/
-
-  /*button img {*/
-  /*  opacity: 1;*/
-  /*}*/
-
-  /*button img.icon-blue {*/
-  /*  position: absolute;*/
-  /*  opacity: 0;*/
-  /*}*/
-
-  /*button:hover img.icon-blue{*/
-  /*  opacity: 1;*/
-  /*}*/
-
-  /*button:hover img:not(.icon-blue){*/
-  /*  opacity: 0;*/
-  /*}*/
-
 
   .mobile {
     display: none;
@@ -190,6 +162,7 @@ export default {
     :root {
       --clr-accent: #022222;
     }
+
     .mobile {
       display: initial;
     }
@@ -212,6 +185,5 @@ export default {
       display: none;
     }
   }
-
 
 </style>

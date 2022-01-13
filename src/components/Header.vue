@@ -1,14 +1,19 @@
 <template>
-
   <header>
-    <img src="../assets/teltonika_logo.png" alt="" class="teltonika-logo">
+
+    <!-- Teltonika Logo -->
+    <router-link to="/" class="header-logo">
+      <img src="../assets/teltonika_logo.png" alt="" class="teltonika-logo">
+    </router-link>
+
+    <!-- Navigation -->
     <nav>
       <router-link :to="{name: 'user-inventory', params:{}}">Mano Inventorius</router-link>
-<!--      <router-link to="/add-inventory" >Pridėti įrangą</router-link>-->
       <router-link class="tablet-hide" to="/notifications">Pranešimai</router-link>
       <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
     </nav>
 
+    <!-- Notifications container -->
     <div class="expand-container">
       <button id="notifications-btn" @click="notificationOpen = !notificationOpen">
         <img src="../assets/icons/Notification-bell.svg" alt="">
@@ -19,6 +24,7 @@
       </notification-card>
     </div>
 
+    <!-- Name Tag and menu -->
     <div class="expand-container">
       <button id="profile-btn" @click="userDropdownOpen = !userDropdownOpen">{{ nameInitials }}</button>
       <action-card v-show="userDropdownOpen" @close="userDropdownOpen = false">
@@ -33,59 +39,55 @@
       </action-card>
     </div>
   </header>
-
 </template>
 
 <script>
-  import NotificationCard from "@/components/NotificationCard";
-  import ActionCard from "@/components/ActionCard";
-  import UserCard from "@/components/UserCard";
   import DataMixin from "@/components/mixins/DataMixin";
+  import UsersMixin from "@/components/mixins/UsersMixin";
+  import ActionCard from "@/components/ActionCard";
+  import NotificationCard from "@/components/NotificationCard";
   import RequestComponent from "@/components/RequestComponent";
-  import usersMixin from "@/components/mixins/UsersMixin";
-
-  // import jwt_decode from "jwt-decode";
+  import UserCard from "@/components/UserCard";
 
   export default {
     name: "Header",
+    mixins: [ DataMixin, UsersMixin ],
     components: {
+      ActionCard,
+      NotificationCard,
       RequestComponent,
       UserCard,
-      ActionCard,
-      NotificationCard
     },
-    // props: [ 'notification', 'name' ],
-    mixins: [ DataMixin, usersMixin ],
     data() {
       return {
-        notification: true,
         notificationOpen: false,
         userDropdownOpen: false,
       }
     },
+
     created() {
       if(!this.$store.getters.allUsers.length){
         this.getUsersList();
       }
       this.getNotifications();
     },
+
     computed: {
       nameInitials() {
         return this.$store.getters.user.first_name.charAt(0) + this.$store.getters.user.last_name.charAt(0);
       },
     },
+
     methods: {
       logOut() {
         this.$http.post(this.$store.getters.API_baseURL + "/auth/logout", {}, this.config)
-          .then(response => {
-            console.log(response.data.message);
+          .then(() => {
             localStorage.clear();
             this.$router.push({path: '/login'});
-            this.$store.commit("setUser", {}); //
-          }).catch(error => {
-            console.log('too bad', error)
+            this.$store.commit("setUser", {});
+          }).catch(() => {
             localStorage.clear();
-            this.$store.commit("setUser", {}); //
+            this.$store.commit("setUser", {});
             this.$router.push({path: '/login'});
           })
       },
@@ -96,31 +98,34 @@
 <style scoped>
 
   header {
+    background-color: var(--clr-accent);
+    font-family: var(--ff-roboto-con);
+
     position: sticky;
     top:0;
-    background-color: var(--clr-accent);
-    padding: .5em 5%; /* dešinė pusė */
+    padding: .5em 5%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    font-family: var(--ff-roboto-con);
-    /*position: relative;*/
     z-index: 2;
-    /*filter: drop-shadow(0px 4px 7px rgba(0, 0, 0, 0.25));*/
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  }
+
+  .header-logo {
+    margin-right: auto;
   }
 
   .teltonika-logo {
-    margin-right: auto;
     height: 30px;
   }
 
   a {
-    letter-spacing: 1px;
     color: var(--clr-white);
     font-size: var(--fs-nav);
-    /*font-weight: 500;*/
+    letter-spacing: 1px;
     text-transform: uppercase;
+    text-decoration: none;
     margin-right: 1.5em;
   }
 
@@ -130,14 +135,14 @@
   }
 
   #unread-notification {
-    background: #FF6464;
-    height: 13px;
-    width: 13px;
+    background: var(--clr-red);
     border: solid var(--clr-accent) 2px;
     border-radius: 50%;
 
     position: absolute;
     right: 1px;
+    height: 13px;
+    width: 13px;
   }
 
   #profile-btn {
@@ -170,10 +175,10 @@
     nav{
       display: none;
     }
+
     .expand-container {
       position: initial;
     }
   }
-
 
 </style>

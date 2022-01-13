@@ -3,11 +3,13 @@ import store from "@/store/store";
 import {EventBus} from "@/main";
 
 export default function auth ({ next }){
+    // if not allowed
     if(!localStorage.getItem("access_token")){
         return next({
             name: 'login'
         })
     } else {
+        // if allowed get token before entering
         axios.post(store.getters.API_baseURL + '/auth/refresh',
             {},
             { headers: { Authorization: `Bearer ${localStorage.getItem("access_token")}` }})
@@ -27,6 +29,6 @@ export default function auth ({ next }){
                 return next({
                     name: 'login'
                 })
-            }) // ar taip tinka?
+            })
     }
 }

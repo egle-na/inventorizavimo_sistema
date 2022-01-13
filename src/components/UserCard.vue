@@ -1,28 +1,25 @@
 <template>
   <div class="user-card">
 
-<!--    <div class="name-container">-->
-      <span id="profile-btn">{{ nameInitials }}</span>
-<!--      <div>-->
-        <span class="name">{{ $store.getters.user.first_name }}</span>
-        <span class="name">{{ $store.getters.user.last_name }}</span>
-<!--      </div>-->
+    <!-- Initials -->
+    <span id="profile-btn">{{ nameInitials }}</span>
 
-<!--    </div>-->
+    <!-- Name Surname -->
+    <span class="name">{{ $store.getters.user.first_name }}</span>
+    <span class="name">{{ $store.getters.user.last_name }}</span>
+
+    <!-- Email -->
     <p class="email">{{ $store.getters.user.email }}</p>
 
   </div>
 </template>
 <script>
-  // import ProfileImgMixin from "@/components/mixins/ProfileImgMixin";
-
   export default {
     name: 'UserCard',
-    // mixins: [ ProfileImgMixin ],
-    // props: [ 'user', 'nameInitials' ],
     computed: {
       nameInitials() {
-        return this.$store.getters.user.first_name.charAt(0) + this.$store.getters.user.last_name.charAt(0);
+        return this.$store.getters.user.first_name.charAt(0)
+            + this.$store.getters.user.last_name.charAt(0);
       }
     }
   }
@@ -35,7 +32,6 @@
     display: grid;
     padding: 0 1.5em;
     margin: 2em 0 1em;
-    /*grid-gap: .1em .4em;*/
     grid-template-columns: min-content auto;
   }
 
@@ -73,9 +69,7 @@
     text-transform: uppercase;
     margin-left: .3em;
     display: block;
-    /*margin-bottom: 0;*/
     line-height: 1.1em;
-    /*align-self: center;*/
   }
 
   .email {

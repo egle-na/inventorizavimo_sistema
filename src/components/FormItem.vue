@@ -3,11 +3,13 @@
     <slot />
   </form>
 </template>
+
 <script>
   export default {
-    name: 'FormItem'
+    name: 'FormItem',
   }
 </script>
+
 <style scoped>
 
   input,
@@ -52,7 +54,7 @@
   }
 
   input.input-error {
-    border-color: #FF6464;
+    border-color: var(--clr-red);
     margin-bottom: 0;
   }
 
@@ -68,7 +70,7 @@
 
   .error-msg{
     margin: 0;
-    color: #FF6464;
+    color: var(--clr-red);
   }
 
   @media (max-width: 580px){

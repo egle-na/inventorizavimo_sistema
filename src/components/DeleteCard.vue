@@ -1,7 +1,9 @@
 <template>
 
   <modulus-full @close="$emit('close')">
+
     <slot></slot>
+
     <div class="btn-container">
       <p class="error-msg">{{ errorMsg }}</p>
       <div class="buttons">

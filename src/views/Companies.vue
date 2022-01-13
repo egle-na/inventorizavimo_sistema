@@ -102,26 +102,26 @@
 
 <script>
   import DataMixin from "@/components/mixins/DataMixin";
-  import AdminDesk from "@/components/AdminDesk";
+  import UsersMixin from "@/components/mixins/UsersMixin";
   import ActionCard from "@/components/ActionCard";
   import AddUser from "@/components/AddUser";
+  import AdminDesk from "@/components/AdminDesk";
+  import BtnComponent from "@/components/BtnComponent";
+  import DeleteCard from "@/components/DeleteCard";
   import ModulusFull from "@/components/ModulusFull";
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
-  import BtnComponent from "@/components/BtnComponent";
   import {EventBus} from "@/main";
-  import UsersMixin from "@/components/mixins/UsersMixin";
-  import DeleteCard from "@/components/DeleteCard";
   export default {
-    name: "AllCompanies",
+    name: "Companies",
     mixins: [ DataMixin, UsersMixin ],
     components: {
-      DeleteCard,
-      BtnComponent,
+      ActionCard,
       AddUser,
       AdminDesk,
-      ActionCard,
+      BtnComponent,
+      DeleteCard,
       ModulusFull,
       Search,
       TableActions,
@@ -174,9 +174,9 @@
 
       openMobileActions(id, event){
         this.mobileActions = id;
-        this.mobileActionsPos = event.pageY + 15 ;
+        this.mobileActionsPos = event.pageY + 15;
         if((window.innerHeight - event.clientY) < 190){
-          this.mobileActionsPos = event.pageY - 180 ;
+          this.mobileActionsPos = event.pageY - 180;
         }
       },
 
@@ -191,18 +191,19 @@
             this.url,
             { name: this.newCompanyName },
             this.config
-        ).then(response => {
-          console.log(response.data);
+
+        ).then(() => {
           this.addCompanyOpen = false;
           this.newCompanyName = '';
           this.errorMsg = "";
-          this.getData(this.url) // need to clear search input
+          this.getData(this.url);
+          // need to clear search input
           EventBus.$emit('displayMessage', 'Įmonė pridėta sėkmingai!');
+
         }).catch(error => {
-          console.log(error);
           if(error.response.status === 400){
             if(error.response.data.error.name[0] === "The name has already been taken."){
-              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta."
+              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta.";
             }
           }
         })
@@ -213,8 +214,8 @@
             this.url + '/' + id,
             { name: this.newCompanyName },
             this.config
-        ).then(response => {
-          console.log(response.data);
+
+        ).then(() => {
           this.editCompanyOpen = false;
           this.errorMsg = "";
           this.editCompanyId = '';
@@ -222,28 +223,31 @@
           // clear search
           this.getData(this.url);
           EventBus.$emit('displayMessage', 'Įmonės redagavimas sėkmingas!');
+
         }).catch(error => {
-          console.log(error);
           if(error.response.status === 400){
             if(error.response.data.error.name[0] === "The name has already been taken."){
-              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta."
+              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta.";
             }
           }
         })
       },
 
       deleteCompany(id){
-        this.deleteData(`${this.url}/${id}`, () => {
-          this.deleteCompanyOpen = false;
-          this.getData(this.url);
-          this.newCompanyName = '';
-          this.editCompanyId = '';
-          this.mobileActions = false;
-          this.errorMsg = '';
-          EventBus.$emit('displayMessage', 'Įmonė ištrinta!');
-        }, () => {
-          this.errorMsg = 'Negalima ištrinti įmonės, kurioje dar yra darbuotojų'
-        })
+        this.deleteData(
+            `${this.url}/${id}`,
+            () => {
+              this.deleteCompanyOpen = false;
+              this.getData(this.url);
+              this.newCompanyName = '';
+              this.editCompanyId = '';
+              this.mobileActions = false;
+              this.errorMsg = '';
+              EventBus.$emit('displayMessage', 'Įmonė ištrinta!');
+            },
+            () => {
+              this.errorMsg = 'Negalima ištrinti įmonės, kurioje dar yra darbuotojų';
+            })
       },
 
       closeCard(){
@@ -293,11 +297,12 @@
 
   th:first-child,
   td:first-child {
-    padding-left: 1em ;
+    padding-left: 1em;
     text-align: left;
   }
 
-  th:not(:first-child){ /* column dividers for sticky header */
+  /* column dividers for sticky header */
+  th:not(:first-child){
     box-shadow: none;
   }
 
@@ -310,6 +315,5 @@
       position: absolute;
     }
   }
-
 
 </style>

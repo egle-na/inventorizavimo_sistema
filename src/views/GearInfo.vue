@@ -19,8 +19,7 @@
                    @click="openSelect('Skolinti')"
            >Skolinti</button>
 
-           <button v-show="!list.lent"
-                   @click="openSelect('Perleisti')"
+           <button v-show="!list.lent" @click="openSelect('Perleisti')"
            >Perleisti</button>
 
            <button v-show="statusText === 'Pasiskolinta'" @click="returnCardOpen = true">Grąžinti</button>
@@ -29,11 +28,14 @@
          </action-card>
        </div>
 
-       <div v-else><!-- Generuoti PDF btn when no other actions are available -->
+       <!-- Generuoti PDF btn when no other actions are available -->
+       <div v-else>
          <button class="btn non-mobile" @click="generatePDF(list.id, list.name)">Generuoti PDF</button>
-         <btn-component :btnType="'PDF'" class="mobile" @btnClicked="generatePDF(list.id, list.name)" title="Generuoti PDF" />
+         <button class="mobile pdf-btn" @click="generatePDF(list.id, list.name)" title="Generuoti PDF" >
+           <img src="../assets/icons/downloadPDF-blue.svg" alt="" class="icon-blue">
+           <img src="../assets/icons/downloadPDF.svg" alt="">
+         </button>
        </div>
-
      </div><!-- /title container -->
 
      <!-- Main Content -->
@@ -99,8 +101,8 @@
              <td title="Kada?">{{ history.created_at.split('T')[0] }}</td>
            </tr>
          </table-component>
-       </div><!-- /history container -->
 
+       </div><!-- /history container -->
      </div><!-- /main container -->
    </main>
 
@@ -132,98 +134,89 @@
 </template>
 
 <script>
-  import Header from "@/components/Header";
-  import ActionCard from "@/components/ActionCard";
-  import TableComponent from "@/components/TableComponent";
-  import SelectUser from "@/components/SelectUser";
   import DataMixin from "@/components/mixins/DataMixin";
   import UsersMixin from "@/components/mixins/UsersMixin";
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
+  import ActionCard from "@/components/ActionCard";
   import BtnOptionDots from "@/components/BtnOptionDots";
-  import BtnComponent from "@/components/BtnComponent";
   import DeleteCard from "@/components/DeleteCard";
+  import Header from "@/components/Header";
+  import SelectUser from "@/components/SelectUser";
+  import TableComponent from "@/components/TableComponent";
 
   export default {
-    name: "InventoryInfo",
+    name: "GearInfo",
     mixins: [ DataMixin, UsersMixin, GearActionsMixin ],
     components: {
-      DeleteCard,
-      BtnComponent,
+      ActionCard,
       BtnOptionDots,
+      DeleteCard,
+      Header,
       SelectUser,
       TableComponent,
-      ActionCard,
-      Header,
     },
     data() {
       return {
         url: this.$store.getters.API_baseURL + '/gear/' + this.$route.params.inventory_id,
-        users_url: this.$store.getters.API_baseURL + '/users',
         actionCardOpen: false,
         selectUserOpen: false,
         writeOffCardOpen: false,
         returnCardOpen: false,
         actionType:'',
-        ownersName: '',
-        selectedUser: '',
         errorMsg: '',
-        // status
-        history: {},
         historyList: {},
-        checked: false,
         statusText: '',
       }
     },
     created() {
-      if(this.$store.getters.user.isAdmin === true){
-        this.url = this.$store.getters.API_baseURL + '/gear/all/' + this.$route.params.inventory_id;
-      }
-      this.getData(this.url,
-          () => { this.getStatusText(); },
-          () => { this.$router.push({name: 'user-inventory'})
-      });
-      this.getHistory();
+      this.loadPage();
     },
     computed: {
       ownerName() {
         if(this.$store.getters.allUsers.length){
           return this.findName(this.list.user_id);
-        } else return ''
+        } else return '';
       },
     },
 
     methods: {
+      loadPage() {
+        if(this.$store.getters.user.isAdmin === true){
+          this.url = this.$store.getters.API_baseURL + '/gear/all/' + this.$route.params.inventory_id;
+        }
+        this.getData(this.url,
+            () => { this.getStatusText(); },
+            () => { this.$router.push({name: 'user-inventory'})
+            });
+        this.getHistory();
+      },
 
       getStatusText() {
         if(this.$store.getters.user.isAdmin) { // Admin
 
           if(this.list.user_id === this.$store.getters.user.id){ // Admin is owner
-            this.statusText = this.list.lent ? "Paskolintas" : "Savininkas"
+            this.statusText = this.list.lent ? "Paskolintas" : "Savininkas";
 
           } else { // Admin not owner
             this.statusText = this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
 
             if(this.list.lent) { // Admin not owner but gear is lent
-              this.getData(this.$store.getters.API_baseURL + '/gear/' + this.list.id,
+              this.getData(
+                  this.$store.getters.API_baseURL + '/gear/' + this.list.id,
                   () => {
                     this.statusText = "Pasiskolinta";
-                  },
-                  () => {
-                    // this.statusText = this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
                   })
             }
           }
-
         } else { // not Admin
           this.statusText = this.list.own ? this.list.lent ? "Paskolintas" : "Savininkas" : "Pasiskolinta";
         }
-
       },
 
       getHistory() {
         this.$http.get(this.$store.getters.API_baseURL + '/gear-history/' + this.$route.params.inventory_id, this.config)
           .then(response => this.historyList = response.data)
-          .catch(err => console.error(err))
+          .catch(() => {})
       },
 
       openSelect(action) {
@@ -306,7 +299,7 @@
   }
 
   .specs .btn {
-    margin-left: 1em
+    margin-left: 1em;
   }
 
   .history {
@@ -315,7 +308,6 @@
     margin-top: 1.5rem;
     border: solid 3px var(--clr-grey);
     border-radius: 7px;
-    /*max-height: 100%;*/
   }
 
   .history-title {
@@ -341,7 +333,7 @@
     border-bottom: solid 2px var(--clr-light-grey);
   }
 
-  .table-container { /* nieko nedaro */
+  .table-container {
     border: none;
   }
 
@@ -368,8 +360,26 @@
     .specs {
       margin-bottom: 2em;
     }
-
   }
 
+  @media (max-width: 580px){
+    .pdf-btn img {
+      height: 70px;
+      margin-bottom: -8px;
+    }
+
+    .pdf-btn .icon-blue{
+      position: absolute;
+    }
+
+    .pdf-btn:hover img:not(.icon-blue),
+    .pdf-btn .icon-blue{
+      opacity: 0;
+    }
+    .pdf-btn img:not(.icon-blue),
+    .pdf-btn:hover .icon-blue{
+      opacity: 1;
+    }
+  }
 
 </style>

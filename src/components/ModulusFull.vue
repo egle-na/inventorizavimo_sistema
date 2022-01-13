@@ -9,20 +9,22 @@
     </div>
   </div>
 </template>
+
 <script>
   export default {
     name: 'ModulusFull',
   }
 </script>
+
 <style scoped>
 
   .backdrop {
+    background: #ffffffaa;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background: #ffffffaa;
   }
 
   .container {
@@ -57,7 +59,7 @@
     top: .5em;
     right: .5em;
     line-height: 1;
-    color: var(--clr-dark-grey)
+    color: var(--clr-dark-grey);
   }
 
   h3 {
@@ -92,7 +94,7 @@
 
   .error-msg {
     margin: 0 auto 0 0;
-    color: #FF6464;
+    color: var(--clr-red);
   }
 
   @media(max-width: 580px){
@@ -105,6 +107,5 @@
       background: #ffffffea;
     }
   }
-
 
 </style>

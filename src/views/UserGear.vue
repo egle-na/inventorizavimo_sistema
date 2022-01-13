@@ -43,7 +43,8 @@
 
     <!-- Deal with selected -->
     <div class="selection-actions">
-      <div class="mobile flex"> <!-- mobile checkbox -->
+      <!-- mobile checkbox -->
+      <div class="mobile flex">
         <input type="checkbox"
                title="Pasirinkti Viską"
                :class="{'checkbox-hidden': !anySelected}"
@@ -57,11 +58,11 @@
         <span class="non-mobile">Pasirinkta: {{ rowsSelected.length }}</span>
         <table-actions class="actions">
 
-          <btn-component :btnType="'return'" title="Grąžinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
+          <btn-hands :btnType="'return'" title="Grąžinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
           <span class="action-divider" v-if="!$route.params.user_id" />
-          <btn-component :btnType="'lend'" title="Skolinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleLend')" />
+          <btn-hands :btnType="'lend'" title="Skolinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleLend')" />
           <span class="action-divider" v-if="!$route.params.user_id" />
-          <btn-component :btnType="'transfer'" title="Perduoti" @btnClicked="openCard('multipleTransfer')" />
+          <btn-hands :btnType="'transfer'" title="Perduoti" @btnClicked="openCard('multipleTransfer')" />
           <span class="action-divider" />
           <btn-component :btnType="'delete'" @btnClicked="openCard('multipleDelete')" title="Ištrinti" />
 
@@ -108,15 +109,17 @@
         <!-- Non Mobile Table Actions -->
         <td class="actions-cell non-mobile">
           <table-actions>
-            <btn-return v-if="!gear.own && gear.lent && !$route.params.user_id" @btnClicked="openCard('return', gear.id)" />
+            <btn-hands :btnType="'return'" v-if="!gear.own && gear.lent && !$route.params.user_id" @btnClicked="openCard('return', gear.id)" />
             <span class="action-divider" v-if="!gear.own && gear.lent && !$route.params.user_id" />
 
-            <btn-lend v-if="!$route.params.user_id"
+            <btn-hands :btnType="'lend'"
+                      title="Skolinti"
+                      v-if="!$route.params.user_id"
                       :disabled="gear.current_holder && ((gear.own && gear.lent) || (!gear.own && !gear.lent))"
                       @btnClicked="openCard('Skolinti', gear.id)" />
             <span class="action-divider" v-if="gear.own && !$route.params.user_id" />
 
-            <btn-transfer v-if="gear.own || $route.params.user_id" :disabled="gear.lent" @btnClicked="openCard('Perleisti', gear.id)" />
+            <btn-hands :btnType="'transfer'" title="Perleisti" v-if="gear.own || $route.params.user_id" :disabled="gear.lent" @btnClicked="openCard('Perleisti', gear.id)" />
             <span class="action-divider"  v-if="gear.own || $route.params.user_id" />
 
             <btn-component :btnType="'delete'" v-if="gear.own || $route.params.user_id" :disabled="gear.lent" @btnClicked="openCard('delete', gear.id)" title="Ištinti" />
@@ -203,31 +206,27 @@
   import UsersMixin from "@/components/mixins/UsersMixin";
   import ActionCard from "@/components/ActionCard";
   import AddItem from "@/components/AddItem";
-  import BtnLend from "@/components/BtnLend";
+  import BtnComponent from "@/components/BtnComponent";
+  import BtnHands from "@/components/BtnHands";
   import BtnOptionDots from "@/components/BtnOptionDots";
-  import BtnReturn from "@/components/BtnReturn";
-  import BtnTransfer from "@/components/BtnTransfer";
+  import DeleteCard from "@/components/DeleteCard";
   import Header from "@/components/Header";
   import ModulusFull from "@/components/ModulusFull";
   import SelectUser from "@/components/SelectUser";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
-  import BtnComponent from "@/components/BtnComponent";
   import {EventBus} from "@/main";
-  import DeleteCard from "@/components/DeleteCard";
 
   export default {
     name: "UserItems",
     mixins: [ DataMixin, GearActionsMixin, UsersMixin ],
     components: {
-      DeleteCard,
-      BtnComponent,
       ActionCard,
       AddItem,
-      BtnLend,
+      BtnComponent,
+      BtnHands,
       BtnOptionDots,
-      BtnReturn,
-      BtnTransfer,
+      DeleteCard,
       Header,
       ModulusFull,
       SelectUser,
@@ -260,8 +259,8 @@
       EventBus.$off('requestChanged');
     },
     watch: {
-      // get new data when going from specific user (route with params) to my gear (no params)
       $route() {
+      // get new data when going from specific user (route with params) to my gear (no params)
         this.url = this.$store.getters.API_baseURL + '/gear';
         this.config = {
           headers: {
@@ -345,11 +344,9 @@
             let deselect = [];
             if(id > this.lastSelected){ // uncheck multiple from down to up
               for(let i = id; i >= this.lastSelected; i--) {
-                console.log(id, this.lastSelected)
                 deselect.push(i);
               }
             } else { // uncheck multiple from up to down
-                console.log("uncheck multiple from up to down");
               for(let i = id; i <= this.lastSelected; i++) {
                 deselect.push(i);
               }
@@ -366,8 +363,9 @@
       },
 
       addIfNotSelected(item){
-        if(!this.rowsSelected.includes(item))
-        this.rowsSelected.push(item);
+        if(!this.rowsSelected.includes(item)) {
+          this.rowsSelected.push(item);
+        }
       },
 
       toggleSelect(id){
@@ -390,11 +388,6 @@
         if(this.anySelected){
           this.selectRow(index, event);
         }
-      },
-
-      listSelected(){
-        const sendList = this.rowsSelected.map(row => this.list[row]);
-        sendList.forEach(item => console.log(item.name));
       },
 
       addGearSuccess() {
@@ -426,7 +419,6 @@
           if(!this.returnCardOpen.length) { // Jei nieko negalima grąžinti
             this.returnCardOpen = 'err';
           } else if(this.returnCardOpen.length === 1){ // Jei galima grąžinti tik vieną
-            console.log('elp',this.returnCardOpen)
             this.returnCardOpen = this.returnCardOpen[0];
           }
 
@@ -516,7 +508,7 @@
   }
 
   .filter-btn:hover {
-    border-color: var(--clr-accent) ;
+    border-color: var(--clr-accent);
   }
 
   .filter-btn:last-child {
@@ -609,7 +601,6 @@
     }
   }
 
-  /* Filter */
   @media (max-width: 580px){
     .mobile-filter-card{
       margin-left: auto;

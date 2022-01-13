@@ -1,28 +1,32 @@
 <template>
   <div>
-      <!-- page -->
+    <!-- In page requests -->
     <div v-if="type === 'page'">
       <div v-for="request in $store.getters.notifications" :key="request.id" class="message">
+
         <div>
           <p class="date">{{ request.created_at.split('T')[0] }}</p>
           <p>{{ constructMessage(request) }} <strong>{{ request.gear[0].name }}</strong>.</p>
         </div>
 
+        <!-- buttons -->
         <div class="btn-container">
           <button class="btn faded" @click="declineRequest(request.id, request.status)">Atmesti</button>
           <button class="btn" @click="acceptRequest(request.id, request.status)">Priimti</button>
         </div>
+
       </div>
     </div>
 
-      <!-- notification header -->
+    <!-- In header card requests -->
     <div v-if="type === 'small'">
       <div v-for="request in $store.getters.notifications" :key="request.id" class="message">
-        <p class="date">{{ request.created_at.split('T')[0] }}</p>
 
+        <p class="date">{{ request.created_at.split('T')[0] }}</p>
         <div class="message-small">
           <p>{{ constructMessage(request) }} <strong>{{ request.gear[0].name }}</strong>.</p>
 
+          <!-- buttons -->
           <div class="btn-container">
             <button title="Priimti" @click="acceptRequest(request.id, request.status)">
               <img src="../assets/icons/Accept.svg" alt="">
@@ -36,12 +40,14 @@
       </div>
     </div>
 
-
+    <!-- No requests -->
     <div v-if="!$store.getters.notifications.length">
       <p>Šiuo metu naujų pranešimų neturite.</p>
     </div>
+
   </div>
 </template>
+
 <script>
   import DataMixin from "@/components/mixins/DataMixin";
   import UsersMixin from "@/components/mixins/UsersMixin";
@@ -53,7 +59,7 @@
     mixins: [ DataMixin, UsersMixin ],
     methods: {
       acceptRequest(id, status){
-        let endpoint = ''
+        let endpoint = '';
         switch (status){
           case 0: // skolina
             endpoint = '/requests/accept-lend/';
@@ -74,22 +80,21 @@
       },
 
       declineRequest(id, status) {
-        if (status === 2) {
+        if (status === 2) { // grąžina
           this.$http.post(this.$store.getters.API_baseURL + '/requests/decline-return/' + id,{}, this.config)
               .then(() => {
                 EventBus.$emit('displayMessage', 'Užklausa atmesta!');
-                // EventBus.$emit('requestChanged');
                 this.getNotifications(); // is it too short?
-              })
-              .catch(this.getNotifications)
+
+              }).catch(this.getNotifications)
+
         } else {
           this.$http.delete(this.$store.getters.API_baseURL + '/requests/' + id, this.config)
               .then(() => {
                 EventBus.$emit('displayMessage', 'Užklausa atmesta!');
-                // EventBus.$emit('requestChanged');
                 this.getNotifications();
-              })
-              .catch(this.getNotifications)
+
+              }).catch(this.getNotifications)
         }
       },
 
@@ -106,16 +111,16 @@
     }
   }
 </script>
+
 <style scoped>
 
   .message {
-    margin: 1em 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: solid 3px var(--clr-light-grey);
-    /*margin-bottom: 1em;*/
     flex-wrap: wrap;
+    margin: 1em 0;
+    border-bottom: solid 3px var(--clr-light-grey);
   }
 
   .message-small {
@@ -129,7 +134,7 @@
 
   .date {
     margin: 0;
-    color: var(--clr-darker-grey)
+    color: var(--clr-darker-grey);
   }
 
   .btn-container{
@@ -164,7 +169,6 @@
     border-color: var(--clr-grey);
   }
 
-  /*.faded:focus,*/
   .faded:hover {
     border-color: var(--clr-accent);
   }

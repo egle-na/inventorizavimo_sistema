@@ -6,26 +6,22 @@
     methods: {
 
       getUsersList() {
-        // console.log('get names')
         let endpoint = '/users';
         if(this.$store.getters.user.isAdmin === true){
-          endpoint = '/users/all'
+          endpoint = '/users/all';
         }
         this.$http.get(this.$store.getters.API_baseURL + endpoint, this.config)
             .then(response => {
-              // console.log(response.data)
               this.$store.commit('setAllUsers', response.data );
-            }).catch(() => {
-        })
+            }).catch(() => {})
       },
 
       findName(id) {
         if(this.$store.getters.allUsers.length){
-          // let user = this.userList.filter(user => user.id === id)[0];
           let user = this.$store.getters.allUsers.filter(user => user.id === id)[0];
-          return user ? user.first_name + ' ' + user.last_name : "Nežinomas"
+          return user ? user.first_name + ' ' + user.last_name : "Nežinomas";
         }
-        return ''
+        return '';
       },
 
       addUser(userData){
@@ -46,9 +42,9 @@
       },
 
       userAddError(error) {
-        if(error.response.status === 400 && error.response.data.message === "The email has already been taken"){
+        if(error.response.data.error.email){
           this.errorMsg = 'Vartotojas šiuo elektroninio pašto adresu jau pridėtas.';
-        }
+        } else this.errorMsg = 'Įvyko Klaida.';
       },
 
     }

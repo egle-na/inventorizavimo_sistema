@@ -5,7 +5,7 @@
 
   <div class="backdrop">
     <form class="form-container" @submit.prevent="tryLogin">
-      <p v-show="isUnrecognized" class="error-msg">Prisijungimo duomenys neteisngi.</p>
+      <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
 
       <!-- Email input -->
       <input type="email" placeholder="Elektroninis Paštas" required class="first-input" v-model="email"/>
@@ -25,15 +25,15 @@
 </template>
 
 <script>
+  import BtnViewEye from "@/components/BtnViewEye";
   import HeaderGuest from "@/components/HeaderGuest";
-  import BtnViewEye from "@/views/BtnViewEye";
 
   export default {
     name: "LogIn",
-    components: {BtnViewEye, HeaderGuest},
+    components: { BtnViewEye, HeaderGuest },
     data() {
       return {
-        isUnrecognized: false,
+        errorMsg: false,
         pswVisible: false,
         password: '',
         email: '',
@@ -52,11 +52,11 @@
         }).then(response => {
           this.$store.commit('setUser', response.data.user);
           localStorage.setItem("access_token", response.data.access_token);
-
           this.$router.push({path: '/user-inventory'});
-        }).catch(err => {
-          console.error(err);
-          this.isUnrecognized = true;
+        }).catch(error => {
+          if(error.response.data.error === "Unauthorized"){
+            this.errorMsg = "Prisijungimo duomenys neteisingi.";
+          } else this.errorMsg = "Įvyko klaida.";
         })
       }
     },
@@ -115,8 +115,8 @@
 
   a {
     align-self: flex-end;
-    font-size: 0.75rem; /* gal geriau 1rem */
-    margin: 1.5em 0;
+    font-size: 0.8rem;
+    margin: 1.3em 0;
     color: var(--clr-darker-grey);
     text-decoration: none;
   }
@@ -131,38 +131,13 @@
   }
 
   .error-msg {
-    color: #FF6464;
+    color: var(--clr-red);
     position: absolute;
     top: -3em;
   }
 
   #show-psw-btn:hover path{
-    fill: var(--clr-accent)
-  }
-
-
-  /* ISTRINTI -----------------  Button hover */
-
-  button img {
-    opacity: 1;
-    transition: opacity 200ms;
-  }
-
-  button img.icon-blue {
-    position: absolute;
-    opacity: 0;
-  }
-
-  button:hover img.icon-blue{
-    opacity: 1;
-  }
-
-  button:hover img:not(.icon-blue){
-    opacity: 0;
-  }
-
-  button:not(.add-btn) img:not(.hand) {
-    height: 1.35em;
+    fill: var(--clr-accent);
   }
 
 </style>

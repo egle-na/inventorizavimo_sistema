@@ -7,6 +7,7 @@
       <btn-component :btnType="'add'" @btnClicked="addGearOpen = true" title="Pridėti inventorių" />
     </div>
 
+    <!-- Search -->
     <Search @setSearch="setSearch"/>
 
     <!-- Table -->
@@ -89,21 +90,21 @@
   import GearActionsMixin from "@/components/mixins/GearActionsMixin";
   import AddItem from "@/components/AddItem";
   import AdminDesk from "@/components/AdminDesk";
+  import BtnComponent from "@/components/BtnComponent";
+  import DeleteCard from "@/components/DeleteCard";
   import ModulusFull from "@/components/ModulusFull";
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
-  import BtnComponent from "@/components/BtnComponent";
   import {EventBus} from "@/main";
-  import DeleteCard from "@/components/DeleteCard";
   export default {
-    name: "AllItems",
+    name: "Gear",
     mixins: [ DataMixin, GearActionsMixin ],
     components: {
-      DeleteCard,
-      BtnComponent,
       AddItem,
       AdminDesk,
+      BtnComponent,
+      DeleteCard,
       ModulusFull,
       Search,
       TableActions,

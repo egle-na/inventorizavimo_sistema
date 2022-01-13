@@ -8,12 +8,8 @@
         <li><router-link to="/all-companies">Įmonės</router-link></li>
         <li><router-link to="/all-users">Darbuotojai</router-link></li>
         <li><router-link to="/all-inventory">Inventorius</router-link></li>
-<!--        <li><router-link to="/add-user">Pridėti Darbuotoją</router-link></li>-->
-<!--        <li><router-link to="/add-inventory">Pridėti įrangą</router-link></li>-->
-<!--        <li><router-link to="/settings">Nustatymai</router-link></li>-->
       </ul>
     </div>
-
 
   </div>
 </template>
@@ -30,10 +26,9 @@
 <style scoped>
 
   .side-menu-container {
-    background: var(--clr-almost-white) ;
-    /*position: fixed;*/
+    background: var(--clr-almost-white);
     height: 100%;
-    /*width: 330px;*/
+    box-shadow: 4px 0 7px #E5E5E5;
 
     display: grid;
     grid-template: min-content auto / auto;
@@ -41,8 +36,6 @@
     font-family: var(--ff-roboto-con);
     font-size: var(--fs-side-menu);
     text-transform: uppercase;
-
-    box-shadow: 4px 0 7px #E5E5E5;
   }
 
   .side-nav-container {
@@ -51,7 +44,6 @@
     align-self: center;
     min-height: 100px;
     height: 100%;
-    /*max-height: 350px;*/
     max-height: 210px;
   }
 
@@ -68,7 +60,6 @@
   }
 
   .side-nav li{
-    /*margin-bottom: 2em;*/
     width: fit-content;
     padding-right: 2em;
   }
@@ -151,8 +142,8 @@
     .side-nav{
       padding: 0 .6em;
       justify-content: space-between;
-
     }
+
     .side-menu-container {
       z-index: 1;
       font-size: 1.2em;
@@ -169,7 +160,5 @@
       left: -.8em;
     }
   }
-
-
 
 </style>

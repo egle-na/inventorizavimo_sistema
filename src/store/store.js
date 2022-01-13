@@ -15,11 +15,9 @@ export default new Vuex.Store({
             state.user = newUser;
         },
         setAllUsers(state, newList) {
-            console.log('got all Users')
             state.allUsers = newList;
         },
         setNotifications(state, newRequests) {
-            console.log("new notifications list");
             state.notifications = newRequests;
         }
     },
@@ -37,5 +35,4 @@ export default new Vuex.Store({
             return state.API_baseURL;
         }
     },
-
 })

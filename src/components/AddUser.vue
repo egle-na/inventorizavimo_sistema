@@ -1,35 +1,37 @@
 <template>
-<!--  <admin-desk>-->
+  <div>
+    <h2>Pridėti Darbuotoją</h2>
+
+    <form-item @onSubmit="createUser">
+      <!-- Vardas Pavardė -->
       <div>
-        <h2>Pridėti Darbuotoją</h2>
-
-        <form-item @onSubmit="createUser">
-          <div>
-            <input type="text"
-                   placeholder="Vardas" required
-                   v-model="newUser.first_name">
-            <input type="text"
-                   placeholder="Pavardė" required
-                   v-model="newUser.last_name">
-          </div>
-          <input type="email"
-                 placeholder="Elektroninis paštas"
-                 class="input-long" required
-                 v-model="newUser.email">
-
-          <select class="input-long" required v-model="newUser.company_id">
-            <option selected hidden class="placeholder" value="">Įmonė</option>
-            <option v-for="item in companyList" :key="item.id" :value="item.id">{{item.name}}</option> <!-- įmonių sąrašas -->
-          </select>
-
-          <div class="button-container">
-            <p class="error-msg">{{ errorMsg }}</p>
-            <button class="btn" type="submit">Pridėti</button>
-          </div>
-        </form-item>
-
+        <input type="text"
+               placeholder="Vardas" required
+               v-model="newUser.first_name">
+        <input type="text"
+               placeholder="Pavardė" required
+               v-model="newUser.last_name">
       </div>
-<!--  </admin-desk>-->
+      <!-- Email -->
+      <input type="email"
+             placeholder="Elektroninis paštas"
+             class="input-long" required
+             v-model="newUser.email">
+
+      <!-- Company -->
+      <select class="input-long" required v-model="newUser.company_id">
+        <option selected hidden class="placeholder" value="">Įmonė</option>
+        <option v-for="item in companyList" :key="item.id" :value="item.id">{{item.name}}</option> <!-- įmonių sąrašas -->
+      </select>
+
+      <!-- Errors and Submit btn -->
+      <div class="button-container">
+        <p class="error-msg">{{ errorMsg }}</p>
+        <button class="btn" type="submit">Pridėti</button>
+      </div>
+
+    </form-item>
+  </div>
 </template>
 
 <script>
@@ -38,9 +40,7 @@
   export default {
     name: "AddUser",
     props: [ 'companyList', 'errorMsg', 'company_id' ],
-    components: {
-      FormItem,
-    },
+    components: { FormItem },
     data() {
       return {
         newUser: {
@@ -59,7 +59,6 @@
     },
     methods:{
       createUser() {
-        console.log(this.newUser);
         this.$emit('createUser', this.newUser);
       },
     }

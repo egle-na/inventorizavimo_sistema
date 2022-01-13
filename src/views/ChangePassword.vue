@@ -3,16 +3,18 @@
   <Header />
 
   <div class="backdrop">
+
+    <!-- After success container -->
     <div v-show="passwordChanged"  class="form-container done-container" >
       <p>Slaptažodis pakeistas!</p>
       <router-link to="/">Mano Inventorius</router-link>
     </div>
 
+    <!-- Main container -->
     <div v-show="!passwordChanged" class="form-container">
       <h2>Keisti slaptažodį</h2>
 
       <form-item @onSubmit="changePassword">
-        <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
 
         <!-- Old password input -->
         <div class="password-container" >
@@ -47,7 +49,11 @@
           <p v-if="passwordConfirm.length >= 6 && !validPsw" class="error-msg">Slaptažodžiai nesutampa!</p>
         </div>
 
-        <button type="submit" class="btn">Pakeisti</button>
+        <!-- Errors and Submit btn -->
+        <div class="btn-container">
+          <p class="error-msg">{{ errorMsg }}</p>
+          <button type="submit" class="btn">Pakeisti</button>
+        </div>
       </form-item>
 
     </div>
@@ -57,7 +63,7 @@
 
 <script>
   import DataMixin from "@/components/mixins/DataMixin";
-  import BtnViewEye from "@/views/BtnViewEye";
+  import BtnViewEye from "@/components/BtnViewEye";
   import FormItem from "@/components/FormItem";
   import Header from "@/components/Header";
 
@@ -111,8 +117,10 @@
             this.passwordChanged = true;
 
           }).catch(error =>{
-            if(error.response.status === 422){
-            this.errorMsg = "Slaptažodis neteisingas";
+            if(error.response.data.error === "Either your email or token is wrong."){
+              this.errorMsg = "Slaptažodis neteisingas!";
+            } else {
+              this.errorMsg = "Įvyko klaida.";
             }
           })
         } // end if
@@ -142,7 +150,6 @@
     flex-direction: column;
     width: 400px;
     max-width: 95%;
-
     margin: auto;
   }
 
@@ -193,7 +200,7 @@
     align-self: flex-end;
   }
 
-  .error-msg {
+  .confirm-msg .error-msg {
     margin-top: 1em;
   }
 
@@ -201,8 +208,11 @@
     margin-bottom: 0;
   }
 
-  .btn {
+  .btn-container {
     margin-top: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
 </style>

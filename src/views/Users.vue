@@ -116,25 +116,25 @@
   import AddItem from "@/components/AddItem";
   import AddUser from "@/components/AddUser";
   import AdminDesk from "@/components/AdminDesk";
+  import BtnComponent from "@/components/BtnComponent";
+  import DeleteCard from "@/components/DeleteCard";
   import FormItem from "@/components/FormItem";
   import ModulusFull from "@/components/ModulusFull";
   import Search from "@/components/Search";
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
-  import BtnComponent from "@/components/BtnComponent";
   import {EventBus} from "@/main";
-  import DeleteCard from "@/components/DeleteCard";
 
   export default {
-    name: "AllUsers",
+    name: "Users",
     mixins: [ DataMixin, UsersMixin ],
     components: {
-      DeleteCard,
-      BtnComponent,
       ActionCard,
       AddItem,
       AddUser,
       AdminDesk,
+      BtnComponent,
+      DeleteCard,
       FormItem,
       ModulusFull,
       Search,
@@ -147,7 +147,6 @@
         addUserOpen: false,
         editUserCardOpen: false,
         deleteUserOpen: false,
-        addUserError: false,
         addGearOpen: false,
         selectedUser: { },
         mobileActions: false,
@@ -171,7 +170,7 @@
         this.params.company = this.$route.params.company_id;
       }
       this.getDataQuery(this.url, this.params);
-      this.getAdditionalData(this.$store.getters.API_baseURL + "/companies")
+      this.getAdditionalData(this.$store.getters.API_baseURL + "/companies");
     },
 
     methods: {
@@ -193,7 +192,8 @@
           params.role = oldUser.role === 1 ? 0 : oldUser.role === 0 && 1;
         }
 
-        if(Object.keys(params).length !== 0) { // if some changes are made
+        // if some changes are made
+        if(Object.keys(params).length !== 0) {
           this.$http.put(
               this.$store.getters.API_baseURL + "/users/" + id,
               params,
@@ -206,16 +206,16 @@
           }).catch(err => {
             if(err.response.data.error) {
               if(err.response.data.error.email){
-                this.errorMsg = "Vartotojas šiuo elektroninio pašto adresu jau užregistruotas."
+                this.errorMsg = "Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.";
               }
             }
             if(err.response.status === 401){
-              this.$router.push('/')
+              this.$router.push('/');
             }
           })
 
         } else { // if no changes
-          this.errorMsg = "Darbuotojo duomenys nepasikeitę."
+          this.errorMsg = "Darbuotojo duomenys nepasikeitę.";
         }
       },
 
@@ -243,21 +243,21 @@
               this.mobileActions = false;
               this.deleteUserOpen = false;
             }).catch(() => {
-              this.errorMsg = 'Negalima ištinti vartotojo dar turinčio priskirto inventoriaus.'
+              this.errorMsg = 'Negalima ištinti vartotojo dar turinčio priskirto inventoriaus.';
             })
       },
 
       setSearch(val) {
-        this.params.search = val
+        this.params.search = val;
         this.getDataQuery(this.url, this.params);
         this.mobileActions = false;
       },
 
       openMobileActions(id, event){
         this.mobileActions = id;
-        this.mobileActionsPos = event.pageY + 15 ; // position the card
+        this.mobileActionsPos = event.pageY + 15; // position the card
         if((window.innerHeight - event.clientY) < 190){
-          this.mobileActionsPos = event.pageY - 180 ;
+          this.mobileActionsPos = event.pageY - 180;
         }
       },
 
@@ -317,7 +317,6 @@
     border-left: none;
     border-bottom: solid 2px var(--clr-accent);
     max-width: 50%;
-    /*color: var(--clr-grey)*/
   }
 
   .company-filter .placeholder {
