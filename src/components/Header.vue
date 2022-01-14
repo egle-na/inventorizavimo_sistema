@@ -66,16 +66,10 @@
     },
 
     created() {
-      console.log("header created", this.$store.getters.allUsers)
       if(!this.$store.getters.allUsers.length){
-      console.log("no users", this.$store.getters.allUsers)
         this.getUsersList();
       }
       this.getNotifications();
-    },
-
-    mounted() {
-      console.log("header mounted")
     },
 
     computed: {

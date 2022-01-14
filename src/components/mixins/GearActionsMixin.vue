@@ -149,7 +149,6 @@
       },
 
       generatePDF(id, name) {
-        console.log('PDF sugeneruotas');
         this.$http.get(
             this.$store.getters.API_baseURL + '/gear/pdf/' + id,
             {...this.config, responseType: 'arraybuffer'}
