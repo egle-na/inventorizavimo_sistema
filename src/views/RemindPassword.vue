@@ -34,6 +34,9 @@
         email: '',
       }
     },
+    created() {
+      document.title = "Priminti slaptažodį | Inventorizavimo sistema";
+    },
     methods: {
       remindPassword() {
         this.$http.post(this.$store.getters.API_baseURL + "/reset-password",{email: this.email})

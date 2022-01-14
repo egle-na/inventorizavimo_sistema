@@ -39,7 +39,9 @@
         email: '',
       }
     },
-
+    created() {
+      document.title = "Prisijungti | Inventorizavimo sistema";
+    },
     methods: {
       togglePasswordVisibility() {
         this.pswVisible = !this.pswVisible;
@@ -51,6 +53,7 @@
           password: this.password
         }).then(response => {
           this.$store.commit('setUser', response.data.user);
+          this.$store.commit("setAllUsers", {});
           localStorage.setItem("access_token", response.data.access_token);
           this.$router.push({path: '/user-inventory'});
         }).catch(error => {

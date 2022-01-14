@@ -121,6 +121,7 @@
       }
     },
     created() {
+      document.title = "Inventorius | Inventorizavimo sistema";
       this.getData(this.url);
     },
     methods: {

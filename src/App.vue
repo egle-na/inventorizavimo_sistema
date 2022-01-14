@@ -159,10 +159,6 @@ export default {
   }
 
   @media (max-width: 580px){
-    :root {
-      --clr-accent: #022222;
-    }
-
     .mobile {
       display: initial;
     }

@@ -185,7 +185,10 @@
           this.url = this.$store.getters.API_baseURL + '/gear/all/' + this.$route.params.inventory_id;
         }
         this.getData(this.url,
-            () => { this.getStatusText(); },
+            () => {
+              document.title = this.list.name + " | Inventorizavimo sistema";
+              this.getStatusText();
+            },
             () => { this.$router.push({name: 'user-inventory'})
             });
         this.getHistory();

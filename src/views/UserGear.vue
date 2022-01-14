@@ -6,7 +6,7 @@
     <div class="title-container">
       <h1 v-if="!this.$route.params.user_id">Mano Inventorius</h1>
       <div v-else>
-        <p class="title-name">{{ findName(parseInt(this.$route.params.user_id)) }}</p>
+        <p class="title-name">{{ findName(user_id) }}</p>
         <h1>Inventorius</h1>
       </div>
       <btn-component :btnType="'add'" @btnClicked="addGearOpen = true; mobileActions = false; rowsSelected = []" />
@@ -251,6 +251,7 @@
       }
     },
     created() {
+      document.title = "Mano Invetorius | Inventorizavimo sistema";
       this.loadData();
     },
     mounted() {
@@ -263,6 +264,7 @@
       $route() {
       // get new data when going from specific user (route with params) to my gear (no params)
         this.url = this.$store.getters.API_baseURL + '/gear';
+        document.title = "Mano Invetorius | Inventorizavimo sistema";
         this.config = {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`
@@ -298,8 +300,9 @@
     methods: {
       loadData() {
         if(this.$route.params.user_id){
-          this.user_id = this.$route.params.user_id;
+          this.user_id = parseInt(this.$route.params.user_id);
           this.url = this.url +'/user/' + this.user_id;
+          document.title = this.findName(this.user_id) + " Inventorius | Inventorizavimo sistema";
         }
         this.getData(this.url);
       },

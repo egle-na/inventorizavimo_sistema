@@ -149,6 +149,7 @@
       }
     },
     created() {
+      document.title = "Įmonės | Inventorizavimo sistema";
       this.getData(this.url);
     },
     methods: {

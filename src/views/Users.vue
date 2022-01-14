@@ -171,6 +171,7 @@
       }
       this.getDataQuery(this.url, this.params);
       this.getAdditionalData(this.$store.getters.API_baseURL + "/companies");
+      document.title = "Darbuotojai | Inventorizavimo sistema";
     },
 
     methods: {

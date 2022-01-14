@@ -46,6 +46,7 @@
       }
     },
     created(){
+      document.title = "Pranešimai | Inventorizavimo sistema";
       this.getData(this.url);
     },
     mounted() {

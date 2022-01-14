@@ -89,6 +89,9 @@
         passwordConfirm: '',
       }
     },
+    created() {
+      document.title = "Keisti slaptažodį | Inventorizavimo sistema";
+    },
     computed: {
       validPsw(){
         return this.password === this.passwordConfirm;

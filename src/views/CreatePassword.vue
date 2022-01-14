@@ -76,6 +76,7 @@
       }
     },
     created() {
+      document.title = "Susikurti slaptažodį | Inventorizavimo sistema";
       this.email = this.$route.query.email;
       this.token = this.$route.query.token;
     },
