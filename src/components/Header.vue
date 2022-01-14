@@ -34,7 +34,7 @@
         <router-link to="/notifications">Visi pranešimai</router-link>
         <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" class="mobile">Admin</router-link>
         <router-link to="/change-password">Keisti slaptažodį</router-link>
-        <button @click="logOut">Atsijungti</button>
+        <button @click="tryLogOut">Atsijungti</button>
 
       </action-card>
     </div>
@@ -66,10 +66,16 @@
     },
 
     created() {
+      console.log("header created", this.$store.getters.allUsers)
       if(!this.$store.getters.allUsers.length){
+      console.log("no users", this.$store.getters.allUsers)
         this.getUsersList();
       }
       this.getNotifications();
+    },
+
+    mounted() {
+      console.log("header mounted")
     },
 
     computed: {
@@ -79,16 +85,12 @@
     },
 
     methods: {
-      logOut() {
+      tryLogOut() {
         this.$http.post(this.$store.getters.API_baseURL + "/auth/logout", {}, this.config)
           .then(() => {
-            localStorage.clear();
-            this.$router.push({path: '/login'});
-            this.$store.commit("setUser", {});
+            this.logOut();
           }).catch(() => {
-            localStorage.clear();
-            this.$store.commit("setUser", {});
-            this.$router.push({path: '/login'});
+            this.logOut();
           })
       },
     },

@@ -35,13 +35,6 @@
     grid-template-columns: min-content auto;
   }
 
-  .name-container {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
   #profile-btn {
     grid-row: 2 span;
     grid-column: 1;

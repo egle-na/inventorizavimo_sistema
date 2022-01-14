@@ -23,6 +23,9 @@ export default function admin ({ next, store }){
                     EventBus.$emit('displayMessage', "Įvyko klaida.")
                 }
                 localStorage.clear();
+                store.commit("setUser", {});
+                store.commit("setAllUsers", {});
+                store.commit("setNotifications", {});
                 return next({
                     name: 'login'
                 })

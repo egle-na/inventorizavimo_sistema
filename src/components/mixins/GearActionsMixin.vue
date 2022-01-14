@@ -71,8 +71,7 @@
 
               } else if(error.response.data.message === "Token has expired"){
                 EventBus.$emit('displayMessage', 'Sesijos laikas baigėsi!');
-                localStorage.clear();
-                this.$router.push({name: 'login'});
+                this.logOut();
 
               } else if(error.response.status === 500){
                 this.errorMsg = 'Įvyko klaida';

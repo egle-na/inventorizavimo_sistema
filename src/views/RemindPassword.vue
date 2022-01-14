@@ -12,7 +12,7 @@
         <h2>Priminti slaptažodį</h2>
         <form class="form-container" @submit.prevent="remindPassword">
 
-          <input type="email" placeholder="Elektroninis Paštas" required v-model="email"/>
+          <input type="email" autocomplete="username" placeholder="Elektroninis Paštas" required v-model="email"/>
           <p class="error-msg">{{ errorMsg }}</p>
 
           <button type="submit" class="btn">Priminti</button>

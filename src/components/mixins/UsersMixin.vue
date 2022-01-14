@@ -6,6 +6,7 @@
     methods: {
 
       getUsersList() {
+        console.log("get users")
         let endpoint = '/users';
         if(this.$store.getters.user.isAdmin === true){
           endpoint = '/users/all';

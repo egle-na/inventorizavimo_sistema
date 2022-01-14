@@ -21,6 +21,7 @@
           <input :type="oldPswInputType"
                  class="input-long"
                  placeholder="Dabartinis slaptažodis"
+                 autocomplete="current-password"
                  v-model="oldPassword"
                  required minlength="6"/>
           <btn-view-eye :pswVisible="oldPswVisible" @btnClicked="togglePasswordVisibility('old')"/>
@@ -31,6 +32,7 @@
           <input :type="pswInputType"
                  class="input-long"
                  placeholder="Naujas slaptažodis"
+                 autocomplete="new-password"
                  v-model="password"
                  required minlength="6"/>
           <btn-view-eye :pswVisible="pswVisible" @btnClicked="togglePasswordVisibility('new')"/>
@@ -40,6 +42,7 @@
         <!-- New password confirm input -->
         <input type="password" class="input-long"
                placeholder="Pakartoti naują slaptažodį"
+               autocomplete="new-password"
                v-model="passwordConfirm"
                required minlength="6"/>
 

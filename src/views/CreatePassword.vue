@@ -18,13 +18,14 @@
         <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
 
         <!-- Email input -->
-        <input type="email" placeholder="Elektroninis Paštas" required class="input-long" v-model="email"/>
+        <input type="email" autocomplete="username" placeholder="Elektroninis Paštas" required class="input-long" v-model="email"/>
 
         <!-- New password input -->
         <div class="password-container" >
           <input :type="pswInputType"
                  class="input-long"
                  placeholder="Naujas slaptažodis"
+                 autocomplete="new-password"
                  v-model="password"
                  required minlength="6"/>
           <btn-view-eye :pswVisible="pswVisible" @btnClicked="togglePasswordVisibility" />
@@ -33,6 +34,7 @@
         <!-- New password confirm input -->
         <input type="password" class="input-long"
                placeholder="Pakartoti naują slaptažodį"
+               autocomplete="new-password"
                v-model="passwordConfirm"
                required minlength="6"/>
 

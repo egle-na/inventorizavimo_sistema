@@ -87,13 +87,24 @@
 
       catchErrorTokenExpired(error){
         if(error.response.status === 500){
-          if(error.response.data.message === "Token has expired" ||
-              error.response.data.message === "The token has been blacklisted"){
-            localStorage.clear();
-            this.$router.push({name: 'login'});
+          if(
+              error.response.data.message === "Token has expired"
+              || error.response.data.message === "The token has been blacklisted"
+          ){
+            this.logOut();
             EventBus.$emit('displayMessage', 'Sesijos laikas baigėsi!');
           }
         }
+      },
+
+      logOut() {
+        localStorage.clear();
+
+        this.$store.commit("setUser", {});
+        this.$store.commit("setAllUsers", {});
+        this.$store.commit("setNotifications", {});
+
+        this.$router.push({path: '/login'});
       }
 
     }

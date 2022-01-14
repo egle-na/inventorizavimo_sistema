@@ -8,11 +8,11 @@
       <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
 
       <!-- Email input -->
-      <input type="email" placeholder="Elektroninis Paštas" required class="first-input" v-model="email"/>
+      <input type="email" autocomplete="username" placeholder="Elektroninis Paštas" required class="first-input" v-model="email"/>
 
       <!-- Password input -->
       <div class="password-container">
-        <input :type="pswInputType" placeholder="Slaptažodis" required v-model="password" minlength="6"/>
+        <input :type="pswInputType" autocomplete="current-password" placeholder="Slaptažodis" required v-model="password" minlength="6"/>
         <btn-view-eye :pswVisible="pswVisible" @btnClicked="togglePasswordVisibility">
         </btn-view-eye>
       </div>
