@@ -66,6 +66,7 @@
     },
 
     created() {
+      // get all users list if users list is empty
       if(!this.$store.getters.allUsers.length){
         this.getUsersList();
       }

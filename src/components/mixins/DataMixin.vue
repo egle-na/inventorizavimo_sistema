@@ -28,6 +28,10 @@
       },
 
       getDataError(error){
+        if(!error){
+          EventBus.$emit('displayMessage', 'Įvyko klaida.');
+          return;
+        }
         this.catchErrorTokenExpired(error);
         if(error.response.status !== 500){
           EventBus.$emit('displayMessage', 'Įvyko klaida.');
@@ -35,6 +39,7 @@
       },
 
       setSearch(val) {
+        console.log(val)
         this.getDataQuery(this.url, {search: val});
       },
 

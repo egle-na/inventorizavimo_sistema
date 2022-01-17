@@ -39,7 +39,7 @@
     },
     methods: {
       remindPassword() {
-        this.$http.post(this.$store.getters.API_baseURL + "/reset-password",{email: this.email})
+        this.$http.post(this.$store.getters.API_baseURL + "/reset-password-email",{email: this.email})
           .then(() => this.passwordResetSent = true)
           .catch((error) => {
             if(error.response.data.message === "Email does not exist.") {

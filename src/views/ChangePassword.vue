@@ -20,24 +20,27 @@
         <div class="password-container" >
           <input :type="oldPswInputType"
                  class="input-long"
+                 :class="{'input-error': errorMsg === 'Slaptažodis neteisingas!'}"
+                 @change="errorMsg = ''"
                  placeholder="Dabartinis slaptažodis"
                  autocomplete="current-password"
                  v-model="oldPassword"
                  required minlength="6"/>
           <btn-view-eye :pswVisible="oldPswVisible" @btnClicked="togglePasswordVisibility('old')"/>
         </div>
+        <p :class="{'hidden': password.length < 6 || password !== oldPassword}" class="error-msg">Naujas slaptažodis sutampa su dabartiniu slaptažodžiu!</p>
 
         <!-- New password input -->
         <div class="password-container" >
           <input :type="pswInputType"
                  class="input-long"
+                 :class="{'input-error': password.length >= 6 && password === oldPassword}"
                  placeholder="Naujas slaptažodis"
                  autocomplete="new-password"
                  v-model="password"
                  required minlength="6"/>
           <btn-view-eye :pswVisible="pswVisible" @btnClicked="togglePasswordVisibility('new')"/>
         </div>
-        <p v-show="password.length >= 6 && password === oldPassword" class="error-msg">Naujas slaptažodis sutampa su dabartiniu slaptažodžiu!</p>
 
         <!-- New password confirm input -->
         <input type="password" class="input-long"
@@ -47,9 +50,9 @@
                required minlength="6"/>
 
         <!-- does it match msg -->
-        <div class="confirm-msg" v-if="password.length >= 6 && password !== oldPassword">
-          <p v-if="passwordConfirm.length >= 6 && validPsw">Slaptažodžiai sutampa!</p>
-          <p v-if="passwordConfirm.length >= 6 && !validPsw" class="error-msg">Slaptažodžiai nesutampa!</p>
+        <div class="confirm-msg" :class="{'hidden': password.length < 6 || passwordConfirm.length < 6 || password === oldPassword}">
+          <p v-if="validPsw">Slaptažodžiai sutampa!</p>
+          <p v-else class="error-msg">Slaptažodžiai nesutampa!</p>
         </div>
 
         <!-- Errors and Submit btn -->
@@ -105,26 +108,32 @@
     },
     methods: {
       togglePasswordVisibility(type) {
-        if (type === 'old') {
-          this.oldPswVisible = !this.oldPswVisible;
-        } else if (type === 'new') {
-          this.pswVisible = !this.pswVisible;
+        switch (type) {
+          case 'old':
+            this.oldPswVisible = !this.oldPswVisible;
+            break;
+          case 'new':
+            this.pswVisible = !this.pswVisible;
+            break;
         }
       },
 
       changePassword() {
+        // request password change if new passwords are the same and doesn't match with the old one
         if (this.validPsw && this.password !== this.oldPassword) {
           this.errorMsg = "";
           this.$http.post(
               this.$store.getters.API_baseURL + "/change-password",
-              { old_password: this.oldPassword, password: this.password },
+              { old_password: this.oldPassword, password: this.password, confirm_password: this.passwordConfirm },
               this.config
           ).then(() => {
             this.passwordChanged = true;
 
           }).catch(error =>{
-            if(error.response.data.error === "Either your email or token is wrong."){
+            if(error.response.data.message === "Password is incorrect"){
               this.errorMsg = "Slaptažodis neteisingas!";
+            } else if(error.response.data.message === "Passwords do not match"){
+              this.errorMsg = "";
             } else {
               this.errorMsg = "Įvyko klaida.";
             }
@@ -175,7 +184,7 @@
   }
 
   .password-container:first-of-type {
-    margin-bottom: 2.8em;
+    margin-bottom: 1em;
   }
 
   .password-container input {

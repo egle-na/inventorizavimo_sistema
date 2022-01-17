@@ -87,6 +87,10 @@
     padding: 0;
   }
 
+  .align-center {
+    text-align: center;
+  }
+
   a {
     display: inline-block;
     color: currentColor;

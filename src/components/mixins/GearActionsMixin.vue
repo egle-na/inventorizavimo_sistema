@@ -3,24 +3,30 @@
 
   export default {
     name: "GearActionsMixin",
+    data() {
+      return {
+        errorArr: [],
+      }
+    },
     methods: {
       returnItem(id) {
+        this.errorArr = [];
+        this.errorMsg = "";
         if (!id.length){
           id = [id];
         }
 
-        this.postData(this.$store.getters.API_baseURL + '/requests/return',
+        this.postData(
+            this.$store.getters.API_baseURL + '/requests/return',
             {gear_id: [...id]},
             (response) => {
               this.getData(this.url);
               this.returnCardOpen = false;
-              this.errorMsg = "";
               if(response.data.message.includes("Return request created")){
                 EventBus.$emit('displayMessage', 'Užklausa sėkmingai išsiųsta!');
               }
             },
             (error) => {
-              this.errorMsg = "";
               error.response.data.message.forEach( message => {
                 if(message.includes("Return request is already sent")){
                   this.errorMsg = "Grąžinimo užklausa jau pateikta.";
@@ -46,11 +52,13 @@
       },
 
       deleteGear(id) {
-        if(id.length){
-          // delete multiple
+        this.errorArr = [];
+        if(!id.length){
+          id = [id];
         }
         // id = this.$route.params.inventory_id;
-        this.$http.delete(this.$store.getters.API_baseURL + '/gear/' + id, this.config)
+        this.$http.delete(this.$store.getters.API_baseURL + '/gear/delete',
+            {...this.config, data:{gear_id: id} })
             .then(() => {
               this.deleteCardOpen = false;
               if(this.$route.name === 'inventory-info') {
@@ -60,30 +68,49 @@
               }
               this.errorMsg = '';
               EventBus.$emit('displayMessage', 'Inventorius sėkmingai nurašytas!');
-            })
-            .catch(error => {
-              if(error.response.data.message === "Gear has a request" ){
-                this.errorMsg = 'Inventorius turi neatsakytą užklausą.';
 
-              } else if(error.response.data.message === "You cannot destroy lent gear"
-                  || error.response.data.message === "You cannot delete lent gear"){
-                this.errorMsg = 'Paskolinto inventoriaus išmesti negalima.';
+            }).catch (error => {
+            // one delete request was sent and it failed
+              if (id.length === 1 && error.response.data.message.length === 1) {
+                if (error.response.status === 500) {
+                  this.catchErrorTokenExpired(error);
 
-              } else if(error.response.data.message === "Token has expired"){
-                EventBus.$emit('displayMessage', 'Sesijos laikas baigėsi!');
-                this.logOut();
+                } else if (error.response.data.message[0].includes("Gear has a request")) {
+                  this.errorMsg = 'Inventorius turi neatsakytą užklausą.';
 
-              } else if(error.response.status === 500){
-                this.errorMsg = 'Įvyko klaida';
+                } else if (error.response.data.message[0].includes("You cannot destroy lent gear")
+                    || error.response.data.message[0].includes("You cannot delete lent gear")) {
+                  this.errorMsg = 'Paskolinto inventoriaus nurašyti negalima.';
+                } else {
+                  this.errorMsg = error.response.data.message[0];
+                }
 
-              } else if(error.response.data.message === "Not authorized"){
-                this.errorMsg = 'Negalite atlikti šio veiksmo.';
+              // if some requests succeeded
+              } else {
+                this.errorMsg = error.response.data.message.length < id.length ? `${id.length - error.response.data.message.length} inventorius nurašytas!` : "";
+                this.returnCardOpen = false;
+                this.errorMsg += `
+                    <button @click="EventBus.$emit('displayMessage', 'elp')">
+                        peržiūrėti ${error.response.data.message.length} nepavykusius
+                    </button>
+                `;
 
-              } else this.errorMsg = error.response.data.message;
+                error.response.data.message.forEach(msg => {
+                  this.addError('delete', msg);
+                })
+              }
             })
       },
 
+      addError(type, message) {
+        if (type === 'delete') {
+          this.errorArr.push(message);
+        }
+      },
+
+
       gearAction(user_id, id, actionType){
+        this.errorArr = [];
         if(!user_id) {
           this.errorMsg = 'Pasirinkite darbuotoją';
         } else {
@@ -123,6 +150,8 @@
                     this.errorMsg = "Inventorius turi neatsakytą užklausą";
                   } else if (message.includes("You cannot give away lent gear")) {
                     this.errorMsg = "Negalite perleisti paskolinto inventoriaus";
+                  } else if (message.includes("You do not currently hold this gear")) {
+                    this.errorMsg = "Negalite skolinti šio inventoriaus";
                   } else if (message.includes("Sorry, gear not found.")) {
                     if (actionType === 'Perleisti' && this.$store.getters.user.isAdmin) {
                       this.errorMsg = "Svetimo inventoriaus perleisti kitiems negalite.";

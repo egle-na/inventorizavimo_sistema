@@ -52,11 +52,11 @@
       <div class="btn-container">
         <div>
           <label>
-            <input type="radio" name="long-term" value="1" v-model="newGear.long_term">
+            <input type="radio" name="long-term" value="true" v-model="newGear.long_term">
             Ilgalaikė įranga
           </label>
           <label>
-            <input type="radio" name="long-term" value="0" v-model="newGear.long_term">
+            <input type="radio" name="long-term" value="false" v-model="newGear.long_term">
             Trumpalaikė įranga
           </label>
         </div>
@@ -91,7 +91,7 @@
           serial_number: '',
           amount: '',
           unit_price: '',
-          long_term: 1,
+          long_term: true,
           user_id: this.user,
         },
       }
@@ -129,11 +129,16 @@
       },
 
       checkCode(){
-        this.$http.get(this.$store.getters.API_baseURL + "/code/" + this.newGear.code, this.config)
+        this.$http.get(this.$store.getters.API_baseURL + "/gear/code/" + this.newGear.code, this.config)
             .then(response => {
                let { name, unit_price, description, long_term } = response.data;
                this.newGear = {...this.newGear, name, unit_price, description, long_term };
-            }).catch(() => {})
+            }).catch(error => {
+              if(error.response.data.message === "Sorry, gear not found."){
+                this.newGear = {...this.newGear, name:"", unit_price:"", description:"", long_term:true };
+              }
+              this.catchErrorTokenExpired();
+        })
       }
     }
   }

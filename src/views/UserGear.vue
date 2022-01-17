@@ -11,8 +11,8 @@
       </div>
       <btn-component :btnType="'add'" @btnClicked="addGearOpen = true; mobileActions = false; rowsSelected = []" />
 
-      <!-- Filter -->
-      <div class="filter-container non-mobile">
+      <!-- Max width filter -->
+      <div class="wide-filter filter non-mobile">
         <button class="filter-btn"
                 v-if="!this.$route.params.user_id"
                 :class="{'filter-selected': filter === 'owned'}"
@@ -25,14 +25,26 @@
                 :class="{'filter-selected': filter === 'borrowed'}"
                 @click="setFilter('borrowed')">Pasiskolinta</button>
         <button class="filter-btn"
+                :class="{'filter-selected': filter === 'lent'}"
+                @click="setFilter('lent')">Paskolinta</button>
+        <button class="filter-btn"
                 :class="{'filter-selected': filter === 'all'}"
                 @click="setFilter('all')">Visi</button>
       </div>
 
+      <!-- Medium filter -->
+      <select class="medium-filter filter non-mobile" v-model="filter" @change="rowsSelected = []">
+        <option selected value="all" class="placeholder">Visa įranga</option>
+        <option v-if="!this.$route.params.user_id" value="owned" class="placeholder">Mano įranga</option>
+        <option v-else value="owned" class="placeholder">Ameninė įranga</option>
+        <option value="lent" class="placeholder">Paskolinta įranga</option>
+        <option value="borrowed" class="placeholder">Pasiskolinta įranga</option>
+      </select>
+
       <!-- Mobile Filter -->
-      <div class="mobile mobile-filter-card">
+      <div class="mobile mobile-filter filter">
         <btn-option-dots @btnClicked="mobileFilterOpen = !mobileFilterOpen" />
-        <action-card class="mobile-filter" v-show="mobileFilterOpen" @close="mobileFilterOpen = false">
+        <action-card class="mobile-filter-card" v-show="mobileFilterOpen" @close="mobileFilterOpen = false">
           <button class="first" v-if="!this.$route.params.user_id" @click="setFilter('owned')">Mano įranga</button>
           <button v-else @click="setFilter('owned')">Asmeninė</button>
           <button @click="setFilter('borrowed')">Pasiskolinta</button>
@@ -42,19 +54,22 @@
     </div> <!-- /title container -->
 
     <!-- Deal with selected -->
-    <div class="selection-actions">
-      <!-- mobile checkbox -->
-      <div class="mobile flex">
-        <input type="checkbox"
-               title="Pasirinkti Viską"
-               :class="{'checkbox-hidden': !anySelected}"
-               :checked="anySelected"
-               @click="$event.target.checked ? selectAll() : rowsSelected = []">
-        <span class="mobile" v-if="anySelected">: {{ rowsSelected.length }}</span>
-      </div>
+    <div class="selection-container">
+      <Search @setSearch="setSearch(...arguments); rowsSelected = []" />
 
-      <!-- other actions -->
-      <div :class="{'hidden': !anySelected}" class="flex">
+      <div :class="{'hidden': !anySelected}" class="flex selection-actions">
+
+        <!-- mobile checkbox -->
+        <div class="mobile flex">
+          <input type="checkbox"
+                 title="Pasirinkti Viską"
+                 :class="{'checkbox-hidden': !anySelected}"
+                 :checked="anySelected"
+                 @click="$event.target.checked ? selectAll() : rowsSelected = []">
+          <span class="mobile" v-if="anySelected">: {{ rowsSelected.length }}</span>
+        </div>
+
+        <!-- other actions -->
         <span class="non-mobile">Pasirinkta: {{ rowsSelected.length }}</span>
         <table-actions class="actions">
 
@@ -82,7 +97,8 @@
                  @click="$event.target.checked ? selectAll() :  rowsSelected = []">
         </th>
         <th>Pavadinimas</th>
-        <th class="tablet-hide">Gavimo data</th>
+        <th class="tablet-hide align-center">Kodas</th>
+        <th class="tablet-hide">Serijos Numeris</th>
         <th>Statusas</th>
         <th>Veiksmai</th>
       </tr>
@@ -103,14 +119,18 @@
           </router-link>
         </td>
 
-        <td @click="selectRow(index, $event)" class="tablet-hide non-mobile">{{ gear.updated_at.split('T')[0] }}</td>
+        <td @click="selectRow(index, $event)" class="tablet-hide non-mobile align-center">{{ gear.code }}</td>
+        <td @click="selectRow(index, $event)" class="tablet-hide non-mobile">{{ gear.serial_number }}</td>
         <td @click="selectRow(index, $event)" class="non-mobile">{{ statusText(gear.lent, gear.own) }}</td>
 
         <!-- Non Mobile Table Actions -->
         <td class="actions-cell non-mobile">
           <table-actions>
-            <btn-hands :btnType="'return'" v-if="!gear.own && gear.lent && !$route.params.user_id" @btnClicked="openCard('return', gear.id)" />
-            <span class="action-divider" v-if="!gear.own && gear.lent && !$route.params.user_id" />
+            <btn-hands :btnType="'return'"
+                       v-if="statusText(gear.lent, gear.own) === 'Pasiskolinta' && !$route.params.user_id"
+                       :disabled="!gear.current_holder"
+                       @btnClicked="openCard('return', gear.id)" />
+            <span class="action-divider" v-if="statusText(gear.lent, gear.own) === 'Pasiskolinta' && !$route.params.user_id" />
 
             <btn-hands :btnType="'lend'"
                       title="Skolinti"
@@ -216,11 +236,13 @@
   import TableActions from "@/components/TableActions";
   import TableComponent from "@/components/TableComponent";
   import {EventBus} from "@/main";
+  import Search from "@/components/Search";
 
   export default {
     name: "UserItems",
     mixins: [ DataMixin, GearActionsMixin, UsersMixin ],
     components: {
+      Search,
       ActionCard,
       AddItem,
       BtnComponent,
@@ -292,6 +314,8 @@
             return unpackedList.filter(gear => gear.own === 1);
           case "borrowed":
             return unpackedList.filter(gear => gear.own === 0);
+          case "lent":
+            return unpackedList.filter(gear => gear.own === 1 && gear.current_holder === 0);
           default :
             return this.list;
         }
@@ -490,7 +514,7 @@
 <style scoped>
 
   main {
-    max-width: 1000px;
+    max-width: 1200px;
     width: 94%;
     margin: 0 auto;
   }
@@ -510,9 +534,18 @@
     letter-spacing: 0.065em;
   }
 
-  .filter-container {
+  /* Filter */
+
+  .filter {
     margin-left: auto;
-    flex-shrink: .5;
+  }
+
+  .wide-filter {
+    flex-shrink: 0;
+  }
+
+  .medium-filter {
+    display: none;
   }
 
   .filter-btn {
@@ -545,7 +578,8 @@
     border-color: var(--clr-accent);
   }
 
-  .mobile-filter-card button:first-child {
+
+  .mobile-filter button:first-child {
     margin: 0 1em;
   }
 
@@ -565,17 +599,43 @@
     color: var(--clr-accent);
   }
 
+  .search-container {
+    margin: 0 auto 1em 0;
+    /*margin-right: auto;*/
+    width: 45%;
+    transition: width 250ms;
+  }
+
+  .selection-container{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: .5em 0;
+  }
+
+  .selection-container .actions {
+    margin-left: 1.5em;
+  }
+
+  .selection-actions {
+    align-items: center;
+  }
+
+  .table-container{
+    max-height: calc(100vh - 50px - 18rem);
+  }
+
   .checkbox-cell {
     width: 50px;
     text-align: center;
   }
 
   .checkbox-hidden {
-    opacity: 0;
+    opacity: .3;
   }
 
   .checkbox-hidden:hover {
-    opacity: .3;
+    opacity: .9;
   }
 
   .row-selected-simple{
@@ -586,24 +646,11 @@
     background: #0054A620;
   }
 
-  .hidden{
-    visibility: hidden;
-  }
-
-  .selection-actions{
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    margin: .5em 0;
-  }
-
-  .selection-actions .actions {
-    margin-left: 1.5em;
-  }
-
   .flex {
     display: flex;
-    align-items: center;
+    /*align-items: center;*/
+    justify-content: space-between;
+    align-self: stretch;
   }
 
   .mobile.flex {
@@ -614,19 +661,46 @@
     width: 230px;
   }
 
-  @media (max-width: 960px){
-    .filter-container {
-      display: flex;
-      flex-direction: column-reverse;
-      margin-right: 1em;
+  @media (max-width: 1100px){
+    .wide-filter {
+      display: none;
     }
-    .filter-container .filter-btn {
-      padding: 0 1em;
+    .medium-filter{
+      display: initial;
+      border-left: none;
+    }
+    .table-container{
+      max-height: calc(100vh - 50px - 16rem);
+    }
+  }
+
+  @media (max-width: 820px){
+    h1 {
+      font-size: 3.3rem;
+    }
+    .selection-container {
+      flex-direction: column;
+    }
+    .search-container {
+      width: 100%;
+    }
+    .selection-container .actions {
+      margin-left: 1.5em;
+    }
+
+    .table-container{
+      max-height: calc(100vh - 50px - 17rem);
+    }
+  }
+
+  @media (max-width: 715px){
+    h1 {
+      font-size: 2.9rem;
     }
   }
 
   @media (max-width: 580px){
-    .mobile-filter-card{
+    .mobile-filter{
       margin-left: auto;
     }
 
@@ -634,17 +708,16 @@
       opacity: .2;
     }
 
-    .selection-actions{
+    .selection-container{
       justify-content: space-between;
-      margin-left: 1.3em;
     }
 
     .mobile.flex {
+      margin-left: 1.3em;
       display: flex;
-    }
-
-    .filter-container{
-      display: none;
+      align-items: center;
+      min-width: 50px;
+      justify-content: flex-start;
     }
 
     td:first-child {
@@ -654,6 +727,10 @@
     .mobile-actions-card{
       position: absolute;
       right: 10%;
+    }
+
+    .non-mobile {
+      display: none;
     }
   }
 </style>

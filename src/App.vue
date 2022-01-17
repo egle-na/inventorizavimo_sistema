@@ -158,6 +158,11 @@ export default {
     display: none;
   }
 
+  .hidden{
+    visibility: hidden;
+  }
+
+
   @media (max-width: 580px){
     .mobile {
       display: initial;
@@ -176,7 +181,7 @@ export default {
     }
   }
 
-  @media(max-width: 730px){
+  @media(max-width: 820px){
     .tablet-hide {
       display: none;
     }

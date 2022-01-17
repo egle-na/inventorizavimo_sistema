@@ -195,24 +195,27 @@
       },
 
       getStatusText() {
-        if(this.$store.getters.user.isAdmin) { // Admin
-
-          if(this.list.user_id === this.$store.getters.user.id){ // Admin is owner
-            this.statusText = this.list.lent ? "Paskolintas" : "Savininkas";
-
-          } else { // Admin not owner
-            this.statusText = this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
-
-            if(this.list.lent) { // Admin not owner but gear is lent
-              this.getData(
-                  this.$store.getters.API_baseURL + '/gear/' + this.list.id,
-                  () => {
-                    this.statusText = "Pasiskolinta";
-                  })
-            }
-          }
-        } else { // not Admin
+        // If not Admin checks it's gear
+        if(!this.$store.getters.user.isAdmin){
           this.statusText = this.list.own ? this.list.lent ? "Paskolintas" : "Savininkas" : "Pasiskolinta";
+          return;
+        }
+
+        // If Admin is the owner
+        if(this.list.user_id === this.$store.getters.user.id){
+          this.statusText = this.list.lent ? "Paskolintas" : "Savininkas";
+
+        } else { // If Admin is not the owner
+
+          // gear is not lent to Admin
+          this.statusText = this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
+
+          // check if ger is lent to Admin
+          if(this.list.lent) {
+            this.getData(
+                this.$store.getters.API_baseURL + '/gear/' + this.list.id,
+                () => { this.statusText = "Pasiskolinta"; })
+          }
         }
       },
 

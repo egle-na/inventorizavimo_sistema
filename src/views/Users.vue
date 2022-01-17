@@ -12,7 +12,7 @@
 
       <!-- filter -->
       <select class="company-filter" v-model="params.company" @change="getDataQuery(url, params); mobileActions = false">
-        <option selected value="" class="placeholder">Visi darbuotojai</option> <!-- Visos įmonės-->
+        <option selected value="" class="placeholder">Visi darbuotojai</option>
         <option v-for="item in additionalList" :key="item.id" :value="item.id">{{ item.name }}</option>
       </select>
     </div> <!-- /title container-->
@@ -166,9 +166,7 @@
       }
     },
     created() {
-      if( this.$route.params.company_id ){
-        this.params.company = this.$route.params.company_id;
-      }
+      this.params.company = this.$route.params.company_id ? this.$route.params.company_id : "";
       this.getDataQuery(this.url, this.params);
       this.getAdditionalData(this.$store.getters.API_baseURL + "/companies");
       document.title = "Darbuotojai | Inventorizavimo sistema";

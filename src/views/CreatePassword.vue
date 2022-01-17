@@ -97,7 +97,7 @@
         if (this.validPsw) {
           this.errorMsg = "";
           this.$http.post(
-              this.$store.getters.API_baseURL + "/change-password",
+              this.$store.getters.API_baseURL + "/reset-password",
               {email: this.email, token: this.token, password: this.password}
           ).then(() => {
             this.passwordCreated = true;
@@ -105,8 +105,9 @@
           }).catch(error => {
             if (error.response.status === 422) {
               this.errorMsg = "Elektroninio pašto adresas neteisingas arba nuoroda nebegaliojanti.";
-            }
+            } else this.errorMsg = "Įvyko klaida."
           })
+
         } // end if
       },
 

@@ -33,6 +33,7 @@
 <style scoped>
 
   .search-container {
+    position: relative;
     margin: 1.5em 0 2em;
   }
 
@@ -50,7 +51,7 @@
 
   #clear-btn {
     position: absolute;
-    right: 1em;
+    right: .5em;
 
     color: var(--clr-grey);
     font-size: 2rem;
