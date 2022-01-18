@@ -30,7 +30,12 @@
 
       <!-- Errors and Submit btn -->
       <div class="btn-container">
-        <p v-if="errorMsg" class="error-msg">{{ errorMsg }}</p>
+        <p v-if="errorMsg" class="error-msg">
+          {{ errorMsg }}
+          <button v-if="errorArr && errorArr.length" @click="openErrorsCard" type="button">
+            Peržiūrėti klaidas.
+          </button>
+        </p>
         <button class="btn">{{ type }}</button>
       </div>
     </form>
@@ -41,12 +46,13 @@
 <script>
   import UsersMixin from "@/components/mixins/UsersMixin";
   import ModulusFull from "@/components/ModulusFull";
+  import {EventBus} from "@/main";
 
   export default {
     name: "SelectUser",
     mixins: [ UsersMixin ],
     components: { ModulusFull },
-    props: [ 'type', 'errorMsg', 'gear_owner'],
+    props: [ 'type', 'errorMsg', 'gear_owner', 'errorArr'],
     data() {
       return {
         searchActive: false,
@@ -81,7 +87,6 @@
       },
     },
     methods: {
-
       setSearchActive() {
         if(this.filteredList.length) {
           this.searchActive = true;
@@ -128,6 +133,10 @@
         this.searchName = '';
         this.$emit('close');
       },
+
+      openErrorsCard() {
+        EventBus.$emit('viewErrors', this.errorArr);
+      }
     },
   }
 </script>

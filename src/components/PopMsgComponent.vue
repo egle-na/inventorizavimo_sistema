@@ -1,8 +1,16 @@
 <template>
 <div class="msg-container">
 
-  <div v-for="(message, index) in messages" :key="index" class="msg">
-    <p>{{ message }}</p>
+  <div v-for="(message, index) in messages"
+       :key="index"
+       class="msg" :class="{'error-msg': message.errors}">
+    <p>
+      {{ message.message }}
+      <button v-if="message.errors"
+              class="error-msg"
+              @click="viewErrors(message.errors)"
+      >Peržiūrėti klaidas.</button>
+    </p>
   </div>
 
 </div>
@@ -20,19 +28,37 @@
     },
     created() {
       EventBus.$on('displayMessage', this.showMessage);
+      EventBus.$on('displayErrorsMessage', this.showErrors);
+    },
+    beforeDestroy() {
+      EventBus.$off('displayMessage');
+      EventBus.$off('displayErrorsMessage');
     },
     methods: {
       showMessage(message){
-        this.messages.push(message);
+        this.messages.push({message});
         setTimeout(() => {
           this.messages.shift();
         }, 8000);
       },
+      showErrors(message, errors){
+        this.messages.push({message, errors});
+        setTimeout(() => {
+          this.messages.shift();
+        }, 25000);
+      },
+      viewErrors(errors) {
+        EventBus.$emit('viewErrors', errors)
+      }
     },
   }
 </script>
 
 <style scoped>
+
+  button {
+    font-family: inherit;
+  }
 
   .msg-container {
     position: fixed;
@@ -48,6 +74,11 @@
     border-radius: 10px;
     margin-top: 1em;
   }
+
+  .error-msg {
+    color: var(--clr-red);
+  }
+
 
   @media (max-width: 580px){
     .msg-container {

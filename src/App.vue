@@ -1,16 +1,18 @@
 <template>
   <div id="app">
     <router-view />
-    <success-msg-component />
+    <pop-msg-component />
+    <view-errors-card />
   </div>
 </template>
 
 <script>
 
-import SuccessMsgComponent from "@/components/SuccessMsgComponent";
+import PopMsgComponent from "@/components/PopMsgComponent";
+import ViewErrorsCard from "@/components/ViewErrorsCard";
 export default {
   name: 'App',
-  components: {SuccessMsgComponent},
+  components: {ViewErrorsCard, PopMsgComponent},
 }
 </script>
 

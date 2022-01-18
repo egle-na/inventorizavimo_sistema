@@ -5,7 +5,12 @@
     <slot></slot>
 
     <div class="btn-container">
-      <p class="error-msg">{{ errorMsg }}</p>
+      <p class="error-msg">
+        {{ errorMsg }}
+        <button v-if="errorArr && errorArr.length" @click="openErrorsCard">
+          Peržiūrėti klaidas.
+        </button>
+      </p>
       <div class="buttons">
         <button class="btn faded" @click="$emit('close')">Ne</button>
         <button class="btn" @click="$emit('delete')">Taip</button>
@@ -17,10 +22,16 @@
 
 <script>
   import ModulusFull from "@/components/ModulusFull";
+  import {EventBus} from "@/main";
   export default {
     name: "DeleteCard",
-    props: [ 'errorMsg' ],
-    components: {ModulusFull},
+    props: [ 'errorMsg', 'errorArr' ],
+    components: { ModulusFull },
+    methods: {
+      openErrorsCard() {
+        EventBus.$emit('viewErrors', this.errorArr);
+      }
+    }
   }
 </script>
 

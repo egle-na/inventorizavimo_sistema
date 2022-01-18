@@ -177,7 +177,8 @@
 
   <delete-card v-else-if="returnCardOpen"
                :errorMsg="errorMsg"
-               @close="returnCardOpen = false; errorMsg = ''"
+               :errorArr="errorArr"
+               @close="returnCardOpen = false; errorMsg = ''; errorArr = ''"
                @delete="returnItem(returnCardOpen)">
     <p>Ar esate pasiruošę grąžinti
       <strong v-if="!returnCardOpen.length">{{ gearName(returnCardOpen) }}</strong>
@@ -192,7 +193,8 @@
 
   <delete-card v-else-if="deleteCardOpen"
                :errorMsg="errorMsg"
-               @close="deleteCardOpen = false; errorMsg = ''"
+               :errorArr="errorArr"
+               @close="deleteCardOpen = false; errorMsg = ''; errorArr = ''"
                @delete="deleteGear(deleteCardOpen)">
     <p>Ar tikrai norite nurašyti
       <strong v-if="!deleteCardOpen.length">{{ gearName(deleteCardOpen) }}</strong>
@@ -212,10 +214,11 @@
 
   <!-- Skolinti/Perleisti action -->
   <select-user v-else-if="selectUserOpen"
-               @close="selectUserOpen = false; errorMsg = ''"
+               @close="selectUserOpen = false; errorMsg = ''; errorArr = ''"
                @submitAction="gearAction( ...arguments, selectUserOpen.id, selectUserOpen.type )"
                :type="selectUserOpen.type"
                :gear_owner="selectUserOpen.owner_id"
+               :errorArr="errorArr"
                :errorMsg="errorMsg" />
 </div>
 </template>
@@ -425,7 +428,7 @@
       },
 
       openMobileActions(item, event){
-        let rows = 1;
+        let rows = 1; // find how tall the card will be
         if (!item.own && item.lent && !this.$route.params.user_id) rows++;
         if (((item.own && !item.lent) || (!item.own && item.lent)) && !this.$route.params.user_id) rows++ ;
         if (item.own && !item.lent) rows++;
@@ -456,7 +459,6 @@
           this.selectUserOpen = {id, type: name, owner_id};
 
         } else if(name === 'multipleReturn'){ // RETURN multiple
-
           this.returnCardOpen = [];
           for( let i = 0; i < this.rowsSelected.length; i++ ){
             let gear = this.filteredList[this.rowsSelected[i]];
