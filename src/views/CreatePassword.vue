@@ -6,25 +6,25 @@
 
     <!-- After success container -->
     <div v-show="passwordCreated"  class="form-container done-container" >
-      <p>Slaptažodis sėkmingai sukurtas!</p>
-      <router-link to="/login">Prisijungti</router-link>
+      <p>{{ $t('login.create-success') }}</p>
+      <router-link to="/login">{{ $t('login.login') }}</router-link>
     </div>
 
     <!-- Main container -->
     <div v-show="!passwordCreated">
-      <h2>Susikurti slaptažodį</h2>
+      <h2>{{ $t('login.create-password') }}</h2>
 
       <form-item @onSubmit="createPassword" class="form-container">
-        <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
+        <p v-show="errorMsg" class="error-msg">{{ $t(errorMsg) }}</p>
 
         <!-- Email input -->
-        <input type="email" autocomplete="username" placeholder="Elektroninis Paštas" required class="input-long" v-model="email"/>
+        <input type="email" autocomplete="username" :placeholder="$t('login.email')" required class="input-long" v-model="email"/>
 
         <!-- New password input -->
         <div class="password-container" >
           <input :type="pswInputType"
                  class="input-long"
-                 placeholder="Naujas slaptažodis"
+                 :placeholder="$t('login.new-password')"
                  autocomplete="new-password"
                  v-model="password"
                  required minlength="6"/>
@@ -33,18 +33,18 @@
 
         <!-- New password confirm input -->
         <input type="password" class="input-long"
-               placeholder="Pakartoti naują slaptažodį"
+               :placeholder="$t('login.confirm-password')"
                autocomplete="new-password"
                v-model="passwordConfirm"
                required minlength="6"/>
 
         <!-- does it match msg -->
         <div class="confirm-msg" v-if="password.length >= 6 && passwordConfirm.length >= 6">
-          <p v-if="validPsw">Slaptažodžiai sutampa!</p>
-          <p v-if="!validPsw" class="error-msg">Slaptažodžiai nesutampa!</p>
+          <p v-if="validPsw">{{ $t('login.psw-match') }}</p>
+          <p v-if="!validPsw" class="error-msg">{{ $t('login.psw-dont-match') }}</p>
         </div>
 
-        <button type="submit" class="btn">Sukurti</button>
+        <button type="submit" class="btn">{{ $t('login.create') }}</button>
       </form-item>
 
     </div>
@@ -76,7 +76,8 @@
       }
     },
     created() {
-      document.title = "Susikurti slaptažodį | Inventorizavimo sistema";
+      // document.title = "Susikurti slaptažodį | Inventorizavimo sistema";
+      document.title = this.$t('login.create-password') + this.$t('tab-title_base');
       this.email = this.$route.query.email;
       this.token = this.$route.query.token;
     },
@@ -104,8 +105,8 @@
 
           }).catch(error => {
             if (error.response.status === 422) {
-              this.errorMsg = "Elektroninio pašto adresas neteisingas arba nuoroda nebegaliojanti.";
-            } else this.errorMsg = "Įvyko klaida."
+              this.errorMsg = "login.errors.create-email";
+            } else this.errorMsg = "errors.unknown"
           })
 
         } // end if

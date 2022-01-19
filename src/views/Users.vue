@@ -6,13 +6,15 @@
     <div class="title-container">
       <!-- title -->
       <div class="no-shrink">
-        <h1>Darbuotojai</h1>
-        <btn-component :btnType="'add'" title="Pridėti darbuotoją" @btnClicked="addUserOpen=true; mobileActions = false"/>
+        <h1>{{ $t('user.users') }}</h1>
+        <btn-component :btnType="'add'"
+                       :title="$t('user.add-user')"
+                       @btnClicked="addUserOpen=true; mobileActions = false"/>
       </div>
 
       <!-- filter -->
       <select class="company-filter" v-model="params.company" @change="getDataQuery(url, params); mobileActions = false">
-        <option selected value="" class="placeholder">Visi darbuotojai</option>
+        <option selected value="" class="placeholder">{{ $t('my-inventory.all') }} {{ $t('user.users').toLowerCase() }}</option>
         <option v-for="item in additionalList" :key="item.id" :value="item.id">{{ item.name }}</option>
       </select>
     </div> <!-- /title container-->
@@ -24,9 +26,9 @@
 
       <!-- table labels -->
       <tr class="head-row">
-        <th>Vardas Pavardė</th>
-        <th class="tablet-hide">Elektroninis paštas</th>
-        <th>Įranga</th>
+        <th>{{ $t('user.name') }} {{ $t('user.surname') }}</th>
+        <th class="tablet-hide">{{ $t('login.email') }}</th>
+        <th>{{ $t('gear.gear') }}</th>
         <th></th>
       </tr>
 
@@ -40,11 +42,11 @@
         <td class="actions-cell non-mobile">
           <table-actions>
 
-            <btn-component :btnType="'edit'" @btnClicked="openEditUser(item.id)" title="Redaguoti" />
+            <btn-component :btnType="'edit'" @btnClicked="openEditUser(item.id)" :title="$t('action.edit')" />
             <span class="action-divider" />
-            <btn-component :btnType="'add-action'" title="Priskirti įrangos" @btnClicked="addGearToUser(item.id)" />
+            <btn-component :btnType="'add-action'" @btnClicked="addGearToUser(item.id)" :title="$t('user.add-gear')" />
             <span class="action-divider" />
-            <btn-component :btnType="'delete'" @btnClicked="deleteUserOpen = item.id" title="Ištrinti" />
+            <btn-component :btnType="'delete'" @btnClicked="deleteUserOpen = item.id" :title="$t('action.delete')" />
 
           </table-actions>
         </td>
@@ -56,14 +58,14 @@
           </button>
         </td>
       </tr>
-    </table-component> <!-- /table container-->
+    </table-component>
   </admin-desk>
 
   <!-- Mobile table actions card -->
   <action-card :style="{top: mobileActionsPos+'px'}" class="mobile-actions-card" v-if="mobileActions" @close="mobileActions = false">
-    <button @click="openEditUser(mobileActions, 'item.name')">Redaguoti</button>
-    <button @click="addGearToUser(mobileActions)">Priskirti inventorių</button>
-    <button @click="deleteUserOpen = mobileActions">Ištrinti</button>
+    <button @click="openEditUser(mobileActions, 'item.name')">{{ $t('action.edit') }}</button>
+    <button @click="addGearToUser(mobileActions)">{{ $t('user.add-gear') }}</button>
+    <button @click="deleteUserOpen = mobileActions">{{ $t('action.delete') }}</button>
   </action-card>
 
   <!-- Add user card-->
@@ -73,22 +75,32 @@
 
   <!-- Edit user card-->
   <modulus-full v-if="editUserCardOpen" @close="closeCard">
-    <h3>Redaguoti Darbuotoją</h3>
+    <h3>{{ $t('user.edit-user') }}</h3>
     <form-item @onSubmit="editUser(selectedUser)">
 
       <div>
-        <input type="text" placeholder="Vardas" required v-model="selectedUser.first_name">
-        <input type="text" placeholder="Pavardė" required v-model="selectedUser.last_name">
+        <input type="text" required
+               :placeholder="$t('user.name')"
+               :title="$t('user.name')"
+               v-model="selectedUser.first_name">
+        <input type="text" required
+               :placeholder="$t('user.surname')"
+               :title="$t('user.surname')"
+               v-model="selectedUser.last_name">
       </div>
-      <input type="email" placeholder="Elektroninis paštas" class="input-long" required v-model="selectedUser.email">
+      <input type="email" required
+             :placeholder="$t('login.email')"
+             :title="$t('login.email')"
+             class="input-long"
+             v-model="selectedUser.email">
       <label v-show="selectedUser.role === 0">
-        <input type="checkbox" v-model="selectedUser.changeRole">Suteikti administratoriaus teises</label>
+        <input type="checkbox" v-model="selectedUser.changeRole">{{ $t('user.add-admin-role') }}</label>
       <label v-show="selectedUser.role === 1">
-        <input type="checkbox" v-model="selectedUser.changeRole">Pašalinti administratoriaus teises</label>
+        <input type="checkbox" v-model="selectedUser.changeRole">{{ $t('user.remove-admin-role') }}</label>
 
       <div class="button-container">
-        <p class="error-msg">{{ errorMsg }}</p>
-        <button class="btn" type="submit">Redaguoti</button>
+        <p class="error-msg">{{ $t(errorMsg) }}</p>
+        <button class="btn" type="submit">{{ $t('action.edit') }}</button>
       </div>
     </form-item>
   </modulus-full>
@@ -103,7 +115,7 @@
                :errorMsg="errorMsg"
                @close="deleteUserOpen = false; errorMsg = ''"
                @delete="deleteUser(deleteUserOpen)">
-    <p>Ar tikrai norite ištrinti <strong>{{ findName(deleteUserOpen) }}</strong>?</p>
+    <p>{{ $t('action.messages.remove-ready') }} <strong>{{ findName(deleteUserOpen) }}</strong>?</p>
   </delete-card>
 
 </div>
@@ -169,7 +181,7 @@
       this.params.company = this.$route.params.company_id ? this.$route.params.company_id : "";
       this.getDataQuery(this.url, this.params);
       this.getAdditionalData(this.$store.getters.API_baseURL + "/companies");
-      document.title = "Darbuotojai | Inventorizavimo sistema";
+      document.title = this.$t('user.users') + this.$t('tab-title_base');
     },
 
     methods: {
@@ -201,11 +213,11 @@
             this.getDataQuery(this.url, this.params);
             this.getUsersList(); // store updated users list
             this.editUserCardOpen = false;
-            EventBus.$emit('displayMessage', 'Vartotojo duomenys sėkmingai pakeisti!');
+            EventBus.$emit('displayMessage', 'messages.user-edit-success');
           }).catch(err => {
             if(err.response.data.error) {
               if(err.response.data.error.email){
-                this.errorMsg = "Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.";
+                this.errorMsg = "user.errors.email";
               }
             }
             if(err.response.status === 401){
@@ -214,7 +226,7 @@
           })
 
         } else { // if no changes
-          this.errorMsg = "Darbuotojo duomenys nepasikeitę.";
+          this.errorMsg = "user.errors.no-changes";
         }
       },
 

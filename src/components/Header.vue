@@ -8,14 +8,14 @@
 
     <!-- Navigation -->
     <nav>
-      <router-link :to="{name: 'user-inventory', params:{}}">Mano Inventorius</router-link>
-      <router-link class="tablet-hide" to="/notifications">Pranešimai</router-link>
+      <router-link :to="{name: 'user-inventory', params:{}}">{{ $t('navigation.my-inventory') }}</router-link>
+      <router-link class="tablet-hide" to="/notifications">{{ $t('navigation.notifications') }}</router-link>
       <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
     </nav>
 
     <!-- Notifications container -->
     <div class="expand-container">
-      <button id="notifications-btn" @click="notificationOpen = !notificationOpen">
+      <button id="notifications-btn" @click="notificationOpen = !notificationOpen" :title="$t('navigation.notifications')">
         <img src="../assets/icons/Notification-bell.svg" alt="">
         <span v-show="$store.getters.notifications.length" id="unread-notification"></span>
       </button>
@@ -30,14 +30,15 @@
       <action-card v-show="userDropdownOpen" @close="userDropdownOpen = false">
 
         <user-card />
-        <router-link :to="{name: 'user-inventory', params:{}}">Mano Inventorius</router-link>
-        <router-link to="/notifications">Visi pranešimai</router-link>
+        <router-link :to="{name: 'user-inventory', params:{}}">{{ $t('navigation.my-inventory') }}</router-link>
+        <router-link to="/notifications">{{ $t('navigation.notifications') }}</router-link>
         <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" class="mobile">Admin</router-link>
-        <router-link to="/change-password">Keisti slaptažodį</router-link>
-        <button @click="tryLogOut">Atsijungti</button>
+        <router-link to="/change-password">{{ $t('login.change-password') }}</router-link>
+        <button @click="tryLogOut">{{ $t('navigation.logout') }}</button>
 
       </action-card>
     </div>
+    <language-switch />
   </header>
 </template>
 
@@ -48,11 +49,13 @@
   import NotificationCard from "@/components/NotificationCard";
   import RequestComponent from "@/components/RequestComponent";
   import UserCard from "@/components/UserCard";
+  import LanguageSwitch from "@/components/LanguageSwitch";
 
   export default {
     name: "Header",
     mixins: [ DataMixin, UsersMixin ],
     components: {
+      LanguageSwitch,
       ActionCard,
       NotificationCard,
       RequestComponent,
@@ -100,7 +103,7 @@
 
     position: sticky;
     top:0;
-    padding: .5em 5%;
+    padding: .5em 0 .5em 5%;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
 
     display: flex;

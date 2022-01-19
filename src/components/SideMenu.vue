@@ -5,9 +5,9 @@
 
     <div class="side-nav-container">
       <ul class="side-nav">
-        <li><router-link to="/all-companies">Įmonės</router-link></li>
-        <li><router-link to="/all-users">Darbuotojai</router-link></li>
-        <li><router-link to="/all-inventory">Inventorius</router-link></li>
+        <li><router-link to="/all-companies">{{ $t('company.companies') }}</router-link></li>
+        <li><router-link to="/all-users">{{ $t('user.users') }}</router-link></li>
+        <li><router-link to="/all-inventory">{{ $t('navigation.inventory') }}</router-link></li>
       </ul>
     </div>
 

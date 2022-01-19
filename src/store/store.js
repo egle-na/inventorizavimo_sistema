@@ -8,7 +8,7 @@ export default new Vuex.Store({
         user: {},
         allUsers: {},
         notifications: {},
-        API_baseURL: "https://inventor-system.herokuapp.com/api"
+        API_baseURL: "https://inventor-system.herokuapp.com/api",
     },
     mutations:{
         setUser(state, newUser) {

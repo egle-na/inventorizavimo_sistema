@@ -6,9 +6,9 @@
 
     <div class="btn-container">
       <p class="error-msg">
-        {{ errorMsg }}
+        {{ $t(errorMsg) }}
         <button v-if="errorArr && errorArr.length" @click="openErrorsCard">
-          Peržiūrėti klaidas.
+          {{ $t('errors.check') }}
         </button>
       </p>
       <div class="buttons">

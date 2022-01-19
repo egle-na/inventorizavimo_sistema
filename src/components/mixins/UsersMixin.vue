@@ -38,13 +38,13 @@
         this.getUsersList(); // store updated users list
         this.addUserOpen = false;
         this.errorMsg = "";
-        EventBus.$emit('displayMessage', 'Vartotojas sėkmingai pridėtas!');
+        EventBus.$emit('displayMessage', 'messages.user-add-success');
       },
 
       userAddError(error) {
         if(error.response.data.error.email){
-          this.errorMsg = 'Vartotojas šiuo elektroninio pašto adresu jau pridėtas.';
-        } else this.errorMsg = 'Įvyko Klaida.';
+          this.errorMsg = 'user.errors.email';
+        } else this.errorMsg = 'errors.unknown';
       },
 
       deleteUser(id){
@@ -56,9 +56,9 @@
               this.deleteUserOpen = false;
             }).catch(error => {
               if(error.response.data.message === "User cannot be deleted, because user has gear"){
-                this.errorMsg = 'Negalima ištinti vartotojo dar turinčio priskirto inventoriaus.';
+                this.errorMsg = 'user.errors.cant-delete';
               } else {
-                this.errorMsg = 'Įvyko klaida.';
+                this.errorMsg = 'errors.unknown';
               }
         })
       },

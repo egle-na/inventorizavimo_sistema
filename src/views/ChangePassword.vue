@@ -6,13 +6,13 @@
 
     <!-- After success container -->
     <div v-show="passwordChanged"  class="form-container done-container" >
-      <p>Slaptažodis pakeistas!</p>
-      <router-link to="/">Mano Inventorius</router-link>
+      <p>{{ $t('login.change-success') }}</p>
+      <router-link to="/">{{ $t('navigation.my-inventory') }}</router-link>
     </div>
 
     <!-- Main container -->
     <div v-show="!passwordChanged" class="form-container">
-      <h2>Keisti slaptažodį</h2>
+      <h2>{{ $t('login.change-password') }}</h2>
 
       <form-item @onSubmit="changePassword">
 
@@ -20,22 +20,22 @@
         <div class="password-container" >
           <input :type="oldPswInputType"
                  class="input-long"
-                 :class="{'input-error': errorMsg === 'Slaptažodis neteisingas!'}"
+                 :class="{'input-error': errorMsg === 'login.errors.password'}"
                  @change="errorMsg = ''"
-                 placeholder="Dabartinis slaptažodis"
+                 :placeholder="$t('login.current-password')"
                  autocomplete="current-password"
                  v-model="oldPassword"
                  required minlength="6"/>
           <btn-view-eye :pswVisible="oldPswVisible" @btnClicked="togglePasswordVisibility('old')"/>
         </div>
-        <p :class="{'hidden': password.length < 6 || password !== oldPassword}" class="error-msg">Naujas slaptažodis sutampa su dabartiniu slaptažodžiu!</p>
+        <p :class="{'hidden': password.length < 6 || password !== oldPassword}" class="error-msg">{{ $t('login.errors.psw-identical') }}</p>
 
         <!-- New password input -->
         <div class="password-container" >
           <input :type="pswInputType"
                  class="input-long"
                  :class="{'input-error': password.length >= 6 && password === oldPassword}"
-                 placeholder="Naujas slaptažodis"
+                 :placeholder="$t('login.new-password')"
                  autocomplete="new-password"
                  v-model="password"
                  required minlength="6"/>
@@ -44,21 +44,21 @@
 
         <!-- New password confirm input -->
         <input type="password" class="input-long"
-               placeholder="Pakartoti naują slaptažodį"
+               :placeholder="$t('login.confirm-password')"
                autocomplete="new-password"
                v-model="passwordConfirm"
                required minlength="6"/>
 
         <!-- does it match msg -->
         <div class="confirm-msg" :class="{'hidden': password.length < 6 || passwordConfirm.length < 6 || password === oldPassword}">
-          <p v-if="validPsw">Slaptažodžiai sutampa!</p>
-          <p v-else class="error-msg">Slaptažodžiai nesutampa!</p>
+          <p v-if="validPsw">{{ $t('login.psw-match') }}</p>
+          <p v-else class="error-msg">{{ $t('login.psw-dont-match') }}</p>
         </div>
 
         <!-- Errors and Submit btn -->
         <div class="btn-container">
-          <p class="error-msg">{{ errorMsg }}</p>
-          <button type="submit" class="btn">Pakeisti</button>
+          <p class="error-msg">{{ $t(errorMsg) }}</p>
+          <button type="submit" class="btn">{{ $t('login.change') }}</button>
         </div>
       </form-item>
 
@@ -93,7 +93,9 @@
       }
     },
     created() {
-      document.title = "Keisti slaptažodį | Inventorizavimo sistema";
+      // document.title = "Keisti slaptažodį | Inventorizavimo sistema";
+      document.title = this.$t('login.change-password') + this.$t('tab-title_base');
+
     },
     computed: {
       validPsw(){
@@ -131,11 +133,11 @@
 
           }).catch(error =>{
             if(error.response.data.message === "Password is incorrect"){
-              this.errorMsg = "Slaptažodis neteisingas!";
+              this.errorMsg = "login.errors.password";
             } else if(error.response.data.message === "Passwords do not match"){
               this.errorMsg = "";
             } else {
-              this.errorMsg = "Įvyko klaida.";
+              this.errorMsg = "errors.unknown";
             }
           })
         } // end if

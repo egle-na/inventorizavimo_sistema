@@ -13,6 +13,18 @@ import ViewErrorsCard from "@/components/ViewErrorsCard";
 export default {
   name: 'App',
   components: {ViewErrorsCard, PopMsgComponent},
+  data() {
+    return {
+      defaultLanguage: "lt"
+    }
+  },
+  beforeMount() {
+    let lang = localStorage.getItem("lang") ?
+        localStorage.getItem("lang") :
+        this.defaultLanguage;
+    this.$i18n.locale = lang;
+    this.$i18n.setLocaleMessage(lang, require(`./lang/translations/${lang}.json`));
+  }
 }
 </script>
 

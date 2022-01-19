@@ -4,51 +4,55 @@
   <main>
     <!-- Title container -->
     <div class="title-container">
-      <h1 v-if="!this.$route.params.user_id">Mano Inventorius</h1>
+      <h1 v-if="!this.$route.params.user_id">{{ $t('navigation.my-inventory') }}</h1>
       <div v-else>
         <p class="title-name">{{ findName(user_id) }}</p>
-        <h1>Inventorius</h1>
+        <h1>{{ $t('navigation.inventory') }}</h1>
       </div>
-      <btn-component :btnType="'add'" @btnClicked="addGearOpen = true; mobileActions = false; rowsSelected = []" />
+      <btn-component :btnType="'add'"
+                     :title="$t('action.add-gear')"
+                     @btnClicked="addGearOpen = true; mobileActions = false; rowsSelected = []" />
 
       <!-- Max width filter -->
       <div class="wide-filter filter non-mobile">
         <button class="filter-btn"
                 v-if="!this.$route.params.user_id"
                 :class="{'filter-selected': filter === 'owned'}"
-                @click="setFilter('owned')">Mano įranga</button>
+                @click="setFilter('owned')">{{ $t('my-inventory.owned') }}</button>
         <button class="filter-btn"
                 v-else
                 :class="{'filter-selected': filter === 'owned'}"
-                @click="setFilter('owned')">Asmeninė</button>
+                @click="setFilter('owned')">{{ $t('my-inventory.personal') }}</button>
         <button class="filter-btn"
                 :class="{'filter-selected': filter === 'borrowed'}"
-                @click="setFilter('borrowed')">Pasiskolinta</button>
+                @click="setFilter('borrowed')">{{ $t('my-inventory.borrowed') }}</button>
         <button class="filter-btn"
                 :class="{'filter-selected': filter === 'lent'}"
-                @click="setFilter('lent')">Paskolinta</button>
+                @click="setFilter('lent')">{{ $t('my-inventory.lent') }}</button>
         <button class="filter-btn"
                 :class="{'filter-selected': filter === 'all'}"
-                @click="setFilter('all')">Visi</button>
+                @click="setFilter('all')">{{ $t('my-inventory.all') }}</button>
       </div>
 
       <!-- Medium filter -->
       <select class="medium-filter filter non-mobile" v-model="filter" @change="rowsSelected = []">
-        <option selected value="all" class="placeholder">Visa įranga</option>
-        <option v-if="!this.$route.params.user_id" value="owned" class="placeholder">Mano įranga</option>
-        <option v-else value="owned" class="placeholder">Ameninė įranga</option>
-        <option value="lent" class="placeholder">Paskolinta įranga</option>
-        <option value="borrowed" class="placeholder">Pasiskolinta įranga</option>
+        <option selected value="all" class="placeholder">{{ $t('my-inventory.all') }} {{ $t('my-inventory.gear') }}</option>
+        <option value="owned" class="placeholder">{{ $t('my-inventory.personal') }} {{ $t('my-inventory.gear') }}</option>
+        <option value="lent" class="placeholder">{{ $t('my-inventory.lent') }} {{ $t('my-inventory.gear') }}</option>
+        <option value="borrowed" class="placeholder">{{ $t('my-inventory.borrowed') }} {{ $t('my-inventory.gear') }}</option>
       </select>
 
       <!-- Mobile Filter -->
       <div class="mobile mobile-filter filter">
         <btn-option-dots @btnClicked="mobileFilterOpen = !mobileFilterOpen" />
         <action-card class="mobile-filter-card" v-show="mobileFilterOpen" @close="mobileFilterOpen = false">
-          <button class="first" v-if="!this.$route.params.user_id" @click="setFilter('owned')">Mano įranga</button>
-          <button v-else @click="setFilter('owned')">Asmeninė</button>
-          <button @click="setFilter('borrowed')">Pasiskolinta</button>
-          <button @click="setFilter('all')">Visi</button>
+
+          <button @click="setFilter('all')">{{ $t('my-inventory.all') }}</button>
+          <button class="first" v-if="!this.$route.params.user_id" @click="setFilter('owned')">{{ $t('my-inventory.owned') }}</button>
+          <button v-else @click="setFilter('owned')">{{ $t('my-inventory.personal') }}</button>
+          <button @click="setFilter('borrowed')">{{ $t('my-inventory.borrowed') }}</button>
+          <button @click="setFilter('lent')">{{ $t('my-inventory.lent') }}</button>
+
         </action-card>
       </div>
     </div> <!-- /title container -->
@@ -62,7 +66,7 @@
         <!-- mobile checkbox -->
         <div class="mobile flex">
           <input type="checkbox"
-                 title="Pasirinkti Viską"
+                 :title="$t('my-inventory.select-all')"
                  :class="{'checkbox-hidden': !anySelected}"
                  :checked="anySelected"
                  @click="$event.target.checked ? selectAll() : rowsSelected = []">
@@ -70,16 +74,16 @@
         </div>
 
         <!-- other actions -->
-        <span class="non-mobile">Pasirinkta: {{ rowsSelected.length }}</span>
+        <span class="non-mobile">{{ $t('my-inventory.selected') }}: {{ rowsSelected.length }}</span>
         <table-actions class="actions">
 
-          <btn-hands :btnType="'return'" title="Grąžinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
+          <btn-hands :btnType="'return'" :title="$t('action.return')" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
           <span class="action-divider" v-if="!$route.params.user_id" />
-          <btn-hands :btnType="'lend'" title="Skolinti" v-if="!$route.params.user_id" @btnClicked="openCard('multipleLend')" />
+          <btn-hands :btnType="'lend'" :title="$t('action.lend')" v-if="!$route.params.user_id" @btnClicked="openCard('multipleLend')" />
           <span class="action-divider" v-if="!$route.params.user_id" />
-          <btn-hands :btnType="'transfer'" title="Perduoti" @btnClicked="openCard('multipleTransfer')" />
+          <btn-hands :btnType="'transfer'" :title="$t('action.transfer')" @btnClicked="openCard('multipleTransfer')" />
           <span class="action-divider" />
-          <btn-component :btnType="'delete'" @btnClicked="openCard('multipleDelete')" title="Ištrinti" />
+          <btn-component :btnType="'delete'" :title="$t('action.delete')" @btnClicked="openCard('multipleDelete')" />
 
         </table-actions>
       </div>
@@ -91,16 +95,16 @@
       <tr class="head-row non-mobile">
         <th class="no-padding checkbox-cell">
           <input type="checkbox"
-                 title="Pasirinkti Viską"
+                 :title="$t('my-inventory.select-all')"
                  :class="{'checkbox-hidden': !anySelected}"
                  :checked="anySelected"
                  @click="$event.target.checked ? selectAll() :  rowsSelected = []">
         </th>
-        <th>Pavadinimas</th>
-        <th class="tablet-hide align-center">Kodas</th>
-        <th class="tablet-hide">Serijos Numeris</th>
-        <th>Statusas</th>
-        <th>Veiksmai</th>
+        <th>{{ $t('gear.title') }}</th>
+        <th class="tablet-hide align-center">{{ $t('gear.code') }}</th>
+        <th class="tablet-hide">{{ $t('gear.serial-number') }}</th>
+        <th>{{ $t('gear.status') }}</th>
+        <th>{{ $t('gear.actions') }}</th>
       </tr>
 
       <!-- main rows -->
@@ -121,28 +125,35 @@
 
         <td @click="selectRow(index, $event)" class="tablet-hide non-mobile align-center">{{ gear.code }}</td>
         <td @click="selectRow(index, $event)" class="tablet-hide non-mobile">{{ gear.serial_number }}</td>
-        <td @click="selectRow(index, $event)" class="non-mobile">{{ statusText(gear.lent, gear.own) }}</td>
+        <td @click="selectRow(index, $event)" class="non-mobile">{{ $t(`my-inventory.${statusText(gear.lent, gear.own)}`) }}</td>
 
         <!-- Non Mobile Table Actions -->
         <td class="actions-cell non-mobile">
           <table-actions>
             <btn-hands :btnType="'return'"
-                       v-if="statusText(gear.lent, gear.own) === 'Pasiskolinta' && !$route.params.user_id"
+                       :title="$t('action.return')"
                        :disabled="!gear.current_holder"
+                       v-if="statusText(gear.lent, gear.own) === 'lent' && !$route.params.user_id"
                        @btnClicked="openCard('return', gear.id)" />
-            <span class="action-divider" v-if="statusText(gear.lent, gear.own) === 'Pasiskolinta' && !$route.params.user_id" />
+            <span class="action-divider" v-if="statusText(gear.lent, gear.own) === 'lent' && !$route.params.user_id" />
 
             <btn-hands :btnType="'lend'"
-                      title="Skolinti"
-                      v-if="!$route.params.user_id"
-                      :disabled="gear.current_holder && ((gear.own && gear.lent) || (!gear.own && !gear.lent))"
-                      @btnClicked="openCard('Skolinti', gear.id)" />
+                       :title="$t('action.lend')"
+                       v-if="!$route.params.user_id"
+                       :disabled="gear.current_holder && ((gear.own && gear.lent) || (!gear.own && !gear.lent))"
+                      @btnClicked="openCard('lend', gear.id)" />
             <span class="action-divider" v-if="gear.own && !$route.params.user_id" />
 
-            <btn-hands :btnType="'transfer'" title="Perleisti" v-if="gear.own || $route.params.user_id" :disabled="gear.lent" @btnClicked="openCard('Perleisti', gear.id)" />
+            <btn-hands :btnType="'transfer'"
+                       :title="$t('action.transfer')"
+                       v-if="gear.own || $route.params.user_id"
+                       :disabled="gear.lent" @btnClicked="openCard('transfer', gear.id)" />
             <span class="action-divider"  v-if="gear.own || $route.params.user_id" />
 
-            <btn-component :btnType="'delete'" v-if="gear.own || $route.params.user_id" :disabled="gear.lent" @btnClicked="openCard('delete', gear.id)" title="Ištinti" />
+            <btn-component :btnType="'delete'"
+                           :title="$t('action.delete')"
+                           v-if="gear.own || $route.params.user_id"
+                           :disabled="gear.lent" @btnClicked="openCard('delete', gear.id)" />
           </table-actions>
         </td>
 
@@ -156,10 +167,14 @@
 
   <!-- Mobile table actions card -->
   <action-card :style="mobileActionsPos" ref="mobileCard" class="mobile-actions-card" v-if="mobileActions" @close="mobileActions = false">
-    <button v-if="!mobileActions.own && mobileActions.lent && !$route.params.user_id" @click="openCard('return', mobileActions.id)" >Grąžinti</button>
+    <button v-if="!mobileActions.own && mobileActions.lent && !$route.params.user_id"
+            @click="openCard('return', mobileActions.id)">
+      {{ $t('action.return') }}
+    </button>
     <button v-if="((mobileActions.own && !mobileActions.lent) || (!mobileActions.own && mobileActions.lent)) && !$route.params.user_id"
-            @click="openCard('Skolinti', mobileActions.id)" >Skolinti</button>
-    <button v-if="mobileActions.own && !mobileActions.lent" @click="openCard('Perleisti', mobileActions.id)" >Perleisti</button>
+            @click="openCard('lend', mobileActions.id)"
+    >{{ $t('action.return') }}</button>
+    <button v-if="mobileActions.own && !mobileActions.lent" @click="openCard('transfer', mobileActions.id)" >Perleisti</button>
     <button v-show="mobileActions.own && !mobileActions.lent" @click="openCard('delete', mobileActions.id)" >Nurašyti</button>
     <button @click="generatePDF(mobileActions.id, mobileActions.name)">Generuoti PDF</button>
   </action-card>
@@ -171,8 +186,8 @@
 
   <!-- Grąžinti action -->
   <modulus-full v-if="returnCardOpen === 'err'" @close="returnCardOpen = false">
-    <p>Šių daiktų grąžinti negalima.</p>
-    <button class="btn btn-right" @click="returnCardOpen = false">Uždaryti</button>
+    <p>{{ $t('action.messages.cant-do', {action: $t('action.return').toLowerCase()}) }}</p>
+    <button class="btn btn-right" @click="returnCardOpen = false">{{ $t('close') }}</button>
   </modulus-full>
 
   <delete-card v-else-if="returnCardOpen"
@@ -180,15 +195,15 @@
                :errorArr="errorArr"
                @close="returnCardOpen = false; errorMsg = ''; errorArr = ''"
                @delete="returnItem(returnCardOpen)">
-    <p>Ar esate pasiruošę grąžinti
+    <p>{{ $t('action.messages.return-ready') }}
       <strong v-if="!returnCardOpen.length">{{ gearName(returnCardOpen) }}</strong>
-      <strong v-else>Šiuos {{ returnCardOpen.length }} daiktus</strong>?</p>
+      <strong v-else>{{ $t('action.messages.gear-count', {count: returnCardOpen.length}) }}</strong>?</p>
   </delete-card>
 
   <!-- Nurašyti action -->
   <modulus-full v-if="deleteCardOpen === 'err'" @close="deleteCardOpen = false">
-    <p>Šių daiktų nurašyti negalima.</p>
-    <button class="btn btn-right" @click="deleteCardOpen = false">Uždaryti</button>
+    <p>{{ $t('action.messages.cant-do', {action: $t('action.remove').toLowerCase()}) }}</p>
+    <button class="btn btn-right" @click="deleteCardOpen = false">{{ $t('close') }}</button>
   </modulus-full>
 
   <delete-card v-else-if="deleteCardOpen"
@@ -196,20 +211,20 @@
                :errorArr="errorArr"
                @close="deleteCardOpen = false; errorMsg = ''; errorArr = ''"
                @delete="deleteGear(deleteCardOpen)">
-    <p>Ar tikrai norite nurašyti
+    <p>{{ $t('action.messages.remove-ready') }}
       <strong v-if="!deleteCardOpen.length">{{ gearName(deleteCardOpen) }}</strong>
-      <span v-else>šiuos {{ deleteCardOpen.length }} daiktus</span>?</p>
+      <span v-else>{{ $t('action.messages.gear-count', {count: deleteCardOpen.length}) }}</span>?</p>
   </delete-card>
 
   <!-- Action Unavailable -->
-  <modulus-full v-if="selectUserOpen === 'errSkolinti'" @close="selectUserOpen = false">
-    <p>Šių daiktų skolinti negalima.</p>
-    <button class="btn btn-right" @click="selectUserOpen = false">Uždaryti</button>
+  <modulus-full v-if="selectUserOpen === 'errLend'" @close="selectUserOpen = false">
+    <p>{{ $t('action.messages.cant-do', {action: $t('action.lend').toLowerCase()}) }}</p>
+    <button class="btn btn-right" @click="selectUserOpen = false">{{ $t('close') }}</button>
   </modulus-full>
 
-  <modulus-full v-else-if="selectUserOpen === 'errPerleisti'" @close="selectUserOpen = false">
-    <p>Šių daiktų perleisti negalima.</p>
-    <button class="btn btn-right" @click="selectUserOpen = false">Uždaryti</button>
+  <modulus-full v-else-if="selectUserOpen === 'errTransfer'" @close="selectUserOpen = false">
+    <p>{{ $t('action.messages.cant-do', {action: $t('action.transfer').toLowerCase()}) }}</p>
+    <button class="btn btn-right" @click="selectUserOpen = false">{{ $t('close') }}</button>
   </modulus-full>
 
   <!-- Skolinti/Perleisti action -->
@@ -276,7 +291,7 @@
       }
     },
     created() {
-      document.title = "Mano Invetorius | Inventorizavimo sistema";
+      document.title = this.$t('navigation.my-inventory') + this.$t('tab-title_base');
       this.loadData();
     },
     mounted() {
@@ -289,7 +304,7 @@
       $route() {
       // get new data when going from specific user (route with params) to my gear (no params)
         this.url = this.$store.getters.API_baseURL + '/gear';
-        document.title = "Mano Invetorius | Inventorizavimo sistema";
+        document.title = this.$t('navigation.my-inventory') + this.$t('tab-title_base');
         this.config = {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`
@@ -329,7 +344,7 @@
         if(this.$route.params.user_id){
           this.user_id = parseInt(this.$route.params.user_id);
           this.url = this.url +'/user/' + this.user_id;
-          document.title = this.findName(this.user_id) + " Inventorius | Inventorizavimo sistema";
+          document.title = `${this.findName(this.user_id)} ${this.$t('navigation.inventory')}${this.$t('tab-title_base')}`;
         }
         this.getData(this.url);
       },
@@ -345,7 +360,7 @@
       },
 
       statusText(lent, own){
-        return !own ? "Pasiskolinta" : lent ? "Paskolintas" : "Savininkas";
+        return !own ? "borrowed" : lent ? "lent" : "personal";
       },
 
       setFilter(filter) {
@@ -424,7 +439,7 @@
       addGearSuccess() {
         this.addGearOpen = false;
         this.getData(this.url);
-        EventBus.$emit('displayMessage', 'Inventorius sėkmingai pridėtas!');
+        EventBus.$emit('displayMessage', this.$t('messages.gear-success', {actions: this.$t('action.added')}));
       },
 
       openMobileActions(item, event){
@@ -454,7 +469,7 @@
         } else if(name === 'delete'){
           this.deleteCardOpen = id;
 
-        } else if(name === 'Perleisti' || name === 'Skolinti'){
+        } else if(name === 'transfer' || name === 'lend'){
           let owner_id = this.filteredList.find(gear => gear.id === id).user_id;
           this.selectUserOpen = {id, type: name, owner_id};
 
@@ -466,9 +481,9 @@
               this.returnCardOpen.push(gear.id);
             }
           }
-          if(!this.returnCardOpen.length) { // Jei nieko negalima grąžinti
+          if(!this.returnCardOpen.length) { // unable to return anything
             this.returnCardOpen = 'err';
-          } else if(this.returnCardOpen.length === 1){ // Jei galima grąžinti tik vieną
+          } else if(this.returnCardOpen.length === 1){ // abele to return only 1
             this.returnCardOpen = this.returnCardOpen[0];
           }
 
@@ -481,28 +496,28 @@
               this.deleteCardOpen.push(gear.id);
             }
           }
-          if(!this.deleteCardOpen.length) { // Jei nieko negalima nurašyti
+          if(!this.deleteCardOpen.length) { // unable to delete anything
             this.deleteCardOpen = 'err';
-          } else if(this.deleteCardOpen.length === 1){ // Jei galima nurašyti tik vieną
+          } else if(this.deleteCardOpen.length === 1){ // able to delete only 1
             this.deleteCardOpen = this.deleteCardOpen[0];
           }
 
         } else if(name === 'multipleTransfer' || name === 'multipleLend'){ // LEND or TRANSFER multiple
-          let type = name === 'multipleTransfer' ? 'Perleisti' : 'Skolinti';
+          let type = name === 'multipleTransfer' ? 'transfer' : 'lend';
           this.selectUserOpen = { id: [], type, owner_id: []};
 
           for( let i = 0; i < this.rowsSelected.length; i++ ){
             let gear = this.filteredList[this.rowsSelected[i]];
-            if((gear.own && !gear.lent && type === 'Perleisti') ||
-                (type === 'Skolinti' && (!gear.own && gear.lent || gear.own && !gear.lent && type))
+            if((gear.own && !gear.lent && type === 'transfer') ||
+                (type === 'lend' && (!gear.own && gear.lent || gear.own && !gear.lent && type))
             ) {
               this.selectUserOpen.id.push(gear.id);
               this.selectUserOpen.owner_id.push(gear.user_id);
             }
           }
-          if(!this.selectUserOpen.id.length) { // Jei nieko negalima perduoti ar skolinti
+          if(!this.selectUserOpen.id.length) { // unable to lend or transfer anything
             this.selectUserOpen = 'err' + type;
-          } else if(this.selectUserOpen.id.length === 1){ // Jei galima perduoti ar skolinti tik vieną
+          } else if(this.selectUserOpen.id.length === 1){ // able to lend or transfer only one
             this.selectUserOpen.id = this.selectUserOpen.id[0];
             this.selectUserOpen.owner_id = this.selectUserOpen.owner_id[0];
           }

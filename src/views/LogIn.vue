@@ -5,20 +5,19 @@
 
   <div class="backdrop">
     <form class="form-container" @submit.prevent="tryLogin">
-      <p v-show="errorMsg" class="error-msg">{{ errorMsg }}</p>
+      <p v-show="errorMsg" class="error-msg">{{ $t(errorMsg) }}</p>
 
       <!-- Email input -->
-      <input type="email" autocomplete="username" placeholder="Elektroninis Paštas" required class="first-input" v-model="email"/>
+      <input type="email" autocomplete="username" :placeholder="$t('login.email')" required class="first-input" v-model="email"/>
 
       <!-- Password input -->
       <div class="password-container">
-        <input :type="pswInputType" autocomplete="current-password" placeholder="Slaptažodis" required v-model="password" minlength="6"/>
-        <btn-view-eye :pswVisible="pswVisible" @btnClicked="togglePasswordVisibility">
-        </btn-view-eye>
+        <input :type="pswInputType" autocomplete="current-password" :placeholder="$t('login.password')" required v-model="password" minlength="6"/>
+        <btn-view-eye :pswVisible="pswVisible" @btnClicked="togglePasswordVisibility" />
       </div>
 
-      <router-link to="/forgot-password">Priminti slaptažodį</router-link>
-      <button type="submit" class="btn">Prisijungti</button>
+      <router-link to="/forgot-password">{{ $t('login.reset-password') }}</router-link>
+      <button type="submit" class="btn">{{ $t("login.login") }}</button>
     </form>
   </div>
 </div>
@@ -40,7 +39,7 @@
       }
     },
     created() {
-      document.title = "Prisijungti | Inventorizavimo sistema";
+      document.title = this.$t('login.login') + this.$t('tab-title_base');
     },
     methods: {
       togglePasswordVisibility() {
@@ -58,8 +57,8 @@
           this.$router.push({path: '/user-inventory'});
         }).catch(error => {
           if(error.response.data.error === "Unauthorized"){
-            this.errorMsg = "Prisijungimo duomenys neteisingi.";
-          } else this.errorMsg = "Įvyko klaida.";
+            this.errorMsg = "login.errors.data-incorrect";
+          } else this.errorMsg = "errors.unknown";
         })
       }
     },

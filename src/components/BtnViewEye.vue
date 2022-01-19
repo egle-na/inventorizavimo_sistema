@@ -1,5 +1,5 @@
 <template>
-  <button class="show-psw-btn" @click="$emit('btnClicked')" type="button" title="Padaryti matomą">
+  <button class="show-psw-btn" @click="$emit('btnClicked')" type="button" :title="$t('login.peek')">
     <img v-show="pswVisible === false" src="../assets/icons/view-eye-closed-blue.svg" alt="" class="icon-blue">
     <img v-show="pswVisible === false" src="../assets/icons/view-eye-closed.svg" alt="">
     <img v-show="pswVisible === true" src="../assets/icons/view-blue.svg" alt="" class="icon-blue">

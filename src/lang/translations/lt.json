@@ -1,0 +1,141 @@
+{
+  "tab-title_base": " | Inventorizavimo sistema",
+  "navigation": {
+    "inventory": "Inventorius",
+    "my-inventory": "Mano @:navigation.inventory",
+    "notifications": "Pranešimai",
+    "logout": "Atsijungti"
+  },
+  "login": {
+    "login": "Prisijungti",
+    "email": "Elektroninis paštas",
+    "password": "Slaptažodis",
+    "peek": "Padaryti matomą",
+
+    "reset-password": "Priminti slaptažodį",
+    "reset": "Priminti",
+    "reset-sent": "Slaptažodis išsiųstas elektroniniu pašto adresu: ",
+
+    "create-password": "Susikurti slaptažodį",
+    "new-password": "Naujas slaptažodis",
+    "confirm-password": "Pakartoti naują slaptažodį",
+    "create": "Sukurti",
+    "create-success": "Slaptažodis sėkmingai sukurtas!",
+    "psw-match": "Slaptažodžiai sutampa!",
+    "psw-dont-match": "Slaptažodžiai nesutampa!",
+
+    "change-password": "Keisti slaptažodį",
+    "current-password": "Dabartinis slaptažodis",
+    "change": "pakeisti",
+    "change-success": "Slaptažodis pakeistas!",
+
+    "errors": {
+      "data-incorrect": "Prisijungimo duomenys neteisingi.",
+      "email": "Vartotojas šiuo elektroninio pašto adresu nerastas.",
+      "create-email": "Elektroninio pašto adresas neteisingas arba nuoroda nebegaliojanti.",
+      "psw-identical": "Naujas slaptažodis sutampa su dabartiniu slaptažodžiu!",
+      "password": "Slaptažodis neteisingas!"
+    }
+  },
+  "my-inventory": {
+    "gear": "įranga",
+    "all-gear": "Visa @:my-inventory.gear",
+    "owned": "Mano @:my-inventory.gear",
+    "personal": "Asmeninė",
+    "borrowed": "Pasiskolinta",
+    "lent": "Paskolinta",
+    "all": "Visa",
+
+    "selected": "Pasirinkta",
+    "select-all": "Pasirinkti viską"
+  },
+
+  "action": {
+    "add": "Pridėti",
+    "add-gear": "Pridėti inventorių",
+    "added": "pridėtas",
+
+    "return": "Grąžinti",
+    "returned": "grąžintas",
+
+    "lend": "Skolinti",
+    "lent": "paskolintas",
+
+    "transfer": "Perleisti",
+    "transferred": "perleistas",
+
+    "delete": "Ištrinti",
+    "deleted": "ištrintas",
+
+    "remove": "Nurašyti",
+    "removed": "nurašytas",
+
+    "edit": "Redaguoti",
+
+    "messages": {
+      "cant-do": "Šių daiktų {action} negalima.",
+      "return-ready": "Ar esate pasiruošę grąžinti",
+      "remove-ready": "Ar tikrai norite nurašyti",
+      "gear-count": "šiuos {count} daiktus",
+      "": ""
+    }
+  },
+
+  "gear": {
+    "gear": "įranga",
+    "amount": "Kiekis",
+    "description": "Aprašymas",
+    "price": "Vieneto kaina",
+    "title": "Pavadinimas",
+    "code": "Kodas",
+    "serial-number": "Serijos numeris",
+    "long-term": "Ilgalaikė įranga",
+    "short-term": "Trumpalaikė įranga",
+    "status": "Statusas",
+    "actions": "Veiksmai",
+    "errors": {
+      "serial_number": "Inventorius šiuo serijos numeriu jau pridėtas.",
+      "code": "Duomenys nesutampa su kitu šio kodo inventoriumi.",
+      "": ""
+    }
+  },
+
+  "user": {
+    "add-user": "@:action.add darbuotoją",
+    "edit-user": "@:action.edit darbuotoją",
+    "add-gear": "Priskirti įrangos",
+    "users": "Darbuotojai",
+    "name": "Vardas",
+    "surname": "Pavardė",
+    "company": "Įmonė",
+    "admin-role": "{} administratoriaus teises",
+    "add-admin-role": "Suteikti administratoriaus teises",
+    "remove-admin-role": "Pašalinti administratoriaus teises",
+    "errors": {
+      "email": "Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.",
+      "no-changes": "Darbuotojo duomenys nepasikeitę.",
+      "cant-delete": "Negalima ištrinti vartotojo dar turinčio priskirto inventoriaus."
+    }
+  },
+
+  "company": {
+    "companies": "Įmonės"
+  },
+
+  "errors": {
+    "unknown": "Įvyko klaida.",
+    "check": "Peržiūrėti klaidas.",
+    "": ""
+  },
+  "messages": {
+    "gear-success": "Inventorius sėkmingai {action}!",
+    "user-add-success": "Vartotojas sėkmingai pridėtas!",
+    "user-edit-success": "Vartotojo duomenys sėkmingai pakeisti!",
+
+    "": ""
+  },
+
+  "close": "Uždaryti",
+  "search": "Paieška",
+  "chars-left": "Liko simbolių: {num}"
+}

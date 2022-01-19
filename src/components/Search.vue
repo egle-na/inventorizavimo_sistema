@@ -1,6 +1,6 @@
 <template>
   <div class="search-container">
-    <input type="text" placeholder="Paieška" v-model="search" @keyup="inputChanged">
+    <input type="text" :placeholder="$t('search')" v-model="search" @keyup="inputChanged">
     <button @click="clearSearch" v-show="search" id="clear-btn">&times;</button>
   </div>
 </template>

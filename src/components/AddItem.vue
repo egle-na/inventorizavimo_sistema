@@ -1,72 +1,78 @@
 <template>
   <div>
-    <h2>Pridėti Įrangą</h2>
+    <h2>{{ $t('action.add-gear') }}</h2>
 
     <form-item @onSubmit="addNewGear">
-      <!-- Kodas ir Kiekis -->
+      <!-- Code and Amount -->
       <div>
         <input type="text"
-               placeholder="Kodas"
+               :placeholder="$t('gear.code')"
+               :title="$t('gear.code')"
                v-model="newGear.code"
                @change="checkCode"
-               required title="Kodas">
+               required>
         <input type="number"
                step="1" max="50"
-               placeholder="Kiekis"
+               :placeholder="$t('gear.amount')"
+               :title="$t('gear.amount')"
                v-model="newGear.amount"
-               required title="Kiekis">
+               required>
       </div>
 
-      <!-- Pavadinimas -->
+      <!-- Title -->
       <input type="text"
-             placeholder="Pavadinimas"
+             :placeholder="$t('gear.title')"
+             :title="$t('gear.title')"
              class="input-long"
              v-model="newGear.name"
-             required title="Pavadinimas">
+             required>
 
-      <!-- Aprašymas -->
+      <!-- Description -->
       <textarea maxlength="255"
-                placeholder="Aprašymas"
+                :placeholder="$t('gear.description')"
+                :title="$t('gear.description')"
                 class="input-long"
                 v-model="newGear.description"
-                required title="Aprašymas"/>
-      <p class="char-size">Liko simbolių: {{descriptionCharNum}}</p>
+                required />
+      <p class="char-size">{{ $t('chars-left', {num: descriptionCharNum}) }}</p>
 
-      <!-- Serijos Nr. ir Kaina -->
+      <!-- Serial Nr. and Price -->
       <div class="relative-container">
         <input type="text"
-               placeholder="Serijos Numeris"
+               :placeholder="$t('gear.serial-number')"
+               :title="$t('gear.serial-number')"
                v-model="newGear.serial_number"
-               required title="Serijos numeris"
                :class="{'input-error': errorInput.serial_number}"
-               @focus="delete errorInput.serial_number">
+               @focus="delete errorInput.serial_number"
+               required>
         <input type="number" step=".01"
-               placeholder="Vieneto Kaina"
+               :placeholder="$t('gear.price')"
+               :title="$t('gear.price')"
                id="unit-price"
                v-model="newGear.unit_price"
-               required title="Vieneto kaina">
+               required>
         <label for="unit-price" id="euro-sign">€</label>
       </div>
 
-      <!-- Ilgalaikė ar trumpalaikė įranga -->
+      <!-- Long / Short term -->
       <div class="btn-container">
         <div>
           <label>
             <input type="radio" name="long-term" value="true" v-model="newGear.long_term">
-            Ilgalaikė įranga
+            {{ $t('gear.long-term') }}
           </label>
           <label>
             <input type="radio" name="long-term" value="false" v-model="newGear.long_term">
-            Trumpalaikė įranga
+            {{ $t('gear.short-term') }}
           </label>
         </div>
 
         <!-- Submit btn -->
-        <button class="btn">Pridėti</button>
+        <button class="btn">{{ $t('action.add') }}</button>
       </div>
 
       <!-- Errors -->
-      <p v-for="(message, index) in errorInput" :key="index" class="error-msg">{{ message }}</p>
+      <p v-for="(message, index) in errorInput" :key="index" class="error-msg">{{ $t(message) }}</p>
 
     </form-item>
   </div>
@@ -103,6 +109,7 @@
     },
     methods: {
       addNewGear() {
+        this.newGear.long_term = this.newGear.long_term !== "false";
         this.postData(
             this.$store.getters.API_baseURL + '/gear',
             this.newGear,
@@ -120,11 +127,11 @@
         this.errorInput = {};
         if (error.response.data.error){
           if(error.response.data.error.serial_number) {
-            this.errorInput.serial_number = "Inventorius šiuo serijos numeriu jau pridėtas.";
+            this.errorInput.serial_number = "gear.errors.serial_number";
           }
         }
         if (error.response.data.message === "Gear does not match with other ones with the same code") {
-          this.errorInput.code = "Duomenys nesutampa su kitu šio kodo inventoriumi.";
+          this.errorInput.code = "gear.errors.code";
         }
       },
 
@@ -136,8 +143,7 @@
             }).catch(error => {
               if(error.response.data.message === "Sorry, gear not found."){
                 this.newGear = {...this.newGear, name:"", unit_price:"", description:"", long_term:true };
-              }
-              this.catchErrorTokenExpired();
+              } else this.catchErrorTokenExpired(error);
         })
       }
     }
