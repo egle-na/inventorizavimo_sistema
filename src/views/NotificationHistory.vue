@@ -6,18 +6,28 @@
 
     <!-- Requests -->
     <div v-if="$store.getters.notifications.length">
-      <h3>Neatsakytos užklausos</h3>
+      <h3>{{ $t('request.pending') }}</h3>
       <request-component :type="'page'" />
     </div>
 
     <!-- History -->
-    <h3>Pranešimų istorija</h3>
+    <h3>{{ $t('request.history') }}</h3>
     <div v-if="!list.length">
-      <p>Pranešimų dar neturite.</p>
+      <p>{{ $t('request.no-history') }}</p>
     </div>
     <div v-else>
       <div v-for="notification in list" :key="notification.id" class="message">
-        <p>{{ constructMessage(notification) }} <strong>{{ getGearName(notification) }}</strong>.</p>
+
+        <i18n :path="constructMessage(notification)" tag="p">
+          <template #gear>
+            <strong>{{ getGearName(notification) }}</strong>
+          </template>
+          <template v-if="constructMessage(notification).includes('.you-')" #name>
+            {{ findName(notification.user_id) }}
+          </template>
+          <template v-else #name>{{ findName(notification.sender_id) }}</template>
+        </i18n>
+
         <p class="date">{{ notification.created_at.split('T')[0] }}</p>
       </div>
     </div>
@@ -46,7 +56,7 @@
       }
     },
     created(){
-      document.title = "Pranešimai | Inventorizavimo sistema";
+      document.title = this.$t('navigation.notifications') + this.$t('tab-title_base');
       this.getData(this.url);
     },
     mounted() {
@@ -60,7 +70,7 @@
         if(notification.gear.length){
           return notification.gear[0].name;
         }
-        return 'nežinomą inventorių';
+        return this.$t('request.gear-unknown');
       },
 
       refresh() {
@@ -71,22 +81,22 @@
         if(item.user_id === this.$store.getters.user.id) {
           switch (item.event){
             case 0:
-              return `${this.findName(item.sender_id)} jums paskolino`;
+              return 'request.lent';
             case 1:
-              return `${this.findName(item.sender_id)} jums grąžino`;
+              return 'request.returned';
             case 2:
-              return `${this.findName(item.sender_id)} jums atidavė`;
+              return 'request.transferred';
           }
         } else if (item.user_id !== this.$store.getters.user.id) {
           switch (item.event){
             case 0:
-              return `Jūs paskolinote ${this.findName(item.user_id)}`;
+              return `request.you-lent`;
             case 1:
-              return `Jūs grąžinote ${this.findName(item.user_id)}`;
+              return 'request.you-returned';
             case 2:
-              return `Jūs perleidote ${this.findName(item.user_id)}`;
+              return `request.you-transferred`;
           }
-        } else return 'Nežinomas';
+        }
       },
 
     }

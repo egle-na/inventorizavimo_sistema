@@ -6,6 +6,7 @@
     "notifications": "Pranešimai",
     "logout": "Atsijungti"
   },
+
   "login": {
     "login": "Prisijungti",
     "email": "Elektroninis paštas",
@@ -37,14 +38,17 @@
       "password": "Slaptažodis neteisingas!"
     }
   },
+
   "my-inventory": {
-    "gear": "įranga",
-    "all-gear": "Visa @:my-inventory.gear",
-    "owned": "Mano @:my-inventory.gear",
+    "all-gear": "Visa @:gear.gear",
+    "owned": "Mano @:gear.gear",
+    "owner": "Savininkas",
     "personal": "Asmeninė",
     "borrowed": "Pasiskolinta",
     "lent": "Paskolinta",
     "all": "Visa",
+    "long-term": "Ilgalaikis",
+    "short-term": "Trumpalaikis",
 
     "selected": "Pasirinkta",
     "select-all": "Pasirinkti viską"
@@ -52,17 +56,16 @@
 
   "action": {
     "add": "Pridėti",
-    "add-gear": "Pridėti inventorių",
     "added": "pridėtas",
 
     "return": "Grąžinti",
-    "returned": "grąžintas",
+    "returned-to": "Grąžino",
 
     "lend": "Skolinti",
-    "lent": "paskolintas",
+    "lent-to": "Paskolino",
 
     "transfer": "Perleisti",
-    "transferred": "perleistas",
+    "transferred-to": "Perleido",
 
     "delete": "Ištrinti",
     "deleted": "ištrintas",
@@ -70,72 +73,158 @@
     "remove": "Nurašyti",
     "removed": "nurašytas",
 
+    "generate-pdf": "Generuoti PDF",
     "edit": "Redaguoti",
 
     "messages": {
       "cant-do": "Šių daiktų {action} negalima.",
       "return-ready": "Ar esate pasiruošę grąžinti",
       "remove-ready": "Ar tikrai norite nurašyti",
-      "gear-count": "šiuos {count} daiktus",
-      "": ""
+      "delete-ready": "Ar tikrai norite ištrinti",
+      "gear-count": "šiuos {count} daiktus"
     }
   },
 
   "gear": {
     "gear": "įranga",
+    "add-gear": "Pridėti inventorių",
+
     "amount": "Kiekis",
-    "description": "Aprašymas",
-    "price": "Vieneto kaina",
-    "title": "Pavadinimas",
     "code": "Kodas",
-    "serial-number": "Serijos numeris",
+    "description": "Aprašymas",
     "long-term": "Ilgalaikė įranga",
     "short-term": "Trumpalaikė įranga",
+    "price": "Vieneto kaina",
+    "serial-number": "Serijos numeris",
+    "serial-nr": "Serijos Nr.",
     "status": "Statusas",
+    "title": "Pavadinimas",
+
+    "owner": "Savininkas",
     "actions": "Veiksmai",
+
+    "returned": "grąžintas",
+    "lent": "paskolintas",
+    "transferred": "perleistas",
+    "borrowed": "Pasiskolinta",
+
     "errors": {
       "serial_number": "Inventorius šiuo serijos numeriu jau pridėtas.",
       "code": "Duomenys nesutampa su kitu šio kodo inventoriumi.",
-      "": ""
-    }
+
+      "remove": "Inventoriaus nurašyti nepavyko.",
+      "remove-lent": "Paskolinto inventoriaus nurašyti negalima.",
+      "has-request": "Inventorius turi neatsakytą užklausą.",
+
+      "return": {
+        "sent": "Grąžinimo užklausa jau pateikta.",
+        "not-found": "Inventoriaus grąžinti nepavyko."
+      },
+      "lend": "Negalite skolinti šio inventoriaus.",
+      "user-lent": "Šis darbuotojas paskolino jums šį inventorių.",
+
+      "transfer": "Negalite perleisti šio inventoriaus.",
+      "transfer-lent": "Negalite perleisti paskolinto inventoriaus.",
+      "transfer-admin": "Svetimo inventoriaus perleisti kitiems negalite."
+    },
+    "who": "Kas?",
+    "to-whom": "Kam?",
+    "when": "Kada?"
   },
 
   "user": {
+    "users": "Darbuotojai",
     "add-user": "@:action.add darbuotoją",
     "edit-user": "@:action.edit darbuotoją",
     "add-gear": "Priskirti įrangos",
-    "users": "Darbuotojai",
+    "select-user": "Pasirinkti darbuotoją",
+
     "name": "Vardas",
     "surname": "Pavardė",
     "company": "Įmonė",
-    "admin-role": "{} administratoriaus teises",
     "add-admin-role": "Suteikti administratoriaus teises",
     "remove-admin-role": "Pašalinti administratoriaus teises",
     "errors": {
       "email": "Vartotojas šiuo elektroninio pašto adresu jau užregistruotas.",
       "no-changes": "Darbuotojo duomenys nepasikeitę.",
-      "cant-delete": "Negalima ištrinti vartotojo dar turinčio priskirto inventoriaus."
+      "cant-delete": "Negalima ištrinti vartotojo dar turinčio priskirto inventoriaus.",
+      "none-selected": "Pasirinkite darbuotoją"
     }
   },
 
   "company": {
-    "companies": "Įmonės"
+    "title": "Pavadinimas",
+    "companies": "Įmonės",
+    "employees": "Darbuotojai",
+    "action-company": "{action} įmonę",
+    "company-title": "@:company.companies @:company.title",
+    "errors": {
+      "title": "Šiuo pavadinimu įmonė jau pridėta.",
+      "has-users": "Negalima ištrinti įmonės, kurioje dar yra darbuotojų."
+    }
+  },
+
+  "request": {
+    "all": "Visi @.lower:navigation.notifications",
+    "accept": "Priimti",
+    "decline": "Atmesti",
+    "no-requests": "Šiuo metu naujų pranešimų neturite.",
+    "pending": "Neatsakytos užklausos",
+    "gear-unknown": "nežinomą inventorių",
+
+    "lend": "{name} jums skolina {gear}.",
+    "return": "{name} jums grąžina {gear}.",
+    "transfer": "{name} jums perleidžia {gear}.",
+
+    "you-lent": "Jūs paskolinote {name} {gear}.",
+    "you-returned": "Jūs grąžinote {name} {gear}.",
+    "you-transferred": "Jūs perleidote {name} {gear}.",
+
+    "lent": "{name} jums paskolino {gear}.",
+    "returned": "{name} jums grąžino {gear}.",
+    "transferred": "{name} jums atidavė {gear}.",
+
+    "history": "Pranešimų istorija",
+    "no-history": "Pranešimų dar neturite."
   },
 
   "errors": {
     "unknown": "Įvyko klaida.",
     "check": "Peržiūrėti klaidas.",
-    "": ""
+    "token": "Sesijos laikas baigėsi!",
+    "send-request": "Užklausos išsiųsti nepavyko! | {n} užklausų išsiųsti nepavyko!",
+    "gear-lend": "Inventoriaus paskolinti nepavyko. | {n} inventoriaus paskolinti nepavyko.",
+    "gear-transfer": "Inventoriaus perleisti nepavyko. | {n} inventoriaus perleisti nepavyko.",
+    "gear-remove": "Inventoriaus nurašyti nepavyko. | {n} inventoriaus nurašyti nepavyko.",
+    "gear-return": "Inventoriaus grąžinti nepavyko. | {n} inventoriaus grąžinti nepavyko."
   },
+
   "messages": {
-    "gear-success": "Inventorius sėkmingai {action}!",
+    "gear-add-success": "Inventorius sėkmingai pridėtas!",
+    "gear-edit-success": "Inventorius sėkmingai redaguotas!",
+    "gear-remove-success": "Inventorius sėkmingai nurašytas! | {n} inventorius nurašytas!",
+    "gear-return-success": "Inventorius sėkmingai grąžintas! | {n} inventorius grąžintas!",
+    "gear-transfer-admin": "Inventorius priskirtas jums!",
+
     "user-add-success": "Vartotojas sėkmingai pridėtas!",
     "user-edit-success": "Vartotojo duomenys sėkmingai pakeisti!",
+    "user-delete-success": "Vartotojas sėkmingai ištrintas!",
 
-    "": ""
+    "company-add-success": "Įmonė sėkmingai pridėta!",
+    "company-edit-success": "Įmonės duomenys sėkmingai pakeist!",
+    "company-delete-success": "Įmonė ištrinta sėkmingai!",
+
+    "request-accept": "Užklausa priimta!",
+    "request-decline": "Užklausa atmesta!",
+    "request-sent": "Užklausa sėkmingai išsiųsta! | {n} užklausos sėkmingai išsiųstos!",
+
+    "pdf-generated": "PDF sugeneruotas!"
   },
 
   "close": "Uždaryti",
   "search": "Paieška",
-  "chars-left": "Liko simbolių: {num}"
+  "chars-left": "Liko simbolių: {num}",
+  "yes": "Taip",
+  "no": "Ne",
+  "history": "Istorija"
 }

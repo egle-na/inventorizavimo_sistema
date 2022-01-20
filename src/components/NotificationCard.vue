@@ -6,7 +6,7 @@
       <slot></slot>
     </div>
 
-    <router-link to="/notifications">Visi pranešimai</router-link>
+    <router-link to="/notifications">{{ $t('request.all') }}</router-link>
 
   </div>
 </template>

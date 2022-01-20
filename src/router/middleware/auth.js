@@ -21,9 +21,13 @@ export default function auth ({ next }){
                 if(error.response.data.message === "Unauthenticated."
                 || error.response.data.message === "Token has expired"
                 || error.response.data.message === "The token has been blacklisted"){
-                    EventBus.$emit('displayMessage', 'Sesijos laikas baigėsi!')
+                    let message = localStorage.getItem("lang") === 'en' ?
+                        "Session timeout! Please login." :
+                        "Sesijos laikas baigėsi!";
+                    EventBus.$emit('displayMessage', message );
                 } else {
-                    EventBus.$emit('displayMessage', 'Įvyko klaida!')
+                    let message = localStorage.getItem("lang") === 'en' ? "Something went wrong..." : "Įvyko klaida...";
+                    EventBus.$emit('displayMessage', message);
                 }
                 localStorage.clear();
                 store.commit("setUser", {});

@@ -213,7 +213,7 @@
             this.getDataQuery(this.url, this.params);
             this.getUsersList(); // store updated users list
             this.editUserCardOpen = false;
-            EventBus.$emit('displayMessage', 'messages.user-edit-success');
+            EventBus.$emit('displayMessage', this.$t('messages.user-edit-success'));
           }).catch(err => {
             if(err.response.data.error) {
               if(err.response.data.error.email){

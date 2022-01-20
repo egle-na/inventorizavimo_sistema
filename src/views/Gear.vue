@@ -3,8 +3,8 @@
   <admin-desk>
     <!-- Title container -->
     <div class="title-container">
-      <h1>Įranga</h1>
-      <btn-component :btnType="'add'" @btnClicked="addGearOpen = true" title="Pridėti inventorių" />
+      <h1>{{ $t('navigation.inventory') }}</h1>
+      <btn-component :btnType="'add'" @btnClicked="addGearOpen = true" :title="$t('gear.add-gear')" />
     </div>
 
     <!-- Search -->
@@ -15,9 +15,9 @@
 
       <!-- table labels -->
       <tr class="head-row">
-        <th>Pavadinimas</th>
-        <th class="tablet-hide">Kodas</th>
-        <th>Kiekis</th>
+        <th>{{ $t('gear.title') }}</th>
+        <th class="tablet-hide">{{ $t('gear.code') }}</th>
+        <th>{{ $t('gear.amount') }}</th>
         <th></th>
       </tr>
 
@@ -40,10 +40,10 @@
             <table>
               <tr><!-- expanded rows column labels -->
                 <th class="cell-min non-mobile"></th>
-                <th class="non-mobile">Serijos Numeris</th>
-                <th class="mobile" colspan="2" >Serijos Nr.</th>
-                <th>Savininkas</th>
-                <th class="tablet-hide">Statusas</th>
+                <th class="non-mobile">{{ $t('gear.serial-number') }}</th>
+                <th class="mobile" colspan="2" >{{ $t('gear.serial-nr') }}</th>
+                <th>{{ $t('gear.owner') }}</th>
+                <th class="tablet-hide">{{ $t('gear.status') }}</th>
                 <th></th>
               </tr>
 
@@ -54,11 +54,11 @@
                   <router-link :to="'/inventory/'+ gear.id">{{ gear.serial_number }}</router-link>
                 </td>
                 <td>{{ ownersName(gear.user_id) }}</td>
-                <td v-if="gear.long_term" class="tablet-hide">Ilgalaikis</td>
-                <td v-else class="tablet-hide">Trumpalaikis</td>
+                <td v-if="gear.long_term" class="tablet-hide">{{ $t('gear.long-term') }}</td>
+                <td v-else class="tablet-hide">{{ $t('gear.short-term') }}</td>
                 <td class="actions-cell">
                   <table-actions>
-                    <btn-component :btnType="'delete'" @btnClicked="deleteCardOpen = gear.id; gearName = gear.name" title="Ištrinti" />
+                    <btn-component :btnType="'delete'" @btnClicked="deleteCardOpen = gear.id; gearName = gear.name" :title="$t('action.delete')" />
                   </table-actions>
                 </td>
               </tr>
@@ -79,7 +79,7 @@
                @close="deleteCardOpen = false; errorMsg = ''; gearName = ''"
                :errorMsg="errorMsg"
                @delete="deleteGear(deleteCardOpen)" >
-    <p>Ar tikrai norite nurašyti <strong>{{ gearName }}</strong>?</p>
+    <p>{{ $t('action.messages.remove-ready') }} <strong>{{ gearName }}</strong>?</p>
   </delete-card>
 
 </div>
@@ -121,7 +121,7 @@
       }
     },
     created() {
-      document.title = "Inventorius | Inventorizavimo sistema";
+      document.title = this.$t('navigation.inventory') + this.$t('tab-title_base');
       this.getData(this.url);
     },
     methods: {
@@ -136,7 +136,7 @@
       addGearSuccess() {
         this.addGearOpen = false;
         this.getData(this.url);
-        EventBus.$emit('displayMessage', 'Inventorius sėkmingai pridėtas!');
+        EventBus.$emit('displayMessage', this.$t('messages.gear-add-success'));
       },
 
       ownersName(id){

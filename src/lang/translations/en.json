@@ -6,6 +6,7 @@
     "notifications": "Notifications",
     "logout": "Log out"
   },
+
   "login": {
     "login": "Log in",
     "email": "Email",
@@ -37,14 +38,17 @@
       "password": "Current password is incorrect!"
     }
   },
+
   "my-inventory": {
-    "gear": "equipment",
     "all-gear": "All equipment",
     "owned": "Owned",
+    "owner": "Owner",
     "personal": "Owned",
     "borrowed": "Borrowed",
     "lent": "Lent",
     "all": "All",
+    "long-term": "long-term",
+    "short-term": "short-term",
 
     "selected": "Selected",
     "select-all": "Select all"
@@ -52,17 +56,16 @@
 
   "action": {
     "add": "Add",
-    "add-gear": "Add equipment",
     "added": "added",
 
     "return": "Return",
-    "returned": "returned",
+    "returned-to": "Returned",
 
     "lend": "Lend",
-    "lent": "lent",
+    "lent-to": "Lent",
 
     "transfer": "Transfer",
-    "transferred": "transferred",
+    "transferred-to": "Transferred",
 
     "delete": "Delete",
     "deleted": "deleted",
@@ -70,42 +73,72 @@
     "remove": "Remove",
     "removed": "removed",
 
+    "generate-pdf": "Generate PDF",
     "edit": "Edit",
 
     "messages": {
       "cant-do": "You can not {action} this equipment.",
       "return-ready": "Do you want to return",
       "remove-ready": "Do you want to remove",
-      "gear-count": "{count} these items",
-      "": ""
+      "delete-ready": "Do you want to delete",
+      "gear-count": "{count} these items"
     }
   },
 
   "gear": {
     "gear": "equipment",
     "add-gear": "Add equipment",
+
     "amount": "Amount",
-    "description": "Description",
-    "price": "Unit price",
-    "title": "Title",
     "code": "Code",
-    "serial-number": "Serial number",
+    "description": "Description",
     "long-term": "Long-term",
     "short-term": "Short-term",
+    "price": "Unit price",
+    "serial-number": "Serial number",
+    "serial-nr": "Serial No.",
     "status": "Status",
+    "title": "Title",
+
+    "owner": "Owner",
     "actions": "Actions",
+
+    "returned": "returned",
+    "lent": "lent",
+    "transferred": "transferred",
+    "borrowed": "Borrowed",
+
     "errors": {
       "serial_number": "Equipment with this serial number is added already.",
       "code": "Equipment does not match with other ones with the same code.",
-      "": ""
-    }
+
+      "remove": "Equipment could not be removed.",
+      "remove-lent": "You cannot remove lent gear",
+      "has-request": "Gear has pending request.",
+
+      "return": {
+        "sent": "Return request is already sent.",
+        "not-found": "Equipment could not be returned."
+      },
+      "lend": "Equipment could not be lent!",
+      "user-lent": "You cannot lend equipment to the user who lent it.",
+
+      "transfer": "Equipment could not be transferred!",
+      "transfer-lent": "You cannot give away lent gear.",
+      "transfer-admin": "You cannot transfer this equipment to others"
+    },
+    "who": "Who?",
+    "to-whom": "To whom?",
+    "when": "When?"
   },
 
   "user": {
+    "users": "Users",
     "add-user": "@:action.add user",
     "edit-user": "@:action.edit user",
     "add-gear": "Add equipment",
-    "users": "Users",
+    "select-user": "Select user",
+
     "name": "Name",
     "surname": "Surname",
     "company": "Company",
@@ -114,28 +147,84 @@
     "errors": {
       "email": "The email has already been taken.",
       "no-changes": "No changes were made.",
-      "cant-delete": "User cannot be deleted, because user has gear."
+      "cant-delete": "User cannot be deleted, because user has gear.",
+      "none-selected": "No users selected"
     }
   },
 
   "company": {
-    "companies": "Companies"
+    "title": "Name",
+    "companies": "Companies",
+    "employees": "Employees",
+    "action-company": "{action} company",
+    "company-title": "Company @:company.title",
+    "errors": {
+      "title": "The name has already been taken.",
+      "has-users": "You cannot delete this company since it still has users."
+    }
+  },
+
+  "request": {
+    "all": "All notifications",
+    "accept": "Accept",
+    "decline": "Decline",
+    "no-requests": "There are no pending requests at this time.",
+    "pending": "Pending requests",
+    "gear-unknown": "unknown gear",
+
+    "lend": "{name} lends {gear} to you.",
+    "return": "{name} returns {gear} to you.",
+    "transfer": "{name} transfers {gear} to you.",
+
+    "you-lent": "You lent {gear} to {name}.",
+    "you-returned": "You returned {gear} to {name}.",
+    "you-transferred": "You transferred {gear} to {name}.",
+
+    "lent": "{name} lent {gear} to you.",
+    "returned": "{name} returned {gear} to you.",
+    "transferred": "{name} transferred {gear} to you.",
+
+    "history": "History",
+    "no-history": "There is no history to show."
   },
 
   "errors": {
     "unknown": "Something went wrong",
     "check": "Check errors.",
-    "": ""
+    "token": "Session timeout! Please login.",
+    "send-request": "1 request could not be submitted! | {n} requests could not be submitted!",
+    "gear-lend": "Equipment could not be lent! | {n} equipment could not be lent!",
+    "gear-transfer": "Equipment could not be transferred! | {n} equipment could not be transferred!",
+    "gear-remove": "Equipment could not be removed! | {n} equipment could not be removed!",
+    "gear-return": "Equipment could not be returned! | {n} equipment could not be returned!"
   },
+
   "messages": {
-    "gear-success": "Equipment {action} successfully!",
+    "gear-add-success": "Equipment added successfully!",
+    "gear-edit-success": "Equipment edited successfully!",
+    "gear-remove-success": "Equipment removed successfully! | {n} equipment removed!",
+    "gear-return-success": "Equipment returned successfully! | {n} equipment returned!",
+    "gear-transfer-admin": "Equipment transferred to you!",
+
     "user-add-success": "User added successfully!",
     "user-edit-success": "User edited successfully",
+    "user-delete-success": "User deleted successfully",
 
-    "": ""
+    "company-add-success": "Company added successfully!",
+    "company-edit-success": "Company edited successfully",
+    "company-delete-success": "Company deleted successfully",
+
+    "request-accept": "Request accepted!",
+    "request-decline": "Request declined!",
+    "request-sent": "Request submitted! | {n} requests submitted!",
+
+    "pdf-generated": "PDF generated!"
   },
 
   "close": "Close",
   "search": "Search",
-  "chars-left": "Characters left: {num}"
+  "chars-left": "Characters left: {num}",
+  "yes": "Yes",
+  "no": "No",
+  "history": "History"
 }

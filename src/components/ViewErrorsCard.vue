@@ -3,7 +3,7 @@
     <div class="scroll-container">
       <p v-for="(error, index) in errorArr" :key="index">
         <router-link :to="`/inventory/${error.id}`">{{ error.name }}</router-link>:
-        {{ error.message }}
+        {{ $t(error.message) }}
       </p>
     </div>
   </modulus-full>

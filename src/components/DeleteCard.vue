@@ -12,8 +12,8 @@
         </button>
       </p>
       <div class="buttons">
-        <button class="btn faded" @click="$emit('close')">Ne</button>
-        <button class="btn" @click="$emit('delete')">Taip</button>
+        <button class="btn faded" @click="$emit('close')">{{ $t('no') }}</button>
+        <button class="btn" @click="$emit('delete')">{{ $t('yes') }}</button>
       </div>
     </div>
   </modulus-full>

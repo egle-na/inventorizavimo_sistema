@@ -93,9 +93,7 @@
       }
     },
     created() {
-      // document.title = "Keisti slaptažodį | Inventorizavimo sistema";
       document.title = this.$t('login.change-password') + this.$t('tab-title_base');
-
     },
     computed: {
       validPsw(){

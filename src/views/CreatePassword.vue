@@ -76,7 +76,6 @@
       }
     },
     created() {
-      // document.title = "Susikurti slaptažodį | Inventorizavimo sistema";
       document.title = this.$t('login.create-password') + this.$t('tab-title_base');
       this.email = this.$route.query.email;
       this.token = this.$route.query.token;

@@ -7,31 +7,31 @@
      <!-- Title container -->
      <div class="title-container">
 
-       <h1>{{ list.name }} <span>{{ statusText }}</span></h1>
+       <h1>{{ list.name }} <span>{{ $t('my-inventory.' + statusText) }}</span></h1>
 
        <!-- Gear Actions -->
-       <div class="actions" v-if="statusText !== 'Paskolintas'">
+       <div class="actions" v-if="statusText !== 'lent'">
          <btn-option-dots @btnClicked="actionCardOpen = !actionCardOpen" />
 
          <!-- Actions Card -->
          <action-card v-show="actionCardOpen" @close="actionCardOpen = false">
-           <button v-if="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
-                   @click="openSelect('Skolinti')"
-           >Skolinti</button>
+           <button v-if="statusText === 'owner' || statusText === 'borrowed'"
+                   @click="openSelect('lend')"
+           >{{ $t('action.lend') }}</button>
 
-           <button v-show="!list.lent" @click="openSelect('Perleisti')"
-           >Perleisti</button>
+           <button v-show="!list.lent" @click="openSelect('transfer')"
+           >{{ $t('action.transfer') }}</button>
 
-           <button v-show="statusText === 'Pasiskolinta'" @click="returnCardOpen = true">Grąžinti</button>
-           <button @click="writeOffCardOpen = true">Nurašyti</button>
-           <button @click="generatePDF(list.id, list.name)">Generuoti PDF</button>
+           <button v-show="statusText === 'borrowed'" @click="returnCardOpen = true">{{ $t('action.return') }}</button>
+           <button @click="writeOffCardOpen = true">{{ $t('action.remove') }}</button>
+           <button @click="generatePDF(list.id, list.name)">{{ $t('action.generate-pdf') }}</button>
          </action-card>
        </div>
 
        <!-- Generuoti PDF btn when no other actions are available -->
        <div v-else>
-         <button class="btn non-mobile" @click="generatePDF(list.id, list.name)">Generuoti PDF</button>
-         <button class="mobile pdf-btn" @click="generatePDF(list.id, list.name)" title="Generuoti PDF" >
+         <button class="btn non-mobile" @click="generatePDF(list.id, list.name)">{{ $t('action.generate-pdf') }}</button>
+         <button class="mobile pdf-btn" @click="generatePDF(list.id, list.name)" :title="$t('action.generate-pdf')" >
            <img src="../assets/icons/downloadPDF-blue.svg" alt="" class="icon-blue">
            <img src="../assets/icons/downloadPDF.svg" alt="">
          </button>
@@ -43,43 +43,43 @@
 
        <!-- Info container -->
        <div class="specs">
-         <h3>Aprašymas</h3>
+         <h3>{{ $t('gear.description') }}</h3>
          <p>{{ list.description }}</p>
          <div>
-           <h3>Savininkas</h3>
+           <h3>{{ $t('gear.owner') }}</h3>
            <p >{{ ownerName }}</p>
          </div>
          <div>
-           <h3>Kodas</h3>
+           <h3>{{ $t('gear.code') }}</h3>
            <p>{{ list.code }}</p>
          </div>
          <div>
-           <h3>Serijos numeris</h3>
+           <h3>{{ $t('gear.serial-number') }}</h3>
            <p>{{ list.serial_number }}</p>
          </div>
          <div>
-           <h3>Vieneto kaina</h3>
+           <h3>{{ $t('gear.price') }}</h3>
            <p>{{ list.unit_price }} €</p>
          </div>
 
          <!-- Action Buttons -->
          <div class="btn-container">
            <button class="btn"
-                   v-show="statusText === 'Pasiskolinta'"
-                   @click="returnCardOpen = true">Grąžinti</button>
+                   v-show="statusText === 'borrowed'"
+                   @click="returnCardOpen = true">{{ $t('action.return') }}</button>
            <button class="btn"
-                   v-show="statusText === 'Savininkas' || statusText === 'Pasiskolinta'"
-                   @click="openSelect('Skolinti')">Skolinti</button>
+                   v-show="statusText === 'owner' || statusText === 'borrowed'"
+                   @click="openSelect('lend')">{{ $t('action.lend') }}</button>
            <button class="btn"
                    v-show="!list.lent"
-                   @click="openSelect('Perleisti')">Perleisti</button>
+                   @click="openSelect('transfer')">{{ $t('action.transfer') }}</button>
          </div>
        </div><!-- /info container -->
 
        <!-- History container -->
        <div class="history">
          <div class="history-title">
-           <h3>Istorija</h3>
+           <h3>{{ $t('history') }}</h3>
          </div>
          <table-component>
            <tr v-for="history in historyList" :key="history.id">
@@ -89,16 +89,16 @@
                <img v-else-if="history.event === 2" src="../assets/icons/transfer.svg" alt="">
                <img v-else src="../assets/icons/transfer.svg" alt="">
              </td>
-             <td title="Kas?" v-if="history.event === 1">{{ findName(history.user_id) }}</td>
-             <td title="Kas?" v-else >{{ findName(history.sender_id) }}</td>
+             <td :title="$t('gear.who')" v-if="history.event === 1">{{ findName(history.user_id) }}</td>
+             <td :title="$t('gear.who')" v-else >{{ findName(history.sender_id) }}</td>
 
-             <td v-if="history.event === 0">Paskolino</td>
-             <td v-else-if="history.event === 1">Grąžino</td>
-             <td v-else-if="history.event === 2">Atidavė</td>
+             <td v-if="history.event === 0">{{ $t('action.lent-to') }}</td>
+             <td v-else-if="history.event === 1">{{ $t('action.returned-to') }}</td>
+             <td v-else-if="history.event === 2">{{ $t('action.transferred-to') }}</td>
 
-             <td title="Kam?" v-if="history.event === 1">{{ findName(history.sender_id) }}</td>
-             <td title="Kam?" v-else>{{ findName(history.user_id) }}</td>
-             <td title="Kada?">{{ history.created_at.split('T')[0] }}</td>
+             <td :title="$t('gear.to-whom')" v-if="history.event === 1">{{ findName(history.sender_id) }}</td>
+             <td :title="$t('gear.to-whom')" v-else>{{ findName(history.user_id) }}</td>
+             <td :title="$t('gear.when')">{{ history.created_at.split('T')[0] }}</td>
            </tr>
          </table-component>
 
@@ -106,7 +106,7 @@
      </div><!-- /main container -->
    </main>
 
-   <!-- Skolinti/Perleisti action -->
+   <!-- Lend/Transfer action -->
    <select-user v-if="selectUserOpen"
                 @close="selectUserOpen = false; errorMsg = ''"
                 @submitAction="gearAction(...arguments, list.id, actionType)"
@@ -114,20 +114,20 @@
                 :gear_owner="list.user_id"
                 :errorMsg="errorMsg" />
 
-   <!-- Nurašyti action -->
+   <!-- Remove action -->
    <delete-card v-show="writeOffCardOpen"
                 :errorMsg="errorMsg"
                 @close="writeOffCardOpen = false; errorMsg = ''"
                 @delete="deleteGear(list.id)">
-     <p>Ar tikrai norite nurašyti <strong>{{ list.name }}</strong>?</p>
+     <p>{{ $t('action.messages.remove-ready') }} <strong>{{ list.name }}</strong>?</p>
    </delete-card>
 
-   <!-- Grąžinti action -->
+   <!-- Return action -->
    <delete-card v-show="returnCardOpen"
                 :errorMsg="errorMsg"
                 @close="returnCardOpen = false; errorMsg = ''"
                 @delete="returnItem(list.id)">
-     <p>Ar esate pasiruošę grąžinti <strong>{{ list.name }}</strong>?</p>
+     <p>{{ $t('action.messages.return-ready') }} <strong>{{ list.name }}</strong>?</p>
    </delete-card>
 
  </div>
@@ -165,7 +165,7 @@
         actionType:'',
         errorMsg: '',
         historyList: {},
-        statusText: '',
+        statusText: 'owner',
       }
     },
     created() {
@@ -186,7 +186,7 @@
         }
         this.getData(this.url,
             () => {
-              document.title = this.list.name + " | Inventorizavimo sistema";
+              document.title = this.list.name + this.$t('tab-title_base');
               this.getStatusText();
             },
             () => { this.$router.push({name: 'user-inventory'})
@@ -195,26 +195,26 @@
       },
 
       getStatusText() {
-        // If not Admin checks it's gear
+        // If not Admin checks its gear
         if(!this.$store.getters.user.isAdmin){
-          this.statusText = this.list.own ? this.list.lent ? "Paskolintas" : "Savininkas" : "Pasiskolinta";
+          this.statusText = this.list.own ? this.list.lent ? "lent" : "owner" : "borrowed";
           return;
         }
 
         // If Admin is the owner
         if(this.list.user_id === this.$store.getters.user.id){
-          this.statusText = this.list.lent ? "Paskolintas" : "Savininkas";
+          this.statusText = this.list.lent ? "lent" : "owner";
 
         } else { // If Admin is not the owner
 
           // gear is not lent to Admin
-          this.statusText = this.list.long_term ? 'Ilgalaikis' : 'Trumpalaikis';
+          this.statusText = this.list.long_term ? 'long-term' : 'short-term';
 
           // check if ger is lent to Admin
           if(this.list.lent) {
             this.getData(
                 this.$store.getters.API_baseURL + '/gear/' + this.list.id,
-                () => { this.statusText = "Pasiskolinta"; })
+                () => { this.statusText = "borrowed"; })
           }
         }
       },
@@ -349,7 +349,7 @@
 
   .no-padding img {
     max-width: initial;
-    padding-left:.4em; /* gal abi puses? */
+    padding-left: .4em;
   }
 
 

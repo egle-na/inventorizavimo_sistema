@@ -6,13 +6,21 @@
 
         <div>
           <p class="date">{{ request.created_at.split('T')[0] }}</p>
-          <p>{{ constructMessage(request) }} <strong>{{ request.gear[0].name }}</strong>.</p>
+          <i18n :path="constructMessage(request)" tag="p">
+            <template #gear>
+              <strong>{{ request.gear[0].name }}</strong>
+            </template>
+            <template v-if="constructMessage(request).includes('return')" #name>
+              {{ findName(request.user_id) }}
+            </template>
+            <template v-else #name>{{ findName(request.sender_id) }}</template>
+          </i18n>
         </div>
 
         <!-- buttons -->
         <div class="btn-container">
-          <button class="btn faded" @click="declineRequest(request.id, request.status)">Atmesti</button>
-          <button class="btn" @click="acceptRequest(request.id, request.status)">Priimti</button>
+          <button class="btn faded" @click="declineRequest(request.id, request.status)">{{ $t('request.decline') }}</button>
+          <button class="btn" @click="acceptRequest(request.id, request.status)">{{ $t('request.accept') }}</button>
         </div>
 
       </div>
@@ -24,14 +32,23 @@
 
         <p class="date">{{ request.created_at.split('T')[0] }}</p>
         <div class="message-small">
-          <p>{{ constructMessage(request) }} <strong>{{ request.gear[0].name }}</strong>.</p>
+
+          <i18n :path="constructMessage(request)" tag="p">
+            <template #gear>
+              <strong>{{ request.gear[0].name }}</strong>
+            </template>
+            <template v-if="constructMessage(request).includes('return')" #name>
+              {{ findName(request.user_id) }}
+            </template>
+            <template v-else #name>{{ findName(request.sender_id) }}</template>
+          </i18n>
 
           <!-- buttons -->
           <div class="btn-container">
-            <button title="Priimti" @click="acceptRequest(request.id, request.status)">
+            <button :title="$t('request.accept')" @click="acceptRequest(request.id, request.status)">
               <img src="../assets/icons/Accept.svg" alt="">
             </button>
-            <button title="Atmesti" @click="declineRequest(request.id, request.status);$emit('responded')">
+            <button :title="$t('request.decline')" @click="declineRequest(request.id, request.status)">
               <img src="../assets/icons/Decline.svg" alt="">
             </button>
           </div>
@@ -42,7 +59,7 @@
 
     <!-- No requests -->
     <div v-if="!$store.getters.notifications.length">
-      <p>Šiuo metu naujų pranešimų neturite.</p>
+      <p>{{ $t('request.no-requests') }}</p>
     </div>
 
   </div>
@@ -61,37 +78,37 @@
       acceptRequest(id, status){
         let endpoint = '';
         switch (status){
-          case 0: // skolina
+          case 0: // lend request
             endpoint = '/requests/accept-lend/';
             break;
-          case 2: // grąžina
+          case 2: // return request
             endpoint = '/requests/accept-return/';
             break;
-          case 3: // perleidžia
+          case 3: // transfer request
             endpoint = '/requests/accept-giveaway/';
             break;
         }
         this.$http.post(this.$store.getters.API_baseURL + endpoint + id, {}, this.config)
             .then(() => {
-              EventBus.$emit('displayMessage', 'Užklausa priimta!');
+              EventBus.$emit('displayMessage', this.$t('messages.request-accept'));
               EventBus.$emit('requestChanged');
               this.getNotifications();
             })
       },
 
       declineRequest(id, status) {
-        if (status === 2) { // grąžina
+        if (status === 2) { // return
           this.$http.post(this.$store.getters.API_baseURL + '/requests/decline-return/' + id,{}, this.config)
               .then(() => {
-                EventBus.$emit('displayMessage', 'Užklausa atmesta!');
-                this.getNotifications(); // is it too short?
+                EventBus.$emit('displayMessage', this.$t('messages.request-decline'));
+                this.getNotifications();
 
               }).catch(this.getNotifications)
 
         } else {
           this.$http.delete(this.$store.getters.API_baseURL + '/requests/' + id, this.config)
               .then(() => {
-                EventBus.$emit('displayMessage', 'Užklausa atmesta!');
+                EventBus.$emit('displayMessage', this.$t('messages.request-decline'));
                 this.getNotifications();
 
               }).catch(this.getNotifications)
@@ -101,11 +118,11 @@
       constructMessage(item) {
         switch (item.status) {
           case 0:
-            return `${this.findName(item.sender_id)} jums skolina`;
+            return 'request.lend';
           case 2:
-            return `${this.findName(item.user_id)} jums grąžina`;
+            return 'request.return';
           case 3:
-            return `${this.findName(item.sender_id)} jums perleidžia`;
+            return 'request.transfer';
         }
       },
     }

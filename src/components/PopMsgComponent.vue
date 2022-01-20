@@ -9,7 +9,7 @@
       <button v-if="message.errors"
               class="error-msg"
               @click="viewErrors(message.errors)"
-      >Peržiūrėti klaidas.</button>
+      >{{ $t('errors.check') }}</button>
     </p>
   </div>
 
@@ -20,7 +20,7 @@
   import {EventBus} from "@/main";
 
   export default {
-    name: "SuccessMsgComponent",
+    name: "PopMsgComponent",
     data() {
       return {
         messages: [],
@@ -62,6 +62,7 @@
 
   .msg-container {
     position: fixed;
+    z-index: 1;
     bottom: 1rem;
     left: 1rem;
   }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>{{ $t('action.add-gear') }}</h2>
+    <h2>{{ $t('gear.add-gear') }}</h2>
 
     <form-item @onSubmit="addNewGear">
       <!-- Code and Amount -->

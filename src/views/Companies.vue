@@ -4,8 +4,8 @@
 
     <!-- Title container-->
     <div class="title-container">
-      <h1>Įmonės</h1>
-      <btn-component :btnType="'add'" title="Pridėti įmonę" @btnClicked="openAddCompanyCard" />
+      <h1>{{ $t('company.companies') }}</h1>
+      <btn-component :btnType="'add'" :title="$t('company.action-company', {action: $t('action.add')})" @btnClicked="openAddCompanyCard" />
     </div>
 
     <Search @setSearch="setSearch" />
@@ -15,8 +15,8 @@
 
       <!-- table labels -->
       <tr class="head-row non-mobile">
-        <th>Pavadinimas</th>
-        <th class="non-mobile">Darbuotojai</th>
+        <th>{{ $t('company.title') }}</th>
+        <th class="non-mobile">{{ $t('company.employees') }}</th>
         <th class="mobile"></th>
         <th></th>
       </tr>
@@ -30,11 +30,11 @@
         <td class="actions-cell non-mobile">
           <table-actions>
 
-            <btn-component :btnType="'edit'" @btnClicked="openEditCompanyCard(item.id, item.name)" title="Redaguoti" />
+            <btn-component :btnType="'edit'" @btnClicked="openEditCompanyCard(item.id, item.name)" :title="$t('action.edit')" />
             <span class="action-divider" />
-            <btn-component :btnType="'add-action'" @btnClicked="openAddUserCard(item.id)" title="Pridėti darbuotoją" />
+            <btn-component :btnType="'add-action'" @btnClicked="openAddUserCard(item.id)" :title="$t('user.add-user')" />
             <span class="action-divider" />
-            <btn-component :btnType="'delete'" @btnClicked="openDeleteCompanyCard(item.id, item.name)" title="Ištrinti" />
+            <btn-component :btnType="'delete'" @btnClicked="openDeleteCompanyCard(item.id, item.name)" :title="$t('action.delete')" />
 
           </table-actions>
         </td>
@@ -51,20 +51,20 @@
 
   <!-- Mobile table actions card -->
   <action-card :style="{top: mobileActionsPos+'px'}" class="mobile-actions-card" v-if="mobileActions" @close="mobileActions = false">
-    <button @click="openEditCompanyCard(mobileActions)">Redaguoti</button>
-    <button @click="openAddUserCard(mobileActions)">Pridėti Darbuotoją</button>
-    <button @click="openDeleteCompanyCard(mobileActions)">Ištrinti</button>
+    <button @click="openEditCompanyCard(mobileActions)">{{ $t('action.edit') }}</button>
+    <button @click="openAddUserCard(mobileActions)">{{ $t('user.add-user') }}</button>
+    <button @click="openDeleteCompanyCard(mobileActions)">{{ $t('action.delete') }}</button>
   </action-card>
 
   <!-- Add company card -->
   <modulus-full v-show="addCompanyOpen" @close="closeCard">
-    <h3>Pridėti naują įmonę</h3>
+    <h3>{{ $t('company.action-company', {action: $t('action.add')}) }}</h3>
       <form @submit.prevent="createCompany">
 
-        <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
+        <input type="text" :placeholder="$t('company.company-title')" required class="add-input" v-model="newCompanyName">
         <div class="btn-container">
-          <p class="error-msg">{{ errorMsg }}</p>
-          <button class="btn">Pridėti</button>
+          <p class="error-msg">{{ $t(errorMsg) }}</p>
+          <button class="btn">{{ $t('action.add') }}</button>
         </div>
 
       </form>
@@ -72,13 +72,13 @@
 
   <!-- Edit company card -->
   <modulus-full v-show="editCompanyOpen" @close="closeCard">
-    <h3>Redaguoti įmonę</h3>
+    <h3>{{ $t('company.action-company', {action: $t('action.edit')}) }}</h3>
       <form @submit.prevent="editCompany(editCompanyId)">
 
-        <input type="text" placeholder="Įmonės pavadinimas" required class="add-input" v-model="newCompanyName">
+        <input type="text" :placeholder="$t('company.title')" required class="add-input" v-model="newCompanyName">
         <div class="btn-container">
-          <p class="error-msg">{{ errorMsg }}</p>
-          <button class="btn">Redaguoti</button>
+          <p class="error-msg">{{ $t(errorMsg) }}</p>
+          <button class="btn">{{ $t('action.edit') }}</button>
         </div>
 
       </form>
@@ -94,7 +94,7 @@
                :errorMsg="errorMsg"
                @close="closeCard"
                @delete="deleteCompany(editCompanyId)">
-    <p>Ar tikrai norite ištrinti <strong>{{newCompanyName}}</strong>?</p>
+    <p>{{ $t('action.messages.delete-ready') }} <strong>{{newCompanyName}}</strong>?</p>
   </delete-card>
 
 </div>
@@ -149,7 +149,7 @@
       }
     },
     created() {
-      document.title = "Įmonės | Inventorizavimo sistema";
+      document.title = this.$t('company.companies') + this.$t('tab-title_base');
       this.getData(this.url);
     },
     methods: {
@@ -199,14 +199,15 @@
           this.errorMsg = "";
           this.getData(this.url);
           // need to clear search input
-          EventBus.$emit('displayMessage', 'Įmonė pridėta sėkmingai!');
+          EventBus.$emit('displayMessage', this.$t('messages.company-add-success'));
 
         }).catch(error => {
           if(error.response.status === 400){
             if(error.response.data.error.name[0] === "The name has already been taken."){
-              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta.";
+              this.errorMsg = "company.errors.title";
             }
           }
+          else this.errorMsg = "errors.unknown";
         })
       },
 
@@ -223,12 +224,12 @@
           this.newCompanyName = '';
           // clear search
           this.getData(this.url);
-          EventBus.$emit('displayMessage', 'Įmonės redagavimas sėkmingas!');
+          EventBus.$emit('displayMessage', this.$t('messages.company-edit-success'));
 
         }).catch(error => {
           if(error.response.status === 400){
             if(error.response.data.error.name[0] === "The name has already been taken."){
-              this.errorMsg = "Šiuo pavadinimu įmonė jau pridėta.";
+              this.errorMsg = "company.errors.title";
             }
           }
         })
@@ -244,10 +245,10 @@
               this.editCompanyId = '';
               this.mobileActions = false;
               this.errorMsg = '';
-              EventBus.$emit('displayMessage', 'Įmonė ištrinta!');
+              EventBus.$emit('displayMessage', this.$t('messages.company-delete-success'));
             },
             () => {
-              this.errorMsg = 'Negalima ištrinti įmonės, kurioje dar yra darbuotojų';
+              this.errorMsg = 'company.errors.has-users';
             })
       },
 
@@ -306,6 +307,11 @@
   /* column dividers for sticky header */
   th:not(:first-child){
     box-shadow: none;
+  }
+
+  .actions-container {
+    max-width: 180px;
+    margin-left: auto;
   }
 
   @media(min-width: 580px){

@@ -18,9 +18,13 @@ export default function admin ({ next, store }){
 
             }).catch(error => {
                 if(error.response.status === 401){
-                    EventBus.$emit('displayMessage', "Sesijos Laikas baigėsi!")
+                    let message = localStorage.getItem("lang") === 'en' ?
+                        "Session timeout! Please login." :
+                        "Sesijos laikas baigėsi!";
+                    EventBus.$emit('displayMessage', message );
                 } else {
-                    EventBus.$emit('displayMessage', "Įvyko klaida.")
+                    let message = localStorage.getItem("lang") === 'en' ? "Something went wrong..." : "Įvyko klaida...";
+                    EventBus.$emit('displayMessage', message);
                 }
                 localStorage.clear();
                 store.commit("setUser", {});

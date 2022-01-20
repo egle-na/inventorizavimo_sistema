@@ -29,12 +29,12 @@
 
       getDataError(error){
         if(!error){
-          EventBus.$emit('displayMessage', 'Įvyko klaida.');
+          EventBus.$emit('displayMessage', this.$t('errors.unknown'));
           return;
         }
         this.catchErrorTokenExpired(error);
         if(error.response.status !== 500){
-          EventBus.$emit('displayMessage', 'Įvyko klaida.');
+          EventBus.$emit('displayMessage', this.$t('errors.unknown'));
         }
       },
 
@@ -97,7 +97,7 @@
               || error.response.data.message === "The token has been blacklisted"
           ){
             this.logOut();
-            EventBus.$emit('displayMessage', 'Sesijos laikas baigėsi!');
+            EventBus.$emit('displayMessage', this.$t('errors.token'));
           }
         }
       },

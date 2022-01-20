@@ -10,7 +10,7 @@
         <h1>{{ $t('navigation.inventory') }}</h1>
       </div>
       <btn-component :btnType="'add'"
-                     :title="$t('action.add-gear')"
+                     :title="$t('gear.add-gear')"
                      @btnClicked="addGearOpen = true; mobileActions = false; rowsSelected = []" />
 
       <!-- Max width filter -->
@@ -36,10 +36,10 @@
 
       <!-- Medium filter -->
       <select class="medium-filter filter non-mobile" v-model="filter" @change="rowsSelected = []">
-        <option selected value="all" class="placeholder">{{ $t('my-inventory.all') }} {{ $t('my-inventory.gear') }}</option>
-        <option value="owned" class="placeholder">{{ $t('my-inventory.personal') }} {{ $t('my-inventory.gear') }}</option>
-        <option value="lent" class="placeholder">{{ $t('my-inventory.lent') }} {{ $t('my-inventory.gear') }}</option>
-        <option value="borrowed" class="placeholder">{{ $t('my-inventory.borrowed') }} {{ $t('my-inventory.gear') }}</option>
+        <option selected value="all" class="placeholder">{{ $t('my-inventory.all') }} {{ $t('gear.gear') }}</option>
+        <option value="owned" class="placeholder">{{ $t('my-inventory.personal') }} {{ $t('gear.gear') }}</option>
+        <option value="lent" class="placeholder">{{ $t('my-inventory.lent') }} {{ $t('gear.gear') }}</option>
+        <option value="borrowed" class="placeholder">{{ $t('my-inventory.borrowed') }} {{ $t('gear.gear') }}</option>
       </select>
 
       <!-- Mobile Filter -->
@@ -133,9 +133,9 @@
             <btn-hands :btnType="'return'"
                        :title="$t('action.return')"
                        :disabled="!gear.current_holder"
-                       v-if="statusText(gear.lent, gear.own) === 'lent' && !$route.params.user_id"
+                       v-if="statusText(gear.lent, gear.own) === 'borrowed' && !$route.params.user_id"
                        @btnClicked="openCard('return', gear.id)" />
-            <span class="action-divider" v-if="statusText(gear.lent, gear.own) === 'lent' && !$route.params.user_id" />
+            <span class="action-divider" v-if="statusText(gear.lent, gear.own) === 'borrowed' && !$route.params.user_id" />
 
             <btn-hands :btnType="'lend'"
                        :title="$t('action.lend')"
@@ -217,12 +217,12 @@
   </delete-card>
 
   <!-- Action Unavailable -->
-  <modulus-full v-if="selectUserOpen === 'errLend'" @close="selectUserOpen = false">
+  <modulus-full v-if="selectUserOpen === 'errlend'" @close="selectUserOpen = false">
     <p>{{ $t('action.messages.cant-do', {action: $t('action.lend').toLowerCase()}) }}</p>
     <button class="btn btn-right" @click="selectUserOpen = false">{{ $t('close') }}</button>
   </modulus-full>
 
-  <modulus-full v-else-if="selectUserOpen === 'errTransfer'" @close="selectUserOpen = false">
+  <modulus-full v-else-if="selectUserOpen === 'errtransfer'" @close="selectUserOpen = false">
     <p>{{ $t('action.messages.cant-do', {action: $t('action.transfer').toLowerCase()}) }}</p>
     <button class="btn btn-right" @click="selectUserOpen = false">{{ $t('close') }}</button>
   </modulus-full>
@@ -293,6 +293,8 @@
     created() {
       document.title = this.$t('navigation.my-inventory') + this.$t('tab-title_base');
       this.loadData();
+      // delete this -----------------------------------------------------------------------------
+
     },
     mounted() {
       EventBus.$on('requestChanged', this.refresh);
@@ -439,7 +441,7 @@
       addGearSuccess() {
         this.addGearOpen = false;
         this.getData(this.url);
-        EventBus.$emit('displayMessage', this.$t('messages.gear-success', {actions: this.$t('action.added')}));
+        EventBus.$emit('displayMessage', this.$t('messages.gear-add-success'));
       },
 
       openMobileActions(item, event){

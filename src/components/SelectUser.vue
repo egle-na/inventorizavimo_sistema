@@ -2,15 +2,15 @@
   <ModulusFull @close="closeCard">
     <form @submit.prevent="submitAction" @keydown.enter.prevent="submitAction">
 
-      <h3>{{ type }}</h3>
-      <p>Pasirinkite darbuotoją:</p>
+      <h3>{{ $t('action.' + type) }}</h3>
+      <p>{{ $t('user.select-user') }}:</p>
 
       <!-- click outside to close the selection -->
       <div v-if="searchActive" class="select-backdrop" @click="searchActive = false"></div>
       <div class="select-container">
 
         <!-- Input -->
-        <input type="text" placeholder="Vardas Pavardė"
+        <input type="text" :placeholder="$t('user.name') + ' ' + $t('user.surname')"
                v-model="searchUser"
                @focus="setSearchActive"
                @keyup="setSearchActive"
@@ -31,12 +31,12 @@
       <!-- Errors and Submit btn -->
       <div class="btn-container">
         <p v-if="errorMsg" class="error-msg">
-          {{ errorMsg }}
+          {{ $t(errorMsg) }}
           <button v-if="errorArr && errorArr.length" @click="openErrorsCard" type="button">
-            Peržiūrėti klaidas.
+            {{ $t('errors.check') }}
           </button>
         </p>
-        <button class="btn">{{ type }}</button>
+        <button class="btn">{{ $t('action.' + type) }}</button>
       </div>
     </form>
 
@@ -63,7 +63,7 @@
     computed: {
       userList() {
         if(this.gear_owner.length){
-          if(this.type === "Skolinti" ) {
+          if(this.type === "lend" ) {
             return this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && !this.gear_owner.includes(user.id));
           } else {
             return this.$store.getters.user.isAdmin
@@ -71,7 +71,7 @@
                 : this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && !this.gear_owner.includes(user.id));
           }
         } else {
-          if (this.type === "Skolinti") {
+          if (this.type === "lend") {
             return this.$store.getters.allUsers.filter(user => user.id !== this.$store.getters.user.id && user.id !== this.gear_owner);
           } else {
             return this.$store.getters.user.isAdmin

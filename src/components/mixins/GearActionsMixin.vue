@@ -22,7 +22,7 @@
               this.getData(this.url);
               this.returnCardOpen = false;
               if(response.data.message.includes("Return request created")){
-                EventBus.$emit('displayMessage', 'Užklausa sėkmingai išsiųsta!');
+                EventBus.$emit('displayMessage', this.$tc('messages.request-sent'));
               }
             },
             (error) => {
@@ -34,7 +34,7 @@
 
               // if all failed
               } else if (id.length === error.response.data.message.length) {
-                this.errorMsg = "Inventoriaus nurašyti nepavyko.";
+                this.errorMsg = "gear.errors.remove";
                 error.response.data.message.forEach(message => this.errorArr.push(this.errorMessage("return", message)) );
 
               // if some requests succeeded
@@ -44,8 +44,8 @@
                 this.returnCardOpen = false;
                 this.errorMsg = "";
 
-                EventBus.$emit('displayMessage', `${id.length - error.response.data.message.length} inventorius grąžintas!`);
-                EventBus.$emit('displayErrorsMessage', `${error.response.data.message.length} inventoriaus grąžinti nepavyko!`, errors);
+                EventBus.$emit('displayMessage', this.$tc('messages.gear-return-success', id.length - error.response.data.message.length));
+                EventBus.$emit('displayErrorsMessage', this.$tc('error.gear-return', error.response.data.message.length), errors);
               }
             }
         )
@@ -59,7 +59,7 @@
         this.$http.delete(this.$store.getters.API_baseURL + '/gear/delete',
             {...this.config, data:{gear_id: id} })
             .then(() => {
-              EventBus.$emit('displayMessage', 'Inventorius sėkmingai nurašytas!');
+              EventBus.$emit('displayMessage', this.$tc('messages.gear-remove-success'));
               this.deleteCardOpen = false;
               this.errorMsg = '';
 
@@ -75,7 +75,7 @@
 
               // if all failed
               } else if (id.length === error.response.data.message.length) {
-                this.errorMsg = "Inventoriaus nurašyti nepavyko.";
+                this.errorMsg = "gear.errors.remove";
                 error.response.data.message.forEach(message => this.errorArr.push(this.errorMessage("delete", message)) );
 
               // if some requests succeeded
@@ -85,23 +85,22 @@
                 this.deleteCardOpen = false;
                 this.getData(this.url);
 
-                EventBus.$emit('displayMessage', `${id.length - error.response.data.message.length} inventorius nurašytas!`);
-                EventBus.$emit('displayErrorsMessage', `${error.response.data.message.length} inventoriaus nurašyti nepavyko!`, errors);
+                EventBus.$emit('displayMessage', this.$tc('messages.gear-remove-success', id.length - error.response.data.message.length));
+                EventBus.$emit('displayErrorsMessage', this.$tc('errors.gear-remove', error.response.data.message.length), errors);
               }
             })
       },
 
       gearAction(user_id, id, actionType){
         if(!user_id) {
-          this.errorMsg = 'Pasirinkite darbuotoją';
+          this.errorMsg = 'user.errors.none-selected';
           return;
         }
         this.errorArr = [];
         let endpoint = '';
-        let type = actionType === 'Skolinti' ? 'lend' : 'transfer';
         if (!id.length) id = [id];
 
-        if (actionType === 'Skolinti') {
+        if (actionType === 'lend') {
           endpoint = '/requests/lend';
         } else {
           endpoint = (user_id === this.$store.getters.user.id && this.$store.getters.user.isAdmin)
@@ -118,11 +117,11 @@
 
               if(endpoint === '/requests/give-yourself'){
                 this.getData(this.url,() => { this.getStatusText(); } );
-                EventBus.$emit('displayMessage', 'Inventorius priskirtas jums!');
+                EventBus.$emit('displayMessage', this.$t('messages.gear-transfer-admin') );
 
               } else {
                 this.getData(this.url);
-                EventBus.$emit('displayMessage', 'Užklausa sėkmingai išsiųsta!');
+                EventBus.$emit('displayMessage', this.$tc('messages.request-sent'));
               }
             },
             (error) => {
@@ -130,24 +129,24 @@
 
               // one request was sent and it failed
               if (id.length === 1 && error.response.data.message.length === 1) {
-                this.errorMsg = this.errorMessage(type, error.response.data.message[0]).message;
+                this.errorMsg = this.errorMessage(actionType, error.response.data.message[0]).message;
 
               // if all failed
               } else if (id.length === error.response.data.message.length) {
-                this.errorMsg = `Inventoriaus ${actionType.toLowerCase()} nepavyko.`;
-                error.response.data.message.forEach(message => this.errorArr.push(this.errorMessage(type, message)));
+                this.errorMsg = 'gear.errors.' + actionType.toLowerCase();
+                error.response.data.message.forEach(message => this.errorArr.push(this.errorMessage(actionType, message)));
 
               // if any successful
               } else if(error.response.data.message.length < id.length){
                 let errors = [];
-                error.response.data.message.forEach(message => errors.push(this.errorMessage(type, message)) );
+                error.response.data.message.forEach(message => errors.push(this.errorMessage(actionType, message)) );
                 this.actionType = '';
                 this.errorMsg = '';
                 this.selectUserOpen = false;
                 this.getData(this.url);
 
-                EventBus.$emit('displayMessage', `${id.length - error.response.data.message.length} užklausos sėkmingai išsiųstos!`);
-                EventBus.$emit('displayErrorsMessage', `${error.response.data.message.length} užklausų išsiųsti nepavyko!`, errors);
+                EventBus.$emit('displayMessage', this.$tc('messages.request-sent', id.length - error.response.data.message.length));
+                EventBus.$emit('displayErrorsMessage', this.$tc('errors.send-request', error.response.data.message.length), errors);
               }
             })
       },
@@ -171,7 +170,7 @@
               // window.URL.revokeObjectURL(blob);
             }
             this.actionCardOpen = false;
-            EventBus.$emit('displayMessage', 'PDF sugeneruotas!');
+            EventBus.$emit('displayMessage', this.$t('messages.pdf-generated'));
           })
       },
 
@@ -184,33 +183,33 @@
 
         switch (type) {
           case 'return':
-            if(message.includes("Return request is already sent")) error.message = "Grąžinimo užklausa jau pateikta.";
-            else if(message.includes("Sorry, request not found")) error.message = "Inventoriaus grąžinti nepavyko.";
+            if(message.includes("Return request is already sent")) error.message = "gear.errors.return.sent";
+            else if(message.includes("Sorry, request not found")) error.message = "gear.errors.return.not-found";
             else error.message = message;
             break;
 
           case 'delete':
-            if (message.includes("Gear has a request")) error.message = 'Inventorius turi neatsakytą užklausą.';
-            else if (message.includes("You cannot destroy lent gear")) error.message = 'Paskolinto inventoriaus nurašyti negalima.';
-            else if (message.includes("You cannot delete lent gear")) error.message = 'Paskolinto inventoriaus nurašyti negalima.';
-            else if (message.includes("Sorry, gear not found.")) error.message = 'Paskolinto inventoriaus nurašyti negalima.';
+            if (message.includes("Gear has a request")) error.message = 'gear.errors.has-request';
+            else if (message.includes("You cannot destroy lent gear")) error.message = 'gear.errors.remove-lent';
+            else if (message.includes("You cannot delete lent gear")) error.message = 'gear.errors.remove-lent';
+            else if (message.includes("Sorry, gear not found.")) error.message = 'gear.errors.remove-lent';
             else error.message = message;
             break;
 
           case 'lend':
-            if (message.includes("Gear already has a request."))  error.message = "Inventorius turi neatsakytą užklausą";
-            else if (message.includes("You do not currently hold this gear")) error.message = "Negalite skolinti šio inventoriaus";
-            else if (message.includes("Sorry, gear not found.")) error.message = "Negalite skolinti šio inventoriaus";
-            else if (message.includes("User lent you this gear.")) error.message = "Šis darbuotojas paskolino jums šį inventorių";
+            if (message.includes("Gear already has a request."))  error.message = 'gear.errors.has-request';
+            else if (message.includes("You do not currently hold this gear")) error.message = 'gear.errors.lend';
+            else if (message.includes("Sorry, gear not found.")) error.message = 'gear.errors.lend';
+            else if (message.includes("User lent you this gear.")) error.message = 'gear.errors.user-lent';
             else error.message = message;
             break;
 
           case 'transfer':
-            if (message.includes("Gear already has a request."))  error.message = "Inventorius turi neatsakytą užklausą";
-            else if (message.includes("You cannot give away lent gear")) error.message = "Negalite perleisti paskolinto inventoriaus";
-            else if (message.includes("You do not currently hold this gear")) error.message = "Negalite perleisti šio inventoriaus";
-            else if (message.includes("Sorry, gear not found.") && this.$store.getters.user.isAdmin) error.message = "Svetimo inventoriaus perleisti kitiems negalite.";
-            else if (message.includes("Sorry, gear not found.")) error.message = "Negalite perleisti šio inventoriaus";
+            if (message.includes("Gear already has a request."))  error.message = 'gear.errors.has-request';
+            else if (message.includes("You cannot give away lent gear")) error.message = 'gear.errors.transfer-lent';
+            else if (message.includes("You do not currently hold this gear")) error.message = 'gear.errors.transfer';
+            else if (message.includes("Sorry, gear not found.") && this.$store.getters.user.isAdmin) error.message = 'gear.errors.transfer-admin';
+            else if (message.includes("Sorry, gear not found.")) error.message = 'gear.errors.transfer';
             else error.message = message;
         }
         return error;

@@ -38,7 +38,7 @@
         this.getUsersList(); // store updated users list
         this.addUserOpen = false;
         this.errorMsg = "";
-        EventBus.$emit('displayMessage', 'messages.user-add-success');
+        EventBus.$emit('displayMessage', this.$t('messages.user-add-success'));
       },
 
       userAddError(error) {
