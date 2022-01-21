@@ -293,8 +293,6 @@
     created() {
       document.title = this.$t('navigation.my-inventory') + this.$t('tab-title_base');
       this.loadData();
-      // delete this -----------------------------------------------------------------------------
-
     },
     mounted() {
       EventBus.$on('requestChanged', this.refresh);
@@ -352,6 +350,7 @@
       },
 
       refresh() {
+        this.rowsSelected = [];
         this.getData(this.url);
       },
 
@@ -440,6 +439,7 @@
 
       addGearSuccess() {
         this.addGearOpen = false;
+        this.rowsSelected = [];
         this.getData(this.url);
         EventBus.$emit('displayMessage', this.$t('messages.gear-add-success'));
       },

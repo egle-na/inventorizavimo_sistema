@@ -39,7 +39,6 @@
       },
 
       setSearch(val) {
-        console.log(val)
         this.getDataQuery(this.url, {search: val});
       },
 

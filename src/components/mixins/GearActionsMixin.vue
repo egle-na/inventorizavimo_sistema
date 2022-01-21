@@ -20,6 +20,7 @@
             {gear_id: [...id]},
             (response) => {
               this.getData(this.url);
+              EventBus.$emit('clearSearch');
               this.returnCardOpen = false;
               if(response.data.message.includes("Return request created")){
                 EventBus.$emit('displayMessage', this.$tc('messages.request-sent'));
@@ -61,8 +62,9 @@
             .then(() => {
               EventBus.$emit('displayMessage', this.$tc('messages.gear-remove-success'));
               this.deleteCardOpen = false;
+              this.rowsSelected = [];
               this.errorMsg = '';
-
+              EventBus.$emit('clearSearch');
               if (this.$route.name === 'inventory-info') this.$router.go(-1);
               else this.getData(this.url);
 
@@ -84,6 +86,7 @@
                 error.response.data.message.forEach(message => errors.push(this.errorMessage("delete", message)) );
                 this.deleteCardOpen = false;
                 this.getData(this.url);
+                EventBus.$emit('clearSearch');
 
                 EventBus.$emit('displayMessage', this.$tc('messages.gear-remove-success', id.length - error.response.data.message.length));
                 EventBus.$emit('displayErrorsMessage', this.$tc('errors.gear-remove', error.response.data.message.length), errors);
@@ -114,6 +117,7 @@
               this.actionType = '';
               this.selectUserOpen = false;
               this.errorMsg = '';
+              EventBus.$emit('clearSearch');
 
               if(endpoint === '/requests/give-yourself'){
                 this.getData(this.url,() => { this.getStatusText(); } );
@@ -143,7 +147,9 @@
                 this.actionType = '';
                 this.errorMsg = '';
                 this.selectUserOpen = false;
+                EventBus.$emit('clearSearch');
                 this.getData(this.url);
+
 
                 EventBus.$emit('displayMessage', this.$tc('messages.request-sent', id.length - error.response.data.message.length));
                 EventBus.$emit('displayErrorsMessage', this.$tc('errors.send-request', error.response.data.message.length), errors);

@@ -149,6 +149,10 @@
     align-items: center;
   }
 
+  .message-small p {
+    max-width: 270px;
+  }
+
   .date {
     margin: 0;
     color: var(--clr-darker-grey);

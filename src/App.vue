@@ -53,7 +53,7 @@ export default {
     --fs-nav: 0.875rem;         /* 14px */
     --fs-table-header: 1.25rem; /* 20px */
     --fs-side-menu: 1.5rem;     /* 24px */
-    --fs-button: 1.8rem;        /* nebe 30px 1.875 */
+    --fs-button: 1.8rem;        /* 29px */
   }
 
   * { box-sizing: border-box; }
@@ -175,7 +175,6 @@ export default {
   .hidden{
     visibility: hidden;
   }
-
 
   @media (max-width: 580px){
     .mobile {

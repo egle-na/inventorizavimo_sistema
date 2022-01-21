@@ -113,7 +113,7 @@
       "code": "Equipment does not match with other ones with the same code.",
 
       "remove": "Equipment could not be removed.",
-      "remove-lent": "You cannot remove lent gear",
+      "remove-lent": "You cannot remove lent gear.",
       "has-request": "Gear has pending request.",
 
       "return": {
@@ -125,7 +125,7 @@
 
       "transfer": "Equipment could not be transferred!",
       "transfer-lent": "You cannot give away lent gear.",
-      "transfer-admin": "You cannot transfer this equipment to others"
+      "transfer-admin": "You cannot transfer this equipment to others."
     },
     "who": "Who?",
     "to-whom": "To whom?",

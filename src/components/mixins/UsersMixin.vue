@@ -35,6 +35,7 @@
 
       userAdded(){
         this.getData(this.url);
+        EventBus.$emit('clearSearch');
         this.getUsersList(); // store updated users list
         this.addUserOpen = false;
         this.errorMsg = "";

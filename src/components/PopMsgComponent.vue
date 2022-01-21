@@ -48,7 +48,7 @@
         }, 25000);
       },
       viewErrors(errors) {
-        EventBus.$emit('viewErrors', errors)
+        EventBus.$emit('viewErrors', errors);
       }
     },
   }

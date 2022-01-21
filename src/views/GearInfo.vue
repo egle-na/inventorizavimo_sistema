@@ -61,6 +61,10 @@
            <h3>{{ $t('gear.price') }}</h3>
            <p>{{ list.unit_price }} €</p>
          </div>
+         <div>
+           <h3>{{ $t('gear.status') }}</h3>
+           <p>{{ list.long_term ? $t('gear.long-term') : $t('gear.short-term') }}</p>
+         </div>
 
          <!-- Action Buttons -->
          <div class="btn-container">
@@ -173,9 +177,7 @@
     },
     computed: {
       ownerName() {
-        if(this.$store.getters.allUsers.length){
-          return this.findName(this.list.user_id);
-        } else return '';
+        return this.$store.getters.allUsers.length ? this.findName(this.list.user_id) : '';
       },
     },
 

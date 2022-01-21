@@ -203,7 +203,7 @@
           params.role = oldUser.role === 1 ? 0 : oldUser.role === 0 && 1;
         }
 
-        // if some changes are made
+        // if some changes were made
         if(Object.keys(params).length !== 0) {
           this.$http.put(
               this.$store.getters.API_baseURL + "/users/" + id,

@@ -10,7 +10,7 @@
     <nav>
       <router-link :to="{name: 'user-inventory', params:{}}">{{ $t('navigation.my-inventory') }}</router-link>
       <router-link class="tablet-hide" to="/notifications">{{ $t('navigation.notifications') }}</router-link>
-      <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" >Admin</router-link> <!-- if role = admin -->
+      <router-link v-show="$store.getters.user.isAdmin" to="/all-inventory" >Admin</router-link>
     </nav>
 
     <!-- Notifications container -->

@@ -198,7 +198,7 @@
           this.newCompanyName = '';
           this.errorMsg = "";
           this.getData(this.url);
-          // need to clear search input
+          EventBus.$emit('clearSearch');
           EventBus.$emit('displayMessage', this.$t('messages.company-add-success'));
 
         }).catch(error => {
@@ -222,7 +222,7 @@
           this.errorMsg = "";
           this.editCompanyId = '';
           this.newCompanyName = '';
-          // clear search
+          EventBus.$emit('clearSearch');
           this.getData(this.url);
           EventBus.$emit('displayMessage', this.$t('messages.company-edit-success'));
 
@@ -262,10 +262,10 @@
         this.errorMsg = '';
         this.newUser = {
           first_name: '',
-              last_name: '',
-              email: '',
-              company_id: '',
-              role: 0,
+          last_name: '',
+          email: '',
+          company_id: '',
+          role: 0,
         };
       },
 

@@ -7,7 +7,6 @@
     </div>
 
     <router-link to="/notifications">{{ $t('request.all') }}</router-link>
-
   </div>
 </template>
 

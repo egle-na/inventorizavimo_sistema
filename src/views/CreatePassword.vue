@@ -108,7 +108,7 @@
             } else this.errorMsg = "errors.unknown"
           })
 
-        } // end if
+        }
       },
 
     },

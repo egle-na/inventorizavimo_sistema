@@ -67,10 +67,7 @@
     },
     methods: {
       getGearName(notification) {
-        if(notification.gear.length){
-          return notification.gear[0].name;
-        }
-        return this.$t('request.gear-unknown');
+        return notification.gear.length ? notification.gear[0].name : this.$t('request.gear-unknown');
       },
 
       refresh() {

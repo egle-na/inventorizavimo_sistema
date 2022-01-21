@@ -6,6 +6,8 @@
 </template>
 
 <script>
+  import {EventBus} from "@/main";
+
   export default {
     name: 'Search',
     data() {
@@ -13,6 +15,12 @@
         search: '',
         timeout: '',
       }
+    },
+    created() {
+      EventBus.$on('clearSearch', () => {this.search = ''});
+    },
+    beforeDestroy() {
+      EventBus.$off('clearSearch');
     },
     methods: {
       inputChanged(event) {

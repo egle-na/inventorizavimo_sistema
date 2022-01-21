@@ -126,11 +126,7 @@
     },
     methods: {
       expandRow(item) {
-        if (item === this.rowExpanded){
-          this.rowExpanded = '';
-        } else {
-          this.rowExpanded = item;
-        }
+        this.rowExpanded = item === this.rowExpanded ? '' : item;
       },
 
       addGearSuccess() {
