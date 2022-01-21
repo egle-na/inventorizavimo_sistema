@@ -240,6 +240,7 @@
             `${this.url}/${id}`,
             () => {
               this.deleteCompanyOpen = false;
+              EventBus.$emit('clearSearch');
               this.getData(this.url);
               this.newCompanyName = '';
               this.editCompanyId = '';

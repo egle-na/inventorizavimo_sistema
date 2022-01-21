@@ -132,6 +132,8 @@
       addGearSuccess() {
         this.addGearOpen = false;
         this.getData(this.url);
+        console.log('elp');
+        EventBus.$emit('clearSearch');
         EventBus.$emit('displayMessage', this.$t('messages.gear-add-success'));
       },
 

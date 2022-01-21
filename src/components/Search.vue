@@ -17,10 +17,7 @@
       }
     },
     created() {
-      EventBus.$on('clearSearch', () => {this.search = ''});
-    },
-    beforeDestroy() {
-      EventBus.$off('clearSearch');
+      EventBus.$on('clearSearch', this.clearInput);
     },
     methods: {
       inputChanged(event) {
@@ -34,6 +31,10 @@
         this.search = '';
         this.$emit('setSearch', '');
       },
+
+      clearInput() {
+        this.search = '';
+      }
     }
   }
 </script>

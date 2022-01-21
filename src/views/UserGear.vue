@@ -440,6 +440,7 @@
       addGearSuccess() {
         this.addGearOpen = false;
         this.rowsSelected = [];
+        EventBus.$emit('clearSearch');
         this.getData(this.url);
         EventBus.$emit('displayMessage', this.$t('messages.gear-add-success'));
       },

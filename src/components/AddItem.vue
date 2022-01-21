@@ -81,6 +81,7 @@
 <script>
   import DataMixin from "@/components/mixins/DataMixin";
   import FormItem from "@/components/FormItem";
+  import {EventBus} from "@/main";
 
   export default {
     name: "AddItem",
@@ -109,7 +110,7 @@
     },
     methods: {
       addNewGear() {
-        this.newGear.long_term = this.newGear.long_term !== "false";
+        this.newGear.long_term = (this.newGear.long_term !== "false" && this.newGear.long_term !== false);
         this.postData(
             this.$store.getters.API_baseURL + '/gear',
             this.newGear,
@@ -119,8 +120,9 @@
       },
 
       addGearSuccess() {
-        this.$emit('success');
+        EventBus.$emit('clearSearch');
         this.errorInput = {};
+        this.$emit('success');
       },
 
       addGearError(error) {
