@@ -38,13 +38,16 @@
 
       <!-- Serial Nr. and Price -->
       <div class="relative-container">
-        <input type="text"
-               :placeholder="$t('gear.serial-number')"
-               :title="$t('gear.serial-number')"
-               v-model="newGear.serial_number"
-               :class="{'input-error': errorInput.serial_number}"
-               @focus="delete errorInput.serial_number"
-               required>
+<!--        <div class="small-container relative-container">-->
+          <input type="text"
+                 :placeholder="$t('gear.serial-number')"
+                 :title="$t('gear.serial-number')"
+                 v-model="newGear.serial_number"
+                 :class="{'input-error': errorInput.serial_number}"
+                 @focus="delete errorInput.serial_number"
+                 required>
+<!--          <btn-view-eye :pswVisible="serialNumsVisible" @btnClicked="toggleSerialNumsVisibility" />-->
+<!--        </div>-->
         <input type="number" step=".01"
                :placeholder="$t('gear.price')"
                :title="$t('gear.price')"
@@ -75,6 +78,15 @@
       <p v-for="(message, index) in errorInput" :key="index" class="error-msg">{{ $t(message) }}</p>
 
     </form-item>
+
+<!--    <div class="side-container">-->
+<!--      <h4>Serial numbers:</h4>-->
+<!--      <p v-for="(number, index) in serialArr" :key="index">-->
+<!--        <span>{{ index + 1 }}:</span> {{ number }}-->
+<!--      <input type="text" v-model="serialArr[index]" />-->
+<!--      </p>-->
+<!--    </div>-->
+
   </div>
 </template>
 
@@ -82,15 +94,21 @@
   import DataMixin from "@/components/mixins/DataMixin";
   import FormItem from "@/components/FormItem";
   import {EventBus} from "@/main";
+  // import BtnViewEye from "@/components/BtnViewEye";
 
   export default {
     name: "AddItem",
     mixins: [ DataMixin ],
     props: [ 'user' ],
-    components: { FormItem },
+    components: {
+      // BtnViewEye,
+      FormItem
+    },
     data() {
       return {
         errorInput: {},
+        // serialArr:[],
+        serialNumsVisible: false,
         newGear: {
           description:'',
           name: '',
@@ -106,11 +124,26 @@
     computed: {
       descriptionCharNum() {
         return 255 - this.newGear.description.length;
+      },
+      serialArr(){
+        return this.newGear.serial_number.split(/\s*(?:[,;|/\s\\]|$)\s*/);
       }
     },
     methods: {
       addNewGear() {
+        this.errorInput = {};
+        //check if serial number count matches amount
+        // let prep = this.serialArr; // split at any of these:  ,;|/\space
+
+        if(this.serialArr.length !== parseInt(this.newGear.amount)){
+          console.log("nope")
+          this.errorInput.serial_number = "gear.errors.serial_number-amount";
+          return;
+        }
+        console.log("jap")
+        this.newGear.serial_number = this.serialArr.join(',');
         this.newGear.long_term = (this.newGear.long_term !== "false" && this.newGear.long_term !== false);
+
         this.postData(
             this.$store.getters.API_baseURL + '/gear',
             this.newGear,
@@ -134,6 +167,12 @@
         }
         if (error.response.data.message === "Gear does not match with other ones with the same code") {
           this.errorInput.code = "gear.errors.code";
+        } else if(error.response.data.message === "Serial number amount does not match gear amount"){
+          this.errorInput.serial_number = "gear.errors.serial_number-amount";
+        } else if(error.response.data.message === "Serial numbers must be unique"){
+          this.errorInput.serial_number = "gear.errors.serial_number-unique";
+        } else if(error.response.data.message[0].includes("Gear with this serial number already exists")){
+          this.errorInput.serial_number = "gear.errors.serial_number";
         }
       },
 
@@ -147,6 +186,9 @@
                 this.newGear = {...this.newGear, name:"", unit_price:"", description:"", long_term:true };
               } else this.catchErrorTokenExpired(error);
         })
+      },
+      toggleSerialNumsVisibility() {
+        this.serialNumsVisible = !this.serialNumsVisible;
       }
     }
   }
@@ -181,6 +223,15 @@
 
   .relative-container {
     position: relative;
+  }
+
+  .small-container {
+    display: inline-block;
+    width: 45%;
+    margin-right: 10%;
+  }
+  .small-container input {
+    width: 100%;
   }
 
   .error-msg {
@@ -232,6 +283,33 @@
   /* Firefox */
   input[type=number] {
     -moz-appearance: textfield;
+  }
+
+  .show-psw-btn{
+    top: .7em;
+    right: -1em;
+    bottom: unset;
+  }
+
+  .side-container{
+    background: var(--clr-white);
+    min-height: 100px;
+    border: #FF6464 solid;
+    border-radius: 5px;
+
+    padding: 0 1em;
+    position: absolute;
+    left: 0;
+    translate: -105%;
+    bottom: 0;
+
+    max-width: 300px ;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .side-container span{
+    opacity: .4;
   }
 
 </style>

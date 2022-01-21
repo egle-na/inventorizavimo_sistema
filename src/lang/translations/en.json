@@ -110,6 +110,8 @@
 
     "errors": {
       "serial_number": "Equipment with this serial number is added already.",
+      "serial_number-unique": "Serial numbers must be unique.",
+      "serial_number-amount": "Serial number amount does not match gear amount.",
       "code": "Equipment does not match with other ones with the same code.",
 
       "remove": "Equipment could not be removed.",

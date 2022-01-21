@@ -318,6 +318,10 @@
     max-width: 50%;
   }
 
+  .company-filter option {
+    text-align: left;
+  }
+
   .company-filter .placeholder {
     color: var(--clr-dark-grey);
   }

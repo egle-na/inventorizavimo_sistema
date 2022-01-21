@@ -110,6 +110,8 @@
 
     "errors": {
       "serial_number": "Inventorius šiuo serijos numeriu jau pridėtas.",
+      "serial_number-unique": "Serijos numeriai negali kartotis.",
+      "serial_number-amount": "Pridedamo inventoriaus kiekis ir serijos numerių skaičius nesutampa.",
       "code": "Duomenys nesutampa su kitu šio kodo inventoriumi.",
 
       "remove": "Inventoriaus nurašyti nepavyko.",
