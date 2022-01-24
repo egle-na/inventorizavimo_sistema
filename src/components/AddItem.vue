@@ -38,16 +38,27 @@
 
       <!-- Serial Nr. and Price -->
       <div class="relative-container">
-<!--        <div class="small-container relative-container">-->
+        <div class="small-container relative-container">
           <input type="text"
-                 :placeholder="$t('gear.serial-number')"
-                 :title="$t('gear.serial-number')"
-                 v-model="newGear.serial_number"
+                 :placeholder="$tc('gear.serial-number')"
+                 :title="$tc('gear.serial-number')"
+                 v-model="serial_number"
                  :class="{'input-error': errorInput.serial_number}"
-                 @focus="delete errorInput.serial_number"
-                 required>
-<!--          <btn-view-eye :pswVisible="serialNumsVisible" @btnClicked="toggleSerialNumsVisibility" />-->
-<!--        </div>-->
+                 @keydown.enter.prevent="addSerialNum"
+                 @focus="delete errorInput.serial_number; serialNumsVisible = true">
+          <btn-component btnType="add" @btnClicked="addSerialNum" type="button"/>
+
+          <!-- Serial numbers container mobile-->
+          <div class="side-container side-container--mobile" v-if="serialArr.length && serialNumsVisible">
+            <button class="close-btn" @click="serialNumsVisible = false">&times;</button>
+            <h4>{{ $tc('gear.serial-number', 2) }}:</h4>
+            <p v-for="(number, index) in serialArr" :key="index" :class="{'error': serialErr.includes(number)}">
+              <span>{{ index + 1 }}: </span>
+              <input type="text" v-model="serialArr[index]" />
+              <button @click="serialArr = serialArr.filter(num => num !== number)">&times;</button>
+            </p>
+          </div>
+        </div>
         <input type="number" step=".01"
                :placeholder="$t('gear.price')"
                :title="$t('gear.price')"
@@ -79,13 +90,16 @@
 
     </form-item>
 
-<!--    <div class="side-container">-->
-<!--      <h4>Serial numbers:</h4>-->
-<!--      <p v-for="(number, index) in serialArr" :key="index">-->
-<!--        <span>{{ index + 1 }}:</span> {{ number }}-->
-<!--      <input type="text" v-model="serialArr[index]" />-->
-<!--      </p>-->
-<!--    </div>-->
+    <!-- Serial numbers container -->
+    <div class="side-container" v-if="serialArr.length && serialNumsVisible">
+      <button class="close-btn" @click="serialNumsVisible = false">&times;</button>
+      <h4>{{ $tc('gear.serial-number', 2) }}:</h4>
+      <p v-for="(number, index) in serialArr" :key="index" :class="{'error': serialErr.includes(number)}">
+        <span>{{ index + 1 }}: </span>
+        <input type="text" v-model="serialArr[index]" />
+        <button @click="serialArr = serialArr.filter(num => num !== number)">&times;</button>
+      </p>
+    </div>
 
   </div>
 </template>
@@ -95,19 +109,23 @@
   import FormItem from "@/components/FormItem";
   import {EventBus} from "@/main";
   // import BtnViewEye from "@/components/BtnViewEye";
+  import BtnComponent from "@/components/BtnComponent";
 
   export default {
     name: "AddItem",
     mixins: [ DataMixin ],
     props: [ 'user' ],
     components: {
+      BtnComponent,
       // BtnViewEye,
       FormItem
     },
     data() {
       return {
         errorInput: {},
-        // serialArr:[],
+        serial_number: '',
+        serialArr:[],
+        serialErr:[],
         serialNumsVisible: false,
         newGear: {
           description:'',
@@ -125,22 +143,24 @@
       descriptionCharNum() {
         return 255 - this.newGear.description.length;
       },
-      serialArr(){
-        return this.newGear.serial_number.split(/\s*(?:[,;|/\s\\]|$)\s*/);
-      }
     },
     methods: {
       addNewGear() {
         this.errorInput = {};
-        //check if serial number count matches amount
-        // let prep = this.serialArr; // split at any of these:  ,;|/\space
+        this.serialErr= [];
 
+        // add number if entered into input field but not added yet
+        this.addSerialNum();
+
+        // remove empty values
+        this.serialArr = this.serialArr.filter(num => num);
+
+        // if amount doesn't match the amount of serial numbers
         if(this.serialArr.length !== parseInt(this.newGear.amount)){
-          console.log("nope")
           this.errorInput.serial_number = "gear.errors.serial_number-amount";
           return;
         }
-        console.log("jap")
+
         this.newGear.serial_number = this.serialArr.join(',');
         this.newGear.long_term = (this.newGear.long_term !== "false" && this.newGear.long_term !== false);
 
@@ -171,8 +191,14 @@
           this.errorInput.serial_number = "gear.errors.serial_number-amount";
         } else if(error.response.data.message === "Serial numbers must be unique"){
           this.errorInput.serial_number = "gear.errors.serial_number-unique";
+          let unique = new Set;
+          this.serialArr.forEach(num => {
+            this.serialErr.push(unique.has(num) && num);
+            unique.add(num);
+          })
         } else if(error.response.data.message[0].includes("Gear with this serial number already exists")){
           this.errorInput.serial_number = "gear.errors.serial_number";
+          error.response.data.message.forEach(message => this.serialErr.push(message.split(': ')[1].split(")")[0]))
         }
       },
 
@@ -187,8 +213,11 @@
               } else this.catchErrorTokenExpired(error);
         })
       },
-      toggleSerialNumsVisibility() {
-        this.serialNumsVisible = !this.serialNumsVisible;
+
+      addSerialNum(){
+        this.serialNumsVisible = true;
+        this.serialArr.push(...this.serial_number.split(/\s*(?:[,;|/\s\\]|$)\s*/));
+        this.serial_number = "";
       }
     }
   }
@@ -230,12 +259,26 @@
     width: 45%;
     margin-right: 10%;
   }
+
   .small-container input {
     width: 100%;
   }
 
+  .error{
+    color: var(--clr-red);
+  }
+
   .error-msg {
     margin-top: 1em;
+  }
+
+  .small-container .add-btn {
+    /*transform: initial;*/
+    margin: .5em 0 0;
+    position: absolute;
+    right: 0;
+    top:0;
+    transform: translateY(0) scale(.7);
   }
 
   #euro-sign {
@@ -247,6 +290,10 @@
   }
 
   @media (max-width: 580px) {
+    .small-container {
+      width: 100%;
+    }
+
     #euro-sign {
       top: calc(.7em + 4.7em);
     }
@@ -285,17 +332,20 @@
     -moz-appearance: textfield;
   }
 
-  .show-psw-btn{
+  .close-btn {
+    position: absolute;
+    font-size: 1.5rem;
     top: .7em;
-    right: -1em;
-    bottom: unset;
+    right: .57em;
+    line-height: 1;
+    color: var(--clr-dark-grey);
   }
 
   .side-container{
     background: var(--clr-white);
     min-height: 100px;
-    border: #FF6464 solid;
     border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
 
     padding: 0 1em;
     position: absolute;
@@ -308,8 +358,54 @@
     overflow-y: auto;
   }
 
+  .side-container p{
+    max-width: 90%;
+    white-space: nowrap;
+  }
+
   .side-container span{
     opacity: .4;
+    display: inline-block;
+    min-width: 25px;
+  }
+
+  .side-container button {
+    color: var(--clr-darker-grey);
+  }
+  .side-container button:hover {
+    color: var(--clr-dark-grey);
+  }
+
+  .side-container .close-btn{
+    color: var(--clr-dark-grey);
+  }
+
+  .side-container input{
+    padding: 0;
+    width: min-content;
+    max-width: 90%;
+    border: none;
+    margin: 0
+  }
+
+  .side-container--mobile{
+    display: none;
+  }
+
+  @media(max-width: 1064px){
+    .side-container {
+      display: none;
+      translate: 0;
+      /*top: 0;*/
+      bottom: 105%;
+      /*right: 1em;*/
+      /*left: 1em;*/
+      max-height: 40vh;
+    }
+
+    .side-container--mobile{
+      display: initial;
+    }
   }
 
 </style>

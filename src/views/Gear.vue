@@ -40,7 +40,7 @@
             <table>
               <tr><!-- expanded rows column labels -->
                 <th class="cell-min non-mobile"></th>
-                <th class="non-mobile">{{ $t('gear.serial-number') }}</th>
+                <th class="non-mobile">{{ $tc('gear.serial-number') }}</th>
                 <th class="mobile" colspan="2" >{{ $t('gear.serial-nr') }}</th>
                 <th>{{ $t('gear.owner') }}</th>
                 <th class="tablet-hide">{{ $t('gear.status') }}</th>

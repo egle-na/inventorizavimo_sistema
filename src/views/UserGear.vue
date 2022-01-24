@@ -61,8 +61,7 @@
     <div class="selection-container">
       <Search @setSearch="setSearch(...arguments); rowsSelected = []" />
 
-      <div :class="{'hidden': !anySelected}" class="flex selection-actions">
-
+      <div class="flex selection-actions">
         <!-- mobile checkbox -->
         <div class="mobile flex">
           <input type="checkbox"
@@ -74,8 +73,8 @@
         </div>
 
         <!-- other actions -->
-        <span class="non-mobile">{{ $t('my-inventory.selected') }}: {{ rowsSelected.length }}</span>
-        <table-actions class="actions">
+        <span :class="{'hidden': !anySelected}" class="non-mobile">{{ $t('my-inventory.selected') }}: {{ rowsSelected.length }}</span>
+        <table-actions class="actions" :class="{'hidden': !anySelected}">
 
           <btn-hands :btnType="'return'" :title="$t('action.return')" v-if="!$route.params.user_id" @btnClicked="openCard('multipleReturn')" />
           <span class="action-divider" v-if="!$route.params.user_id" />
@@ -102,7 +101,7 @@
         </th>
         <th>{{ $t('gear.title') }}</th>
         <th class="tablet-hide align-center">{{ $t('gear.code') }}</th>
-        <th class="tablet-hide">{{ $t('gear.serial-number') }}</th>
+        <th class="tablet-hide">{{ $tc('gear.serial-number') }}</th>
         <th>{{ $t('gear.status') }}</th>
         <th>{{ $t('gear.actions') }}</th>
       </tr>
@@ -180,7 +179,7 @@
   </action-card>
 
   <!-- Add item card -->
-  <modulus-full v-if="addGearOpen" @close="addGearOpen = false">
+  <modulus-full v-if="addGearOpen" @close="addGearOpen = false" class="add-item-card">
     <add-item :user="user_id" @success="addGearSuccess"/>
   </modulus-full>
 
@@ -598,7 +597,6 @@
     border-color: var(--clr-accent);
   }
 
-
   .mobile-filter button:first-child {
     margin: 0 1em;
   }
@@ -621,7 +619,6 @@
 
   .search-container {
     margin: 0 auto 1em 0;
-    /*margin-right: auto;*/
     width: 45%;
     transition: width 250ms;
   }
@@ -668,7 +665,6 @@
 
   .flex {
     display: flex;
-    /*align-items: center;*/
     justify-content: space-between;
     align-self: stretch;
   }
@@ -685,10 +681,12 @@
     .wide-filter {
       display: none;
     }
+
     .medium-filter{
       display: initial;
       border-left: none;
     }
+
     .table-container{
       max-height: calc(100vh - 50px - 16rem);
     }
@@ -698,12 +696,15 @@
     h1 {
       font-size: 3.3rem;
     }
+
     .selection-container {
       flex-direction: column;
     }
+
     .search-container {
       width: 100%;
     }
+
     .selection-container .actions {
       margin-left: 1.5em;
     }

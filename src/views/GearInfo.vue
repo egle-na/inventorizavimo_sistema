@@ -54,7 +54,7 @@
            <p>{{ list.code }}</p>
          </div>
          <div>
-           <h3>{{ $t('gear.serial-number') }}</h3>
+           <h3>{{ $tc('gear.serial-number') }}</h3>
            <p>{{ list.serial_number }}</p>
          </div>
          <div>

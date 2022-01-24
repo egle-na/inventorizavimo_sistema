@@ -102,7 +102,6 @@
     text-decoration: underline;
     color: var(--clr-red);
     padding: 0;
-    /*cursor: pointer;*/
   }
 
   @media(max-width: 580px){
