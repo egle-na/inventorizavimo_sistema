@@ -53,7 +53,7 @@
     border-bottom-color: var(--clr-accent);
   }
 
-  input.input-error {
+  input.input--error {
     border-color: var(--clr-red);
     margin-bottom: 0;
   }

@@ -98,6 +98,7 @@
   import TableComponent from "@/components/TableComponent";
   import {EventBus} from "@/main";
   export default {
+    // eslint-disable-next-line vue/multi-word-component-names
     name: "Gear",
     mixins: [ DataMixin, GearActionsMixin ],
     components: {
@@ -140,7 +141,7 @@
       ownersName(id){
         if(this.$store.getters.allUsers.length) {
           let {first_name, last_name} = this.$store.getters.allUsers.find(user => user.id === id);
-          return `${first_name} ${last_name}`
+          return `${first_name} ${last_name}`;
         }
       },
     },

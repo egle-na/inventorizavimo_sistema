@@ -58,6 +58,7 @@
 
   button {
     font-family: inherit;
+    text-decoration: underline;
   }
 
   .msg-container {

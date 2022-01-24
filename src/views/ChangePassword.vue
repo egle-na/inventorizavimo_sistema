@@ -20,7 +20,7 @@
         <div class="password-container" >
           <input :type="oldPswInputType"
                  class="input-long"
-                 :class="{'input-error': errorMsg === 'login.errors.password'}"
+                 :class="{'input--error': errorMsg === 'login.errors.password'}"
                  @change="errorMsg = ''"
                  :placeholder="$t('login.current-password')"
                  autocomplete="current-password"
@@ -34,7 +34,7 @@
         <div class="password-container" >
           <input :type="pswInputType"
                  class="input-long"
-                 :class="{'input-error': password.length >= 6 && password === oldPassword}"
+                 :class="{'input--error': password.length >= 6 && password === oldPassword}"
                  :placeholder="$t('login.new-password')"
                  autocomplete="new-password"
                  v-model="password"

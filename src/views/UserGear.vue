@@ -689,6 +689,7 @@
 
     .table-container{
       max-height: calc(100vh - 50px - 16rem);
+      min-height: 150px;
     }
   }
 

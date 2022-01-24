@@ -42,20 +42,20 @@
           <input type="text"
                  :placeholder="$tc('gear.serial-number')"
                  :title="$tc('gear.serial-number')"
+                 :class="{'input--error': errorInput.serial_number, 'input--invalid': !serialArr.length}"
                  v-model="serial_number"
-                 :class="{'input-error': errorInput.serial_number}"
                  @keydown.enter.prevent="addSerialNum"
                  @focus="delete errorInput.serial_number; serialNumsVisible = true">
           <btn-component btnType="add" @btnClicked="addSerialNum" type="button"/>
 
           <!-- Serial numbers container mobile-->
           <div class="side-container side-container--mobile" v-if="serialArr.length && serialNumsVisible">
-            <button class="close-btn" @click="serialNumsVisible = false">&times;</button>
+            <button class="close-btn" @click="serialNumsVisible = false" type="button">&times;</button>
             <h4>{{ $tc('gear.serial-number', 2) }}:</h4>
             <p v-for="(number, index) in serialArr" :key="index" :class="{'error': serialErr.includes(number)}">
               <span>{{ index + 1 }}: </span>
               <input type="text" v-model="serialArr[index]" />
-              <button @click="serialArr = serialArr.filter(num => num !== number)">&times;</button>
+              <button @click="serialArr.splice(index, 1)" type="button">&times;</button>
             </p>
           </div>
         </div>
@@ -92,12 +92,12 @@
 
     <!-- Serial numbers container -->
     <div class="side-container" v-if="serialArr.length && serialNumsVisible">
-      <button class="close-btn" @click="serialNumsVisible = false">&times;</button>
+      <button class="close-btn" @click="serialNumsVisible = false" type="button">&times;</button>
       <h4>{{ $tc('gear.serial-number', 2) }}:</h4>
       <p v-for="(number, index) in serialArr" :key="index" :class="{'error': serialErr.includes(number)}">
         <span>{{ index + 1 }}: </span>
         <input type="text" v-model="serialArr[index]" />
-        <button @click="serialArr = serialArr.filter(num => num !== number)">&times;</button>
+        <button @click="serialArr.splice(index, 1)" type="button">&times;</button>
       </p>
     </div>
 
@@ -108,7 +108,6 @@
   import DataMixin from "@/components/mixins/DataMixin";
   import FormItem from "@/components/FormItem";
   import {EventBus} from "@/main";
-  // import BtnViewEye from "@/components/BtnViewEye";
   import BtnComponent from "@/components/BtnComponent";
 
   export default {
@@ -117,7 +116,6 @@
     props: [ 'user' ],
     components: {
       BtnComponent,
-      // BtnViewEye,
       FormItem
     },
     data() {
@@ -264,7 +262,7 @@
     width: 100%;
   }
 
-  .error{
+  .error {
     color: var(--clr-red);
   }
 
@@ -273,7 +271,6 @@
   }
 
   .small-container .add-btn {
-    /*transform: initial;*/
     margin: .5em 0 0;
     position: absolute;
     right: 0;
@@ -287,6 +284,24 @@
     right: .5em;
     color: grey;
     width: fit-content;
+  }
+
+  input.input--invalid {
+    border-bottom-color: var(--clr-grey);
+  }
+
+  input.input--invalid:hover,
+  input.input--invalid:focus {
+    border-bottom-color: var(--clr-accent);
+  }
+
+  .input--invalid.input--error {
+    border-bottom-color: var(--clr-red);
+  }
+
+  .input--invalid.input--error:hover,
+  .input--invalid.input--error:focus {
+    border-bottom-color: var(--clr-red);
   }
 
   @media (max-width: 580px) {
@@ -309,13 +324,13 @@
     margin-top: .9em;
   }
 
-  .btn-container div{
+  .btn-container div {
     color: grey;
     display: flex;
     flex-direction: column;
   }
 
-  .btn-container input{
+  .btn-container input {
     width: fit-content;
     margin: 0 1em 0 0;
   }
@@ -341,7 +356,7 @@
     color: var(--clr-dark-grey);
   }
 
-  .side-container{
+  .side-container {
     background: var(--clr-white);
     min-height: 100px;
     border-radius: 5px;
@@ -350,7 +365,7 @@
     padding: 0 1em;
     position: absolute;
     left: 0;
-    translate: -105%;
+    transform: translateX(-105%);
     bottom: 0;
 
     max-width: 300px ;
@@ -358,12 +373,12 @@
     overflow-y: auto;
   }
 
-  .side-container p{
+  .side-container p {
     max-width: 90%;
     white-space: nowrap;
   }
 
-  .side-container span{
+  .side-container span {
     opacity: .4;
     display: inline-block;
     min-width: 25px;
@@ -376,11 +391,11 @@
     color: var(--clr-dark-grey);
   }
 
-  .side-container .close-btn{
+  .side-container .close-btn {
     color: var(--clr-dark-grey);
   }
 
-  .side-container input{
+  .side-container input {
     padding: 0;
     width: min-content;
     max-width: 90%;
@@ -388,22 +403,19 @@
     margin: 0
   }
 
-  .side-container--mobile{
+  .side-container--mobile {
     display: none;
   }
 
-  @media(max-width: 1064px){
+  @media(max-width: 1064px) {
     .side-container {
       display: none;
-      translate: 0;
-      /*top: 0;*/
+      transform: translateX(0);
       bottom: 105%;
-      /*right: 1em;*/
-      /*left: 1em;*/
       max-height: 40vh;
     }
 
-    .side-container--mobile{
+    .side-container--mobile {
       display: initial;
     }
   }

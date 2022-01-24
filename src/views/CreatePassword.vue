@@ -105,7 +105,7 @@
           }).catch(error => {
             if (error.response.status === 422) {
               this.errorMsg = "login.errors.create-email";
-            } else this.errorMsg = "errors.unknown"
+            } else this.errorMsg = "errors.unknown";
           })
 
         }
